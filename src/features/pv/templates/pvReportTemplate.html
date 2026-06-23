@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Design Basis Report</title>
+  <style>
+
+    
+
+    /* .cover-page {
+  background: #163c7a;
+  padding: 40px;
+  color: white;
+}
+
+.cover-blue {
+  background: #0f2f61;
+  padding: 24px;
+}
+
+.cover-green {
+  background: #1f7a5f;
+  padding: 18px;
+}
+
+.cover-project,
+.cover-report,
+.cover-footer-item {
+  color: white;
+} */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5pt;
+      page-break-inside: auto;
+      break-inside: auto;
+    }
+
+    table tr {
+
+      page-break-inside: auto;
+      break-inside: avoid-column;
+    }
+
+    table th {}
+
+    table td {
+
+      page-break-inside: auto;
+      break-inside: auto;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      padding: 5px;
+    }
+
+    thead {
+      display: table-header-group;
+    }
+
+    tfoot {
+      display: table-footer-group;
+    }
+  </style>
+</head>
+
+<body>
+
+  
+
+
+  <!-- <div class="preview-panel"> -->
+
+    <div class="page">
+
+
+
+      <!-- <h1>Table of Contents</h1>
+      <ul id="toc-list"></ul> -->
+
+      <h1 id="introduction"> 1 Introduction</h1>
+
+      <p>
+        {{clientName}} is developing a
+        {{ac_capacity}} MW(POI) / {{dc_capacity}} MWdc
+        {{plant_name}} in {{county}}, in the {{state}}, United States of America.
+
+        The proposed point of interconnection shall be at the
+        {{poi_voltage}} kV {{delivery_company}} switching station.
+      </p>
+
+      <p>
+        PVinsight Inc has been appointed by {{clientContact}}
+        to carry out the turnkey detail engineering and design for the project.
+      </p>
+
+      <h2 id="purpose">1.1 Purpose</h2>
+
+      <p>
+        The purpose of this document is to establish a set of criteria by which the
+        {{plant_name}} will be designed.
+      </p>
+
+      <ol>
+        <li>Applicable Design Standards and Codes</li>
+        <li>Project Details</li>
+        <li>Project Electrical Scheme</li>
+        <li>DC Design Basis</li>
+        <li>AC Design Basis</li>
+        <li>Energy Generation Estimation</li>
+      </ol>
+
+      <h2 id="ApplicableDesignStandards">1.2 Applicable Design Standards and Codes</h2>
+
+      <p>
+        The solar system shall be designed and installed according to the following applicable codes and standards.
+      </p>
+
+      <ul>
+        <li>ANSI - American National Standards Institute</li>
+        <li>AASHTO - American Association of State Highway and Transportation Officials</li>
+        <li>AREMA - American Railway Engineering and Maintenance-of-Way Association</li>
+        <li>ASHRAE - American Society for Heating Refrigeration and Air Conditioning</li>
+        <li>ASTM - American Society of Testing Materials</li>
+        <li>AWWA - American Water Works Association</li>
+        <li>CIGRE - International Council on Large Electric Systems</li>
+        <li>CFR - United States Code of Federal Regulations</li>
+        <li>CIRIA - Construction Industry Research and Information Association</li>
+        <li>EPA - United States Environmental Protection Agency</li>
+        <li>ERCOT - Electric Reliability Council of Texas</li>
+        <li>IBC - International Building Code</li>
+        <li>ICEA - Insulated Cable Engineers Association</li>
+        <li>IEEE - Institute of Electrical and Electronics Engineers</li>
+        <li>IES - Illuminating Engineering Society</li>
+        <li>IFC - International Fire Code</li>
+        <li>IPCEA - Insulated Power Cable Engineers Association</li>
+        <li>IEC - International Electrotechnical Commission</li>
+        <li>ISA - Instrument Society of America</li>
+        <li>ITU - International Telecommunications Union</li>
+        <li>ISO - International Standardization Organization</li>
+        <li>MDEC - Metering and Data Exchange Code</li>
+        <li>MSS - Manufacturers Standardization Society of Valve and Fitting Industry</li>
+        <li>NEC - National Electrical Code</li>
+        <li>NEMA - National Electrical Manufacturers Association</li>
+        <li>NESC - National Electrical Safety Code</li>
+        <li>NETA - National Electrical Testing Association</li>
+        <li>NERC - North American Electric Reliability Corporation</li>
+        <li>NFPA - National Fire Protection Association</li>
+        <li>OSHA - Occupational Safety and Health Administration</li>
+        <li>UL - Underwriters Laboratories</li>
+
+
+      </ul>
+      <p> </p>
+
+      <h2 id="ProjectDetails">1.4 Project Details</h2>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          <colgroup>
+            <col style="width: 7%">
+            <col style="width: 30%">
+            <col style="width: auto">
+            <col style="width: 15%">
+          </colgroup>
+          <tr>
+            <th>Sr No</th>
+            <th>Particulars</th>
+            <th>Description</th>
+            <th>Units</th>
+          </tr>
+        </thead>
+        <tr>
+          <td>1</td>
+          <td>Project Name</td>
+          <td>{{plant_name}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>State</td>
+          <td>{{state}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>County</td>
+          <td>{{county}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Coordinates</td>
+          <td>{{latitude}}, {{longitude}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>5</td>
+          <td>POI Voltage</td>
+          <td>{{poi_voltage}}</td>
+          <td>kV</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>MV Voltage</td>
+          <td>{{mv_voltage}}</td>
+          <td>kV</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>LV Voltage</td>
+          <td>{{lv_voltage}}</td>
+          <td>kV</td>
+        </tr>
+
+        <tr>
+          <td>8</td>
+          <td>GHI</td>
+          <td>{{ghi}}</td>
+          <td>kWh/m²/year</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>DSI</td>
+          <td>{{dsi}}</td>
+          <td>kWh/m²/year</td>
+        </tr>
+
+        <tr>
+          <td>10</td>
+          <td>Data Source</td>
+          <td>{{met_source}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Data Format</td>
+          <td>{{data_format}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>12</td>
+          <td>PV Area</td>
+          <td>{{pv_area}}</td>
+          <td>Acres</td>
+        </tr>
+
+        <tr>
+          <td>13</td>
+          <td> Type of PV Modules </td>
+          <td>{{module_type}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>14</td>
+          <td>DC Capacity</td>
+          <td>{{dc_capacity}}</td>
+          <td>MWdc</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td>AC Capacity</td>
+          <td>{{ac_capacity}}</td>
+          <td>MWac</td>
+        </tr>
+
+        <tr>
+          <td>16</td>
+          <td>AC Capacity (INV)</td>
+          <td>{{ac_capacity_inv}}</td>
+          <td>MWac</td>
+        </tr>
+
+        <tr>
+          <td>17</td>
+          <td>DC/AC Ratio POI</td>
+          <td>{{dc_ac_ratio_poi}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>DC/AC Ratio INV</td>
+          <td>{{dc_ac_ratio_inv}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>19</td>
+          <td>GCR</td>
+          <td>{{gcr}}</td>
+          <td>%</td>
+        </tr>
+
+        <tr>
+          <td>20</td>
+          <td>Temperature</td>
+          <td>Max {{tempCellMax}} / Min {{tempMin}}</td>
+          <td>°C</td>
+        </tr>
+
+        <tr>
+          <td>21</td>
+          <td>Altitude</td>
+          <td>{{altitude}}</td>
+          <td>ft</td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td>Wind Speed</td>
+          <td>{{wind_speed}}</td>
+          <td>mph</td>
+        </tr>
+
+        <tr>
+          <td>23</td>
+          <td>Risk Category</td>
+          <td>{{risk_category}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>24</td>
+          <td>Snow Load</td>
+          <td>{{snow_load}}</td>
+          <td>psf</td>
+        </tr>
+
+        <tr>
+          <td>25</td>
+          <td>String Size</td>
+          <td>{{string_size}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>26</td>
+          <td>Tracker Make</td>
+          <td>{{tracker_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>27</td>
+          <td>Tracker Model</td>
+          <td>{{tracker_model}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>28</td>
+          <td>Configuration</td>
+          <td>
+            {{tracker_config_4}}<br>
+            {{tracker_config_3}}<br>
+            {{tracker_config_2}}
+          </td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>29</td>
+          <td>Tracking Range</td>
+          <td>{{tracking_range}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>30</td>
+          <td>4 String Tracker</td>
+          <td>{{tracker_count_4}}</td>
+          <td>Qty</td>
+        </tr>
+        <tr>
+          <td>31</td>
+          <td>3 String Tracker</td>
+          <td>{{tracker_count_3}}</td>
+          <td>Qty</td>
+        </tr>
+        <tr>
+          <td>32</td>
+          <td>2 String Tracker</td>
+          <td>{{tracker_count_2}}</td>
+          <td>Qty</td>
+        </tr>
+
+        <tr>
+          <td>33</td>
+          <td>Module Make</td>
+          <td>{{module_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>34</td>
+          <td>Module Model</td>
+          <td>{{module_model}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>35</td>
+          <td>Module Watt</td>
+          <td>{{module_wp1}} / {{module_wp2}}</td>
+          <td>Wp</td>
+        </tr>
+
+        <tr>
+          <td>36</td>
+          <td>Module {{module_wp1}} Qty</td>
+          <td>{{module_qty_615}}</td>
+          <td>Qty</td>
+        </tr>
+        <tr>
+          <td>37</td>
+          <td>Module {{module_wp2}} Qty</td>
+          <td>{{module_qty_620}}</td>
+          <td>Qty</td>
+        </tr>
+
+        <tr>
+          <td>38</td>
+          <td>Dimensions</td>
+          <td>{{module_dimensions}}</td>
+          <td>mm</td>
+        </tr>
+
+        <tr>
+          <td>39</td>
+          <td>Central Inverter Make</td>
+          <td>{{Centra_inverter_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>40</td>
+          <td>Central Inverter Model</td>
+          <td>{{Centarl_inverter_model}}</td>
+          <td>-</td>
+        </tr>
+
+        <tr>
+          <td>41</td>
+          <td>Central Inverter Rating</td>
+          <td>{{Centarl_inverter_rating}}</td>
+          <td>kVA</td>
+        </tr>
+
+        <tr>
+          <td>42</td>
+          <td>Total number of Central Inverters</td>
+          <td>{{inverter_count}}</td>
+          <td>Qty</td>
+        </tr>
+
+        <tr>
+          <td>43</td>
+          <td>MV Transformer</td>
+          <td>{{mv_transformer}}</td>
+          <td>kVA</td>
+        </tr>
+
+        <tr>
+          <td>44</td>
+          <td>PCS dimension (W x H x D) </td>
+          <td>{{pcs_dimensions}}</td>
+          <td>mm</td>
+        </tr>
+
+        <tr>
+          <td>45</td>
+          <td>Annual electricity supplied to Grid for 1styear @P50 </td>
+          <td>{{annual_energy}}</td>
+          <td>MWh</td>
+        </tr>
+
+        <tr>
+          <td>46</td>
+          <td>Specific production for 1st year @P50</td>
+          <td>{{specific_yield}}</td>
+          <td>kWh/kWp</td>
+        </tr>
+
+        <tr>
+          <td>47</td>
+          <td> Performance Ratio for 1st year @P50</td>
+          <td>{{performance_ratio}}</td>
+          <td>%</td>
+        </tr>
+
+        <tr>
+          <td>48</td>
+          <td>DC CUF Ratio for 1st year @P50</td>
+          <td>{{dc_cuf}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>49</td>
+          <td>AC CUF Ratio for 1st year @P50</td>
+          <td>{{ac_cuf}}</td>
+          <td>%</td>
+        </tr>
+
+        <tr>
+          <td>50</td>
+          <td>Degradation</td>
+          <td>{{degradation}}</td>
+          <td>%/year</td>
+        </tr>
+
+      </table>
+
+
+      <h2 id="ProjectElectricalScheme">1.5 Project Electrical Scheme</h2>
+
+      <p>
+        {{clientName}} has chosen {{module_make}}'s
+        {{module_type}} technology photovoltaic (PV) modules
+        and {{Centra_inverter_make}}'s power conversion station solution for this project.
+        The PV modules are placed on {{tracker_make}}'s single-axis trackers with a
+        one-portrait (1P) configuration. We have three variations of tracker tables,
+        with each table capable of accommodating {{tracker_module_1}} modules ({{tracker_type_1}} strings),
+        {{tracker_module_2}} modules ({{tracker_type_2}} strings), and {{tracker_module_3}} modules ({{tracker_type_3}}
+        strings).
+      </p>
+      <p>
+        In a sequential configuration, {{modules_series}} modules with Power rating of {{module_wp1}} and {{module_wp2}}
+        will be linkedin a daisy chain to form a single string.
+        Each tracker table accommodates {{tracker_type_1}} strings, {{tracker_type_2}} strings or {{tracker_type_3}}
+        strings.
+        Every set of 2 strings will be interconnected using the DC harness system of 4 and 2 string trackers,
+        the harness system connected to the Trunk system through Tee drops and
+        2 strings will be interconnected using DC Harness system and 1 string will be interconnected
+        without harness system of 3 string trackers to the trunk system through Tee drops.
+        Each trunk System is designed to connect a maximum of 20 strings in parallel, and each
+        individual trunk System is linked to its respective
+        Load Break Disconnect (LBD) as the input circuit.
+      </p>
+      <p>
+        The output circuits, represented by the DC homerun cables, from the LBDs are linked to the PCS
+        through a combination of both direct burial and above-ground cable management system
+        arrangements. Each PCS is connected with maximum of {{max_lbd_per_pcs}} LBDs.
+      </p>
+      <p>
+        Each PCS is equipped with a Central Inverter, MV transformer and associated switchgear rated at
+        {{Centarl_inverter_rating}} kVA AC capacity. {{Centarl_inverter_rating}}kVA Central Inverter has a
+        provision for connecting 28 numbers of DC
+        homerun circuits. Each homerun circuit is protected with a fuse and fuse rating is selected based
+        on the number of strings connected at each Trunk System which is 400A or 500A. Inverter AC
+        connections are protected with circuit breakers and connected to LV side of Transformer through
+        internal arrangement in PCS.
+      </p>
+
+      <p>
+
+        MV Transformer is rated for {{mv_voltage}}/{{lv_voltage}}, {{mv_transformer}}, KNAN type. MV side of the
+        transformer is
+        protected with Expulsion fuse, Backup fuse and Two Position Load Break Switch for system
+        isolation.
+      </p>
+
+      <p>
+        Each PCS is equipped with a feature allowing it to connect or loop with nearby PCS units on the
+        medium-voltage (MV) side of the transformer. A maximum of Seven ({{pcs_loop_count}}) such PCS units can be
+        looped together, forming an integrated system. The final medium-voltage (MV) feeder resulting
+        from this looped configuration is then connected to the PV plant substation. Each feeder circuit
+        is designed to handle {{feeder_capacity}} MW maximum, and in total, there are Twelve ({{total_feeders}}) feeder
+        circuits
+        connected to the substation, contributing to the overall power distribution within the
+        photovoltaic (PV) plant.
+
+      </p>
+
+      <p>
+        The total collected power through {{mv_voltage}}kV MV feeders in the PV plant substation shall be stepped
+        up to {{poi_voltage}}kV voltage level with the help of main power transformers (MPT) and generated power
+        shall be evacuated at the {{delivery_company}} switching station. The scope of PVI
+        has been limited up to the PV Plant Substation.
+      </p>
+
+
+      <h2 id="DCDesignBasis">2 DC Design Basis</h2>
+
+      <h3 id="Solar Modules Technical Specifications">2.1 Solar Modules Technical Specifications</h3>
+
+      <p>
+        The selected solar module technology is {{module_type}}
+        with a wattage of {{module_wp1}} and {{module_wp2}},
+        manufactured by {{module_make}}.
+      </p>
+
+      <h3>Table 2: Technical Parameters of Solar Modules</h3>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>Sr No</th>
+            <th>Technical Parameters</th>
+            <th colspan="6">Data</th>
+            <th>Units</th>
+          </tr>
+
+          <tr>
+            <td>1</td>
+            <td>Module Model</td>
+            <td colspan="6">{{module_model}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>2</td>
+            <td>Module Rated Power</td>
+            <td>{{wp_1}}</td>
+            <td>{{wp_2}}</td>
+            <td>{{wp_3}}</td>
+            <td>{{wp_4}}</td>
+            <td>{{wp_5}}</td>
+            <td>{{wp_6}}</td>
+            <td>Wp</td>
+          </tr>
+
+          <tr>
+            <td>3</td>
+            <td>Pstc (Front Side)</td>
+            <td>{{pstc_1}}</td>
+            <td>{{pstc_2}}</td>
+            <td>{{pstc_3}}</td>
+            <td>{{pstc_4}}</td>
+            <td>{{pstc_5}}</td>
+            <td>{{pstc_6}}</td>
+            <td>Wp</td>
+          </tr>
+
+          <tr>
+            <td>4</td>
+            <td>Voc (Front Side)</td>
+            <td>{{voc_1}}</td>
+            <td>{{voc_2}}</td>
+            <td>{{voc_3}}</td>
+            <td>{{voc_4}}</td>
+            <td>{{voc_5}}</td>
+            <td>{{voc_6}}</td>
+            <td>V</td>
+          </tr>
+
+          <tr>
+            <td>5</td>
+            <td>Vmp (Front Side)</td>
+            <td>{{vmp_1}}</td>
+            <td>{{vmp_2}}</td>
+            <td>{{vmp_3}}</td>
+            <td>{{vmp_4}}</td>
+            <td>{{vmp_5}}</td>
+            <td>{{vmp_6}}</td>
+            <td>V</td>
+          </tr>
+
+          <tr>
+            <td>6</td>
+            <td>Isc (Front Side)</td>
+            <td>{{isc_1}}</td>
+            <td>{{isc_2}}</td>
+            <td>{{isc_3}}</td>
+            <td>{{isc_4}}</td>
+            <td>{{isc_5}}</td>
+            <td>{{isc_6}}</td>
+            <td>A</td>
+          </tr>
+
+          <tr>
+            <td>7</td>
+            <td>Imp (Front Side)</td>
+            <td>{{imp_1}}</td>
+            <td>{{imp_2}}</td>
+            <td>{{imp_3}}</td>
+            <td>{{imp_4}}</td>
+            <td>{{imp_5}}</td>
+            <td>{{imp_6}}</td>
+            <td>A</td>
+          </tr>
+
+          <tr>
+            <td>8</td>
+            <td>Module Efficiency</td>
+            <td>{{eff_1}}</td>
+            <td>{{eff_2}}</td>
+            <td>{{eff_3}}</td>
+            <td>{{eff_4}}</td>
+            <td>{{eff_5}}</td>
+            <td>{{eff_6}}</td>
+            <td>%</td>
+          </tr>
+
+          <tr>
+            <td>9</td>
+            <td>Temp Coefficient (Isc) α</td>
+            <td colspan="6">{{temp_coeff_isc}}</td>
+            <td>%/°C</td>
+          </tr>
+
+          <tr>
+            <td>10</td>
+            <td>Temp Coefficient (Voc) β</td>
+            <td colspan="6">{{temp_coeff_voc}}</td>
+            <td>%/°C</td>
+          </tr>
+
+          <tr>
+            <td>11</td>
+            <td>Temp Coefficient (Pm) γ</td>
+            <td colspan="6">{{temp_coeff_pm}}</td>
+            <td>%/°C</td>
+          </tr>
+
+          <tr>
+            <td>12</td>
+            <td>NOCT</td>
+            <td colspan="6">{{noct}}</td>
+            <td>°C</td>
+          </tr>
+
+          <tr>
+            <td>13</td>
+            <td>Series Fuse Rating</td>
+            <td colspan="6">{{fuse_rating}}</td>
+            <td>A</td>
+          </tr>
+
+          <tr>
+            <td>14</td>
+            <td>Dimensions (L × W × H)</td>
+            <td colspan="6">
+              {{module_length}} x {{module_width}} x {{module_height}}
+            </td>
+            <td>mm</td>
+          </tr>
+
+          <tr>
+            <td>16</td>
+            <td>Solar Cells per Module</td>
+            <td colspan="6">{{cell_count}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>17</td>
+            <td>Solar Cell Type</td>
+            <td colspan="6">{{cell_type}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>19</td>
+            <td>Front Glass</td>
+            <td colspan="6">{{front_glass}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>20</td>
+            <td>Back Glass</td>
+            <td colspan="6">{{back_glass}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>21</td>
+            <td>Module Output Cable</td>
+            <td colspan="6">{{output_cable}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>22</td>
+            <td>Module Connector</td>
+            <td colspan="6">{{connector}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>23</td>
+            <td>Junction Box</td>
+            <td colspan="6">{{junction_box}}</td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>24</td>
+            <td>Load Rating</td>
+            <td colspan="6">
+              {{wind_load}} (Wind) / {{snow_load}} (Snow)
+            </td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>25</td>
+            <td>Degradation</td>
+            <td colspan="6">
+              1st Year: {{deg_year1}} <br>
+              30th Year: {{deg_year30}} <br>
+              Year on Year: {{deg_yearly}}
+            </td>
+            <td>-</td>
+          </tr>
+
+          <tr>
+            <td>26</td>
+            <td>Warranty</td>
+            <td colspan="6">
+              {{warranty_product}} <br>
+              {{warranty_performance}}
+            </td>
+            <td>-</td>
+          </tr>
+        </thead>
+      </table>
+
+
+      <h3 id="String Sizing Calculation & Methodology">2.2 String Sizing Calculation & Methodology</h3>
+
+      <p>
+        The {{plant_name}} power plant shall be designed for a 1500 Vdc system.
+        It is imperative that when we design the string sizing, the maximum voltage
+        should not exceed the rated maximum voltage which is 1500 Vdc
+        under any operating condition.
+        The ambient temperature plays an important
+        role in the voltage and current characteristics of the PV module. As the temperature decreases,
+        the voltage of the PV module increases. We must ensure that even at the lowest temperature, the
+        voltage across the modules connected in series (string) should not exceed the design voltage of
+        1500 Vdc.
+      </p>
+
+      <p>
+        Apart from ambient temperature, the following factors affect string sizing:
+      </p>
+
+      <h4>Bifacial Factor</h4>
+
+      <p>The modules currently employed in the {{plant_name}} power project utilize {{module_type}}
+        technology. Bifacial modules are capable of capturing irradiance from the rear side, adding to the
+        overall power generation. This factor is referred to as the Bifacial factor. The Bifacial factor’s
+        magnitude is primarily influenced by the site’s albedo. An increase in the albedo factor shall
+        correspondingly raise the gain in rear side irradiance. Hence, when determining the string sizing,
+        it’s crucial to account for the highest possible Bifacial factor under the lowest ambient
+        temperature prevailing at the site. </p>
+
+
+      <p>
+        The proposed project modules are {{module_make}} {{module_model}} series modules.
+      </p>
+
+      <h3>2.3 Maximum Circuit Current, Bifacial Gain</h3>
+
+      <p>
+        Many publications accessible in the public domain discuss the field measurement of the bifacial
+        factor and provide a range for the bifacial factors. According to the NREL document “NREL/PR
+        5K00-74090” which talks about the field Bifacial PV system performance, the bifacial gain for
+        PERC modules varies between 4% to 8% considering the 3 sensitivity cases listed below.
+      </p>
+
+      <p>
+        The following table represents sensitivity cases based on albedo variations:
+      </p>
+
+      <h4>Table 3: Bifacial Modelling Sensitivity Case</h4>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>Cases</th>
+            <th>Ground Albedo</th>
+            <th>PERC ΦBifi</th>
+            <th>Si-HJT ΦBifi</th>
+          </tr>
+
+          <tr>
+            <td>High Case</td>
+            <td>{{albedo_high}}</td>
+            <td>{{perc_high}}</td>
+            <td>{{hjt_high}}</td>
+          </tr>
+
+          <tr>
+            <td>Average Case</td>
+            <td>{{albedo_avg}}</td>
+            <td>{{perc_avg}}</td>
+            <td>{{hjt_avg}}</td>
+          </tr>
+
+          <tr>
+            <td>Low Case</td>
+            <td>{{albedo_low}}</td>
+            <td>{{perc_low}}</td>
+            <td>{{hjt_low}}</td>
+          </tr>
+
+        </thead>
+      </table>
+
+      <h3 id="Maximum Circuit Current, Bifacial Gain">2.3 Maximum Circuit Current, Bifacial Gain</h3>
+
+      <p>
+        Since the modules used in the project are
+        {{module_type}}, a bifacial factor of
+        {{bifacial_factor}} is adopted for estimating the maximum current
+        as per the inputs provided in the technical datasheet of the module manufacturer.
+      </p>
+
+      <p>
+        The maximum PV source circuit current shall be calculated in accordance with
+        <b>NEC 690.8(A)(1)(2)</b> using one of the following methods:
+      </p>
+
+      <ul>
+        <li>
+          <b>690.8(A)(1)(a)(1):</b> The sum of parallel-connected PV module rated short circuit
+          currents multiplied by 125%.
+        </li>
+
+        <li>
+          <b>690.8(A)(1)(a)(2):</b> The calculated maximum current value shall be based on the highest 3-hour
+          current average resulting from the simulated local irradiance on the PV array accounting for
+          elevation and orientation.
+        </li>
+      </ul>
+
+      <p>
+        As outlined in the informational notes of NEC 690.8(A)(1)(a), one of the industry-standard method
+        for determining the maximum current of a PV system is available in the reference SAND 2004-
+        3535, titled “Photovoltaic Array Performance Model”, developed by Sandia National Laboratories.
+        This model is used by the System Advisor Model (SAM) simulation program, which is offered by
+        the National Renewable Energy Laboratory (NREL).</p>
+
+      <p>
+        The PV module parameters corresponding to the highest Wp bin range i.e., (<b>{{max_module_power}} Wp</b>) Wp
+        module have
+        been utilized in this analysis. The necessary module parameter inputs have been provided in the
+        SAM. For this simulation, DC losses have been assumed at zero percent, ensuring that the
+        calculated Isc accurately represents the conditions at the module array.</p>
+
+      <p>The SAM simulation has been carried out to determine the maximum current & voltage using
+        TMY data provided by SolarGIS. The average of the highest 3-hr short circuit current obtained is
+        {{max_isc}}A. As the SolarAnywhere time series data was not available at the time of this document
+        preparation, we have verified the worst-case maximum current and voltage using the past 26
+        years historical data from NSRDB, the results of the same are in the following table.
+      </p>
+
+
+      <h4>Table 4: Results of 26-years historical SAM simulation current - NSRDB</h4>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          {{YEARLY_ISC_TABLE}}
+        </thead>
+
+      </table>
+
+      <p>
+        From the above table, it is evident that the average of the highest
+        3-hour short circuit current obtained is
+        <b>{{max_3hr_isc}}</b> for the year <b>{{max_isc_year}}</b>.
+      </p>
+
+      <p>
+        In the following table, the date and hourly data for the first three instances
+        of the highest short circuit currents are presented.
+      </p>
+
+      <h4>Table 5: Highest 3-hour current from SAM simulation - NSRDB</h4>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>Date & Time</th>
+            <th>Irradiance GHI (W/m²)</th>
+            <th>Irradiance DHI (W/m²)</th>
+            <th>Short Circuit Current (A)</th>
+          </tr>
+
+          <tr>
+            <td>{{t1_datetime}}</td>
+            <td>{{t1_ghi}}</td>
+            <td>{{t1_dhi}}</td>
+            <td>{{t1_isc}}</td>
+          </tr>
+
+          <tr>
+            <td>{{t2_datetime}}</td>
+            <td>{{t2_ghi}}</td>
+            <td>{{t2_dhi}}</td>
+            <td>{{t2_isc}}</td>
+          </tr>
+
+          <tr>
+            <td>{{t3_datetime}}</td>
+            <td>{{t3_ghi}}</td>
+            <td>{{t3_dhi}}</td>
+            <td>{{t3_isc}}</td>
+          </tr>
+        </thead>
+      </table>
+
+      <p>
+        The resultant gain percentage, incorporating both irradiance gain and temperature
+        corrections, is <b>{{gain_percentage}}</b> for the highest 3-hour average short
+        circuit current of <b>{{max_3hr_isc}}</b> when compared with the rated short
+        circuit current of <b>{{rated_isc}}</b> at STC conditions.
+      </p>
+
+      <h3 id="Maximum System Voltage">2.4 Maximum System Voltage</h3>
+
+      <p>
+        In Solar PV systems, the Voc (open circuit voltage) serves as the maximum system voltage. To
+        estimate the Maximum Voc of the string per NEC 2023 section 690.7 informational note 1
+        suggests considering the Extreme Annual Mean Minimum Design Dry Bulb Temperature outlined
+        in the ASHRAE Handbook Fundamentals, 2021. These temperature data shall be utilized to
+        calculate the maximum voltage. Further, the maximum voltage shall be calculated using the
+        standard method detailed in the reference SAND 2004-3535, titled “Photovoltaic Array
+        Performance Model publication”, developed by Sandia National Laboratories.
+      </p>
+
+      <p>
+        Based on site coordinates, the nearest weather station used for ASHRAE data is
+        <b>{{weather_station_city}}, {{weather_station_state}}, {{weather_station_country}}</b>,
+        identified by station ID <b>{{weather_station_id}}</b>.
+      </p>
+
+      <!-- <div style="width:100%; overflow-x:auto;"> -->
+      {{ASHRAE_TABLE}}
+      <!-- </div> -->
+
+      <p>
+        A summary of the extreme annual temperatures along with the calculation results of the maximum Voc are provided
+        in the following table. Refer Annexure-01 for detailed string sizing calculation.
+      </p>
+
+      <h4>Table 6: Summary of ASHRAE Temperature Analysis</h4>
+
+      <table class="compact-table" border="1">
+        <th rowspan="2">DataPoint</th>
+        <th rowspan="2">Condi<br>tion</th>
+        <th rowspan="2">Temp<br>(°C)</th>
+        <th rowspan="2">Description</th>
+        <th colspan="6">Summary of Results</th>
+        <th rowspan="2">Units</th>
+
+        <tr>
+          <th>{{wp_1}}</th>
+          <th>{{wp_2}}</th>
+          <th>{{wp_3}}</th>
+          <th>{{wp_4}}</th>
+          <th>{{wp_5}}</th>
+          <th>{{wp_6}}</th>
+        </tr>
+
+        <!-- ASHRAE Mean -->
+        <tr>
+          <td rowspan="3">ASHRAE Mean ({{modules_series}} Modules in Series)</td>
+          <td>Min</td>
+          <td>{{tempMin}}</td>
+          <td>Max Voc</td>
+          <td>{{ashrae_voc_1}}</td>
+          <td>{{ashrae_voc_2}}</td>
+          <td>{{ashrae_voc_3}}</td>
+          <td>{{ashrae_voc_4}}</td>
+          <td>{{ashrae_voc_5}}</td>
+          <td>{{ashrae_voc_6}}</td>
+          <td>V</td>
+        </tr>
+
+        <tr>
+          <td>Max</td>
+          <td>{{tempCellMax}}</td>
+          <td>Modules in Series</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>No.</td>
+        </tr>
+
+        <tr>
+          <td colspan="2"></td>
+          <td>Max String Voc</td>
+          <td>{{ashrae_string_1}}</td>
+          <td>{{ashrae_string_2}}</td>
+          <td>{{ashrae_string_3}}</td>
+          <td>{{ashrae_string_4}}</td>
+          <td>{{ashrae_string_5}}</td>
+          <td>{{ashrae_string_6}}</td>
+          <td>V</td>
+        </tr>
+
+        <!-- PV Syst -->
+        <tr>
+          <td rowspan="3">PV Syst ({{modules_series}} Modules in Series)</td>
+          <td>Min</td>
+          <td>{{tempMin}}</td>
+          <td>Max Voc</td>
+          <td>{{pvsyst_voc_1}}</td>
+          <td>{{pvsyst_voc_2}}</td>
+          <td>{{pvsyst_voc_3}}</td>
+          <td>{{pvsyst_voc_4}}</td>
+          <td>{{pvsyst_voc_5}}</td>
+          <td>{{pvsyst_voc_6}}</td>
+          <td>V</td>
+        </tr>
+
+        <tr>
+          <td>Max</td>
+          <td>{{tempCellMax}}</td>
+          <td>Modules in Series</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>{{modules_series}}</td>
+          <td>No.</td>
+        </tr>
+
+        <tr>
+          <td colspan="2"></td>
+          <td>Max String Voc</td>
+          <td>{{pvsyst_string_1}}</td>
+          <td>{{pvsyst_string_2}}</td>
+          <td>{{pvsyst_string_3}}</td>
+          <td>{{pvsyst_string_4}}</td>
+          <td>{{pvsyst_string_5}}</td>
+          <td>{{pvsyst_string_6}}</td>
+          <td>V</td>
+        </tr>
+
+      </table>
+
+      <p>
+
+      </p>
+
+      <p>
+        The maximum voltage of the string, considering {{modules_series}} modules in series as per manual calculations,
+        is within the 1500 dc limitation.
+      </p>
+
+      <p>
+        To verify the maximum voltage calculation according to NEC 690.7 (A)(3), PVI conducted SAM simulation to
+        understand the impact of temperature and irradiance on the voltage. To validate the maximum Voc of the string, a
+        string sizing analysis has been conducted using the SAM software considering the module rating of the highest
+        bin wattage, {{630Wp}} with the TMY data provided by SolarGIS. The maximum Voc obtained from this analysis is
+        {{1428.04 Vdc}}, which is lower than the rated voltage of 1500 Vdc.
+      </p>
+
+      <p>
+        Further we have carried out the SAM simulation utilizing the past 26 years NSRDB historical weather data set,
+        the maximum Voc obtained from this analysis is {{1441.33 Vdc}} considering 630Wp module, which is lower than the
+        rated voltage of {{1500 Vdc}}, the results of this analysis have been included in the following table.
+      </p>
+
+      <h4>Table 7: Results of 26-years historical SAM simulation voltage - NSRDB</h4>
+
+
+      {{YEARLY_VOC_TABLE}}
+      <p>
+        From the above table it can be observed that with {{modules_series}} modules in series using SAM simulation
+        method and NSRDB
+        data, the maximum voltage is within the 1500Vdc limit. Considering that the maximum voltage obtained from the
+        SAM analysis is 1441.33 Voc and in compliance with NEC 690.7 A(3) we can conclude that the String Sizing can be
+        considered with 28 modules in series.
+      </p>
+
+      <h3 id="Minimum System Voltage">2.5 Minimum System Voltage</h3>
+
+      <p>
+        According to Annexure-1, the Vmp at the maximum temperature is {{36.9}}V, and the inverter's minimum MPP voltage
+        is {{PCS_Min_PV_Input_Voltage}}V.
+      </p>
+
+      <p>
+        The minimum number of modules in series is calculated as:
+      </p>
+
+      <div
+        style="display: flex; flex-direction: row; align-items: center; justify-content: center; font-family: 'Times New Roman', Times, serif; font-size: 20px; font-style: italic; margin: 25px 0;">
+        <span>N<sub>min</sub></span>
+        <span style="margin: 0 10px; font-style: normal;">=</span>
+
+        <div
+          style="display: inline-flex; flex-direction: column; align-items: center; text-align: center; padding: 0 4px;">
+          <span style="border-bottom: 1px solid #000; width: 100%; padding-bottom: 2px;">V<sub>mppt-min</sub></span>
+          <span style="padding-top: 2px;">V<sub>mp@Tmax</sub></span>
+        </div>
+
+        <span style="margin: 0 10px; font-style: normal;">=</span>
+
+        <div
+          style="display: inline-flex; flex-direction: column; align-items: center; text-align: center; padding: 0 4px;">
+          <span
+            style="border-bottom: 1px solid #000; width: 100%; padding-bottom: 2px; font-style: normal;">{{PCS_Min_PV_Input_Voltage}}</span>
+          <span style="padding-top: 2px; font-style: normal;">{{36.9}}</span>
+        </div>
+
+        <span style="margin: 0 10px; font-style: normal;">=</span>
+        <span style="font-style: normal;">N_MIN</span>
+        <span style="margin: 0 10px; font-style: normal;">&approx;</span>
+        <span style="font-style: normal;">N_MIN_ROUNDED</span>
+      </div>
+
+      <p>
+        Therefore, the minimum string size should be 25 modules in series.
+      </p>
+
+      <p>
+        Using the SAM simulation, the maximum string size was determined to be {{modules_series}} modules per string
+        with each module
+        rated at highest bin wattage {{630}}Wp. The Vmp for the {{630}}Wp module is {{41.92}} Vdc. When verifying the
+        minimum string voltage with {{modules_series}} modules per string, we obtained {{1173.76}}, which is higher than
+        the
+        inverter's lower MPPT voltage of {{PCS_Min_PV_Input_Voltage}}V.
+      </p>
+
+      <p>
+        Additionally, we have been verified the lowest voltage using 26 years of NSRDB Data, which is {{1014.22}}Vdc.
+        The lower end of the inverter's MPPT range is {{PCS_Min_PV_Input_Voltage}}Vdc. Accounting for an annual degradation of 0.4%, the
+        voltage at the end of 30 years would be {{1031.42}} Vdc. Therefore, the string sizing will still comply with the
+        lower side of the MPPT range even after considering degradation.
+      </p>
+      ``
+      <h4>Table 8: Summary of 30 years minimum voltage degradation</h4>
+
+      <table border="1">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>Year</th>
+            <th>Min Voltage (V)</th>
+            <th>Module degradation (%)</th>
+            <th>Min voltage after degradation (V)</th>
+          </tr>
+        </thead>
+        {{minVoltageDegradationTable}}
+      </table>
+
+      <h3 id="DC Cables">2.6 DC Cables</h3>
+
+      <p>
+        DC cables, also known as solar PV cables, are specialized electrical cables designed for use in PV systems. DC
+        cables play a crucial role in transmitting the generated electrical energy from the solar PV modules to Trunk
+        cable, LBD and inverters. DC cables are engineered to withstand the unique challenges posed by solar
+        installations. These cables typically feature high-grade materials that offer excellent resistance to
+        ultraviolent (UV) radiation, temperature variation, moisture, and outdoor environmental conditions. The typical
+        technical specifications of the DC cables are listed below.
+      </p>
+
+      <h4>Table 9: DC Cable Technical Details</h4>
+
+      <table border="1" style="text-align: center;">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>Sr. No</th>
+            <th>Technical Description</th>
+            <th>Data</th>
+          </tr>
+
+          <tr>
+            <td>1</td>
+            <td>Cable sizes</td>
+            <td>{{DC_Cable_Sizes}}</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Rated Voltage</td>
+            <td>{{DC_Cable_Rated_Voltage}}</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Conductor Material</td>
+            <td>{{DC_Cable_Conductor_Material}}</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Conductor Type</td>
+            <td>{{DC_Cable_Conductor_Type}}</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Insulation Type</td>
+            <td>{{DC_Cable_Insulation_Type}}</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>UV/Sunlight Resistant</td>
+            <td>{{DC_Cable_UV_Sunlight_Resistant}}</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Temperature Rating</td>
+            <td>{{DC_Cable_Temperature_Rating}}</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>UL Certification</td>
+            <td>{{DC_Cable_UL_Certification}}</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>RoHS Compliant</td>
+            <td>{{DC_Cable_RoHS_Compliant}}</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>NEC Compliant</ td>
+              < td>{{DC_Cable_NEC_Compliant}}</ td>
+              </ tr>
+        </thead>
+
+      </table>
+
+      <p>
+        **PV wire strands shall meet the minimum requirements outlined in NEC table 690.31(c)(4)
+      </p>
+
+      <h3 id="PV Connectors">2.7 PV Connectors</h3>
+
+      <p>
+        PV connectors, also known as solar connectors, are essential components in the PV systems that facilitate the
+        secure and efficient connection of solar panels. These connectors should be designed to handle the electrical
+        output of solar modules, ensuring safe and reliable transmissions within the system. The typical technical
+        specifications of the PV connectors are listed below.
+      </p>
+
+      <h4>Table 10: PV Connectors Technical Details</h4>
+
+      <table border="1" style="text-align: center;">
+        <tr>
+          <th>Sr. No</th>
+          <th>Technical Description</th>
+          <th>Data</th>
+        </tr>
+
+        <tr>
+          <td>1</td>
+          <td>Make</td>
+          <td>{{PV_Connector_Make}}</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Model</td>
+          <td>{{PV_Connector_Model}}</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>System Voltage</td>
+          <td>{{PV_Connector_System_Voltage}}</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Connection Type</td>
+          <td>{{PV_Connector-Connection_Type}}</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Contact Material</td>
+          <td>{{PV_Connector_Contact_Material}}</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Life Expectancy</td>
+          <td>{{PV_Connector_Life_Expectancy}}</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Protection</td>
+          <td>{{PV_Connector_Protection}}</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Ambient Temperature</td>
+          <td>{{PV_Connector_Ambient_Temperature}}</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>UL Certification</td>
+          <td>{{PV_Connector_UL_Certification}}</td>
+        </tr>
+
+      </table>
+
+      <h id="DC Trunk Cable Specifications">2.8 DC Trunk Cable Specifications</h3>
+
+        <p>
+          Technical specifications of the Trunk cable are as below.
+        </p>
+
+        <h4>Table 11: Trunk Cable Technical Specifications</h4>
+
+        <table border="1" style="text-align: center;">
+          <tr>
+            <th>Sr. No</th>
+            <th>Technical Parameters</th>
+            <th>Data</th>
+          </tr>
+
+          <tr>
+            <td>1</td>
+            <td>Make</td>
+            <td>{{Trunk_Cable_Make}}</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Max. System Voltage</td>
+            <td>{{Trunk_Cable_Max_System_Voltage}}</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Maximum OCPD per String</td>
+            <td>{{Trunk_Cable_Maximum_OCPD_per_String}}</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Selected Trunk System Size</td>
+            <td>{{Trunk_Cable_Selected_Trunk_System_Size}}</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Max. No. of Input Circuits</td>
+            <td>{{Trunk_Cable_Max_No_of_Input_Circuits}}</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Ambient temperature</td>
+            <td>{{Trunk_Cable_Ambient_Temperature}}</td>
+          </tr>
+        </table>
+
+        <h id="Load Break Disconnect (LBD)">2.9 Load Break Disconnect (LBD)</h3>
+
+          <p>
+            Technical specifications of the LBD are as below. Each block would be having 12 to 16 LBDs which would be
+            connected to the 4400kVA Central inverter through sufficiently sized DC cable rated for 2 kV.
+          </p>
+
+          <h4>Table 12: Load Break Disconnect Technical Specifications</h4>
+
+          <table border="1" style="text-align: center;">
+            <tr>
+              <th>Sr. No</th>
+              <th>Technical Parameters</th>
+              <th>Data</th>
+            </tr>
+
+            <tr>
+              <td>1</td>
+              <td>Manufacturer</td>
+              <td>{{LBD_Manufacturer}}</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Max. System Voltage</td>
+              <td>{{LBD_Max_System_Voltage}}</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Amperage Rating</td>
+              <td>{{LBD_Amperage_Rating}}</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Short Circuit Current Rating (Isc)</td>
+              <td>{{LBD_Short_Circuit_Current_Rating}}</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Input Wire Size</td>
+              <td>{{LBD_Input_Wire_Size}}</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Output Wire Size</td>
+              <td>{{LBD_Output_Wire_Size}}</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Max. Ambient Temp. Rating</td>
+              <td>{{LBD_Max_Ambient_Temp_Rating}}</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Certification Standards</td>
+              <td>{{LBD_Certification_Standards}}</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Enclosure Fiberglass (Standard)</td>
+              <td>{{LBD_Enclosure_Fiberglass}}</td>
+            </tr>
+
+          </table>
+
+          <h3 id="AC Design Basis">3 AC Design Basis</h3>
+
+          <h3 id="Power Conversion Station Technical Specifications">3.1 Power Conversion Station Technical
+            Specifications</h3>
+
+          <p>
+            The technical specifications of the PCS manufactured by {{Sungrow}} are as follows:
+          </p>
+
+          <h4>Table 13: PCS Technical Specifications</h4>
+
+          <table border="1" style="text-align: center;">
+            <thead style="display: table-header-group;">
+              <tr>
+                <th>Sr. No</th>
+                <th>Technical Parameters</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tr>
+              <td>1</td>
+              <td>Model Name</td>
+              <td>{{PCS_Model_Name}}</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Max. DC Input Voltage</td>
+              <td>{{PCS_Max_DC_Input_Voltage}}</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Min. PV input Voltage/ Start-up input Voltage</td>
+              <td>{{PCS_Min_PV_Input_Voltage}}/{{Start_Up_Input_Voltage}}</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>MPP tracker (MPPT) voltage range</td>
+              <td>{{PCS_MPP_Tracker_Min_Voltage_Range}}-{{PCS_MPP_Tracker_Max_Voltage_Range}}</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Full power MPP Voltage range @40°C</td>
+              <td>{{PCS_Full_Power_MPP_Voltage_Range_40C}}</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Available DC Fuse Sizes</td>
+              <td>{{PCS_Available_DC_Fuse_Sizes}}</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>No. of independent MPPT</td>
+              <td>{{PCS_No_of_Independent_MPPT}}</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Max. PV input current</td>
+              <td>{{PCS_Max_PV_Input_Current}}</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Max. PV short circuit current</td>
+              <td>{{PCS_Max_PV_Short_Circuit_Current}}</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>Number of DC Inputs</td>
+              <td>{{PCS_Number_of_DC_Inputs}}</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>DC surge protection</td>
+              <td>{{PCS_DC surge protection}}</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>Max. AC output power</td>
+              <td>{{PCS_Max AC output power}}</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td>Rated output frequency / range</td>
+              <td>{{PCS_Rated output frequency / range}}</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>THD</td>
+              <td>{{PCS_THD}}</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td>Power factor at nominal power / Adjustable power factor</td>
+              <td>{{PCS_Power factor at nominal power / Adjustable power factor}}</td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td>Transformer rated power/ Max. power</td>
+              <td>{{PCS_Transformer rated power/ Max. power}}</td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td>Transformer LV/MV Voltage</td>
+              <td>{{PCS_Transformer LV/MV Voltage}}</td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td>Transformer Vector</td>
+              <td>{{PCS_Transformer Vector}}</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td>Transformer cooling method</td>
+              <td>{{PCS_Transformer cooling method}}</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td>DC input protection</td>
+              <td>{{PCS_DC input protection}}</td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td>Inverter output protection</td>
+              <td>{{PCS_Inverter output protection}}</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td>AC MV output protection</td>
+              <td>{{PCS_AC MV output protection}}</td>
+            </tr>
+            <tr>
+              <td>23</td>
+              <td>AC surge protection</td>
+              <td>{{PCS_AC surge protection}}</td>
+            </tr>
+            <tr>
+              <td>24</td>
+              <td>Inverter Max. efficiency</td>
+              <td>{{PCS_Inverter Max. efficiency}}</td>
+            </tr>
+            <tr>
+              <td>25</td>
+              <td>Inverter CEC efficiency</td>
+              <td>{{PCS_Inverter CEC efficiency}}</td>
+            </tr>
+            <tr>
+              <td>26</td>
+              <td>Dimensions (W*H*D)</td>
+              <td>{{PCS_Dimensions (W*H*D)}}</td>
+            </tr>
+            <tr>
+              <td>27</td>
+              <td>Degree of Protection</td>
+              <td>{{PCS_Degree of Protection}}</td>
+            </tr>
+            <tr>
+              <td>28</td>
+              <td>Auxiliary power supply</td>
+              <td>{{PCS_Auxiliary power supply}}</td>
+            </tr>
+            <tr>
+              <td>29</td>
+              <td>Max. Operating altitude</td>
+              <td>{{PCS_Max Operating altitude}}</td>
+            </tr>
+            <tr>
+              <td>30</td>
+              <td>Communication Standard:</td>
+              <td>{{PCS_Communication Standard}}</td>
+            </tr>
+            <tr>
+              <td>31</td>
+              <td>Cooling method</td>
+              <td>{{PCS_Cooling method}}</td>
+            </tr>
+
+          </table>
+
+          <h3 id="General Reference Standards for Cables">3.2 General Reference Standards for Cables</h3>
+
+          <p>
+            The General reference standards used for the selection of cable are presented in the following table.
+          </p>
+
+          <h4>Table 14: Cable standards</h4>
+
+          <table border="1" style="text-align: center;">
+            <thead style="display: table-header-group;">
+              <tr>
+                <th>Standard</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tr>
+              <td>NFPA 70</td>
+              <td>National Electrical Code</td>
+            </tr>
+            <tr>
+              <td>UL-44</td>
+              <td>Standard for Safety Thermoset-Insulated Wires and Cables</td>
+            </tr>
+            <tr>
+              <td>UL-83</td>
+              <td>Standard for Safety Thermoplastic-Insulated Wires and Cables</td>
+            </tr>
+            <tr>
+              <td>UL-854</td>
+              <td>Standard for Service-Entrance Cables</td>
+            </tr>
+            <tr>
+              <td>UL-1277</td>
+              <td>Standard for Safety Electrical Power and Control Tray Cables with Optional Optical-Fiber Members</td>
+            </tr>
+            <tr>
+              <td>ANSI/NEMA WC 74/ICEA S-93-639-2017</td>
+              <td>5-46 kV Shielded Power Cable for Use in the Transmission and Distribution of Electric Energy</td>
+            </tr>
+            <tr>
+              <td>ANSI/NEMA WC 70/ICEA S-95-658-2021</td>
+              <td>Power Cables Rated 2,000 Volts or Less for the Distribution of Electrical Energy</td>
+            </tr>
+            <tr>
+              <td>ICEA S-97-682</td>
+              <td>Standard for Utility Shielded Power Cables Rated 5 through 46kV</td>
+            </tr>
+            <tr>
+              <td>IEEE-48</td>
+              <td>Test Procedures and Requirements for Alternating-Current Cable Terminations Used on Shielded Cables
+                Having
+                Laminated Insulation Rated 2.5kV through 765kV or Extruded Insulation Rated 2.5kV through 500kV</td>
+            </tr>
+            <tr>
+              <td>IEEE-404</td>
+              <td>Extruded and Laminated Dielectric Shielded Cable Joints Rated 2.5kV to 500kV</td>
+            </tr>
+            <tr>
+              <td>IEEE-1202</td>
+              <td>Flame testing of cables for use in cable tray</td>
+            </tr>
+            <tr>
+              <td>IEEE-1210</td>
+              <td>Standard Tests for Determining Compatibility of Cable-Pulling Lubricants with Wire and Cable</td>
+            </tr>
+            <tr>
+              <td>ASTM-B3</td>
+              <td>Standard Specification for Soft or Annealed Copper Wire</td>
+            </tr>
+            <tr>
+              <td>ASTM-B8</td>
+              <td>Standard Specification for Concentric-Lay-Stranded Copper Conductors, Hard, Medium-Hard, or Soft</td>
+            </tr>
+            <tr>
+              <td>ASTM-B33</td>
+              <td>Standard Specification for Tin-Coated Soft or Annealed Copper Wire for Electrical Purposes</td>
+            </tr>
+            <tr>
+              <td>ASTM-B172</td>
+              <td>Standard Specification for Rope-Lay-Stranded Copper Conductors Having Bunch-Stranded Members, for
+                Electrical Conductors</td>
+            </tr>
+            <tr>
+              <td>ASTM-B189</td>
+              <td>Standard Specification for Lead-Coated and Lead-Alloy-Coated Soft Copper Wire for Electrical Purposes
+              </td>
+            </tr>
+            <tr>
+              <td>SEA- AS23190C</td>
+              <td>Straps, Clamps, and Mounting Hardware, Plastic and Metal for Cable Harness Tying and Support</td>
+            </tr>
+            <tr>
+              <td>TIA-455-25-C</td>
+              <td>FOTP- 25 Impact Testing of Optical Fiber Cables</td>
+            </tr>
+            <tr>
+              <td>TIA-455-204</td>
+              <td>FOTP-204 Measurement of Bandwidth on Multimode Fiber</td>
+            </tr>
+            <tr>
+              <td>TIA-455-33-B</td>
+              <td>FOTP-33 Optical Fiber Cable Tensile Loading and Bending Test</td>
+            </tr>
+            <tr>
+              <td>TIA-455-41-A</td>
+              <td>FOTP- 41 Compressive Loading Resistance of Optical Fiber Cables</td>
+            </tr>
+            <tr>
+              <td>TIA-455-78B</td>
+              <td>Measurement Methods and Test Procedure – Attenuation</td>
+            </tr>
+            <tr>
+              <td>TIA-455-177-B</td>
+              <td>FOTP-177 IEC-60793-1-43 Optical Fibers – Part 1-43: Measurement Methods and Test Procedures –
+                Numerical
+                Aperture - REPLACES TIA/EIA-455-7 AND TIA/EIA-455-47</td>
+            </tr>
+            <tr>
+              <td>TIA-455-104-A</td>
+              <td>FOTP-104 Fiber Optic Cable Cyclic Flexing Test</td>
+            </tr>
+
+          </table>
+
+          <h3 id="MV AC Cables">3.3 MV AC Cables</h3>
+
+          <p>
+            MV AC cables are specialized electrical cables designed for use in MV distribution or collection systems. MV
+            AC
+            cables play a major role in collecting and transmitting the generated energy from the MV transformers to PV
+            plant substation. The typical specifications of the MV cables are listed below.
+          </p>
+
+          <h4>Table 15: MVAC Cable Technical Details</h4>
+
+          <table border="1" style="text-align: center;">
+            <tr>
+              <th>Sr. No</th>
+              <th>Technical Description</th>
+              <th>Data</th>
+            </tr>
+
+            <tr>
+              <td>1</td>
+              <td>Cable sizes</td>
+              <td>500 &amp; 1000 KCMIL</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Rated Voltage</td>
+              <td>35 kV</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Conductor Material</td>
+              <td>Aluminium</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Conductor Type</td>
+              <td>Stranded</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Insulation Type</td>
+              <td>TR-XLPE</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Insulation Level</td>
+              <td>100%</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Concentric Neutral</td>
+              <td>Copper Wires</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Nominal operating Temperature</td>
+              <td>105°C</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>UL Certification</td>
+              <td>UL 1072</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>Suitable Installation Type</td>
+              <td>Direct Buried</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>NEC Compliant</td>
+              <td>Yes</td>
+            </tr>
+
+          </table>
+          <h2 style="font-size:13.5pt;">2.1.5 Wiring Color Codes</h2>
+
+          <h2 style="font-size:13.5pt;">Table 6: Wiring Color Code
+          </h2>
+
+          <table style="width:100%; border-collapse:collapse; font-size:10.5pt;">
+
+            <thead>
+              <tr>
+                <th style="border:1px solid black;">Voltage
+                  Class</th>
+                <th style="border:1px solid black;">Wire & Cable
+                </th>
+                <th style="border:1px solid black;">Color</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <!-- 120V -->
+              <tr>
+                <td style="border:1px solid black;" rowspan="4">
+                  120 / 208V</td>
+                <td>Line A</td>
+                <td>Black</td>
+              </tr>
+              <tr>
+                <td>Line B</td>
+                <td>Red</td>
+              </tr>
+              <tr>
+                <td>Line C</td>
+                <td>Blue</td>
+              </tr>
+              <tr>
+                <td>Neutral</td>
+                <td>White</td>
+              </tr>
+
+              <!-- 480 -->
+              <tr>
+                <td style="border:1px solid black;" rowspan="4">
+                  480 / 800V</td>
+                <td>Line A</td>
+                <td>Brown</td>
+              </tr>
+              <tr>
+                <td>Line B</td>
+                <td>Orange</td>
+              </tr>
+              <tr>
+                <td>Line C</td>
+                <td>Yellow</td>
+              </tr>
+              <tr>
+                <td>Neutral</td>
+                <td>Grey</td>
+              </tr>
+
+              <!-- MV -->
+              <tr>
+                <td style="border:1px solid black;" rowspan="3">
+                  35kV</td>
+                <td>Line A</td>
+                <td rowspan="3">A / B / C phase labeling</td>
+              </tr>
+              <tr>
+                <td>Line B</td>
+              </tr>
+              <tr>
+                <td>Line C</td>
+              </tr>
+
+              <!-- DC -->
+              <tr>
+                <td rowspan="2">DC Conductors</td>
+                <td>Positive</td>
+                <td>Red</td>
+              </tr>
+              <tr>
+                <td>Negative</td>
+                <td>Black</td>
+              </tr>
+
+              <!-- GROUND -->
+              <tr>
+                <td colspan="2">Ground Conductor</td>
+                <td>Green / Bare</td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+          <h3 id="Energy Generation Estimation">4 Energy Generation Estimation</h3>
+
+          <h3 id="Understanding Annual Energy Yield - Methodology">4.1 Understanding Annual Energy Yield - Methodology
+          </h3>
+
+          <p>
+            For the proposed PV power plant, annual energy yield is defined as the amount of energy fed into the grid
+            after
+            due consideration of all types of generation and distribution losses. The solar PV-based power plant
+            comprises
+            optical energy input and electrical output.
+          </p>
+
+          <p>
+            The optical energy is essentially dependent on the geographical location, seasonal conditions, climatic
+            conditions, and operating parameters with time.
+          </p>
+
+          <p>
+            Electrical output is dependent on the technical specifications of electrical equipment utilized. PVsyst, the
+            industry-standard software, which is used to measure energy yields- has been used for the Energy Generation
+            Assessment.
+          </p>
+
+          <p>
+            The analysis was conducted using the .PAN file for the highest bin wattage {{620Wp}} module.
+          </p>
+
+          <h3 id="Loss Assumptions">4.2 Loss Assumptions</h3>
+
+          <p>
+            In the {{Piedra Solar power project}}, {{Boviet Solar}} {{TOPCON cell technology}} PV modules, {{Sungrow}}
+            Central inverters and Gamechange solar single axis tracker in {{1Px112}}, {{1Px84}}, {{1Px56}} configuration
+            have been chosen as the major equipment suppliers. The loss assumptions provided in the table below are
+            based on
+            the 90% design calculated values wherever applicable.
+          </p>
+
+          <p>
+            Meteo data from {{SolarGIS}} has been considered for solar radiation and other weatherrelated information
+            for
+            the given location.
+          </p>
+
+          <p>
+            Expected Energy Generation: The simulation of the entire solar PV plant at the proposed location is expected
+            to
+            generate about{{ 683,030 MWh}} of energy for the first year at DC_CUF of {{22.22}} at the P50 base value.
+            The 3D
+            shading scene has been used in the current version of the PVsyst.
+          </p>
+
+          <h4>Table 17: Anticipated Technical Losses from PVsyst</h4>
+
+          <table border="1" style="text-align: center;">
+            <thead style="display: table-header-group;">
+
+              <tr>
+                <th>Description</th>
+                <th>Units</th>
+                <th>Data Inputs</th>
+              </tr>
+            </thead>
+            <tr>
+              <td>Module Make</td>
+              <td>-</td>
+              <td>{{Module Make}}</td>
+            </tr>
+            <tr>
+              <td>Inverter Make</td>
+              <td>-</td>
+              <td>{{Inverter Make}}</td>
+            </tr>
+            <tr>
+              <td>Scenario</td>
+              <td>-</td>
+              <td>{{Scenario}}</td>
+            </tr>
+            <tr>
+              <td>Tracker Manufacturer</td>
+              <td>-</td>
+              <td>{{Tracker Manufacturer}}</td>
+            </tr>
+
+            <tr>
+              <td>North-South Spacing</td>
+              <td>Ft</td>
+              <td>{{North-South Spacing}}</td>
+            </tr>
+            <tr>
+              <td>Pitch</td>
+              <td>Mtr</td>
+              <td>{{Pitch}}</td>
+            </tr>
+            <tr>
+              <td>GCR</td>
+              <td>%</td>
+              <td>{{GCR}}</td>
+            </tr>
+
+            <tr>
+              <td>Total Area of the Plant Acres</td>
+              <td>Acres</td>
+              <td>{{Total Area of the Plant Acres}}</td>
+            </tr>
+            <tr>
+              <td>Total PV Fence Area</td>
+              <td>Acres</td>
+              <td>{{Total PV Fence Area}}</td>
+            </tr>
+            <tr>
+              <td>Acres per MW DC</td>
+              <td>Acres</td>
+              <td>{{Acres per MW DC}}</td>
+            </tr>
+
+            <tr>
+              <td>Module Power</td>
+              <td>Wp</td>
+              <td>{{Module Power}}</td>
+            </tr>
+            <tr>
+              <td>Inverter Power</td>
+              <td>kVA</td>
+              <td>{{Inverter Power}}</td>
+            </tr>
+
+            <tr>
+              <td>Total no. of 4 string Trackers</td>
+              <td>Quantity</td>
+              <td>{{Total no. of 4 string Trackers}}</td>
+            </tr>
+            <tr>
+              <td>Total no. of 3 string Trackers</td>
+              <td>Quantity</td>
+              <td>{{Total no. of 3 string Trackers}}</td>
+            </tr>
+            <tr>
+              <td>Total no. of 2 string Trackers</td>
+              <td>Quantity</td>
+              <td>{{Total no. of 2 string Trackers}}</td>
+            </tr>
+
+            <tr>
+              <td>Modules in Each 4 String Tracker</td>
+              <td>Quantity</td>
+              <td>{{Modules in Each 4 String Tracker}}</td>
+            </tr>
+            <tr>
+              <td>Modules in Each 3 String Tracker</td>
+              <td>Quantity</td>
+              <td>{{Modules in Each 3 String Tracker}}</td>
+            </tr>
+            <tr>
+              <td>Modules in Each 2 String Tracker</td>
+              <td>Quantity</td>
+              <td>{{Modules in Each 2 String Tracker}}</td>
+            </tr>
+
+            <tr>
+              <td>Tracker Configuration</td>
+              <td>-</td>
+              <td>{{Tracker Configuration}}</td>
+            </tr>
+
+            <tr>
+              <td>Total Modules (615Wp)</td>
+              <td>Quantity</td>
+              <td>{{Total Modules (615Wp)}}</td>
+            </tr>
+            <tr>
+              <td>Total Modules (620Wp)</td>
+              <td>Quantity</td>
+              <td>{{Total Modules (620Wp)}}</td>
+            </tr>
+
+            <tr>
+              <td>No. of PCS</td>
+              <td>Quantity</td>
+              <td>{{No. of PCS}}</td>
+            </tr>
+
+            <tr>
+              <td>AC Capacity</td>
+              <td>MW</td>
+              <td>{{AC Capacity}}</td>
+            </tr>
+            <tr>
+              <td>DC Capacity</td>
+              <td>MWdc</td>
+              <td>{{DC Capacity}}</td>
+            </tr>
+            <tr>
+              <td>Inverter AC Capacity</td>
+              <td>MW</td>
+              <td>{{Inverter AC Capacity}}</td>
+            </tr>
+
+            <tr>
+              <td>DC/AC Ratio @POI</td>
+              <td>-</td>
+              <td>{{DC/AC Ratio @POI}}</td>
+            </tr>
+            <tr>
+              <td>DC/AC Ratio @Inverter Capacity</td>
+              <td>-</td>
+              <td>{{DC/AC Ratio @Inverter Capacity}}</td>
+            </tr>
+
+          </table>
+
+          <h2>7.0 PVsyst Irradiation Analysis</h2>
+
+          {{PVSYST_IRRADIATION_TABLE}}
+
+          <h2>8.0 PVsyst Energy Loss Analysis</h2>
+
+          {{PVSYST_ENERGY_TABLE}}
+
+    </div>
+
+
+  </div>
+
+</body>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toc = document.getElementById("toc-list");
+
+    document.querySelectorAll("h1, h2").forEach((heading) => {
+      const li = document.createElement("li");
+
+      if (heading.tagName === "H2") {
+        li.style.marginLeft = "20px";
+      }
+
+      li.innerHTML = `
+      <a href="#${heading.id}">
+        ${heading.textContent}
+      </a>
+    `;
+
+      toc.appendChild(li);
+    });
+  });
+</script>
+
+</html>

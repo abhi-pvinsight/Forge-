@@ -1,0 +1,469 @@
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+
+    background: #edf2f7;
+    color: #1f2937;
+
+    line-height: 1.6;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.form-panel {
+    width: 420px;
+    min-width: 420px;
+
+    background: #ffffff;
+
+    border-right: 1px solid #d9dde5;
+
+    padding: 24px;
+
+    overflow-y: auto;
+}
+
+.preview-panel,.cover-page, .report-page lot-page, .report-page toc-page, .report-page doc-control-page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   PAGE PREVIEW
+========================================================= */
+
+.cover-page, .report-page lot-page, .report-page toc-page, .report-page doc-control-page {
+    width: 210mm;
+    min-height: 297mm;
+
+    margin: 0 auto ;
+
+    padding: 0;
+
+    background: #ffffff;
+
+    border: 1px solid #d8dee7;
+    border-radius: 8px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.08),
+        0 3px 10px rgba(0, 0, 0, 0.04);
+
+    overflow-wrap: break-word;
+}
+
+/* =========================================================
+   COVER PAGE
+========================================================= */
+
+.cover-title {
+    font-size: 30pt;
+    font-weight: 700;
+
+    text-align: center;
+
+    color: #163c7a;
+
+    margin-top: 140px;
+}
+
+.cover-subtitle {
+    font-size: 14pt;
+
+    text-align: center;
+
+    color: #64748b;
+
+    margin-top: 12px;
+}
+
+.cover-capacity {
+    text-align: center;
+
+    margin-top: 30px;
+
+    font-size: 13pt;
+
+    font-weight: 600;
+}
+
+.cover-footer {
+    margin-top: 180px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 11pt;
+}
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+h1 {
+    font-size: 20pt;
+    font-weight: 700;
+
+    color: #163c7a;
+
+    margin-top: 0;
+    margin-bottom: 18px;
+
+    padding-bottom: 8px;
+
+    border-bottom: 2px solid #163c7a;
+}
+
+h2 {
+    font-size: 14pt;
+    font-weight: 600;
+
+    color: #163c7a;
+
+    margin-top: 28px;
+    margin-bottom: 12px;
+}
+
+h3 {
+    font-size: 12pt;
+    font-weight: 600;
+
+    color: #334155;
+
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+   PARAGRAPHS
+========================================================= */
+
+p {
+    margin: 0 0 12px;
+
+    text-align: justify;
+
+    font-size: 10.5pt;
+}
+
+/* =========================================================
+   LISTS
+========================================================= */
+
+ul {
+    margin-top: 8px;
+    margin-bottom: 14px;
+    padding-left: 24px;
+}
+
+li {
+    margin-bottom: 5px;
+
+    font-size: 10.5pt;
+}
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 12px;
+    margin-bottom: 20px;
+
+    font-size: 10pt;
+
+    page-break-inside: auto;
+    break-inside: avoid-column;
+}
+
+thead {
+    background: #163c7a;
+    display: table-header-group;
+}
+
+tfoot {
+    display: table-footer-group;
+}
+
+th {
+    color: white;
+
+    font-weight: 600;
+
+    text-align: center;
+
+    border: 1px solid #163c7a;
+
+    padding: 8px;
+    background: #163c7a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+table tr:first-child {
+    display: table-header-group;
+}
+
+
+td {
+    border: 1px solid #d0d7e2;
+
+    padding: 6px;
+
+    vertical-align: top;
+}
+
+tbody tr {
+    
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+tbody tr:hover {
+    background: #eef4ff;
+}
+/* =========================================================
+   COMPACT TABLES
+========================================================= */
+.compact-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 8pt;
+  word-wrap: break-word;
+}
+
+.compact-table th,
+.compact-table td {
+  padding: 2px 4px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1.1;
+}
+
+.compact-table th {
+  font-size: 7.5pt;
+  font-weight: 600;
+}
+
+.compact-table td:first-child {
+  width: 10%;
+}
+
+.compact-table td:nth-child(2),
+.compact-table td:nth-child(3),
+.compact-table td:nth-child(4) {
+  width: 8%;
+}
+
+.compact-table td:last-child {
+  width: 5%;
+}
+
+
+/* =========================================================
+   SECTION TABLE TITLES
+========================================================= */
+
+.table-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    font-weight: 700;
+
+    color: #163c7a;
+}
+
+/* =========================================================
+   FORM ELEMENTS
+========================================================= */
+
+input,
+textarea,
+select {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    margin-top: 5px;
+    margin-bottom: 14px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+
+    border-color: #163c7a;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 60, 122, 0.1);
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+    border: none;
+
+    border-radius: 6px;
+
+    background: #163c7a;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: #0f2f61;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* =========================================================
+   ACTION BAR
+========================================================= */
+
+.action-bar {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.action-bar button {
+    flex: 1;
+
+    padding: 12px;
+}
+
+.action-bar select {
+    width: 140px;
+}
+
+/* =========================================================
+   PAGE BREAKS
+========================================================= */
+
+.page-break {
+    page-break-before: always;
+}
+
+.no-break {
+    page-break-inside: always;
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print {
+
+    body {
+        background: white;
+    }
+
+    .container {
+        display: block;
+    }
+
+    .form-panel {
+        display: none;
+    }
+
+    /* .preview-panel {
+        padding: 0;
+        background: white;
+    } */
+
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none;
+        padding: 0; background: white; width: 100%; min-height: auto;
+    }
+
+    table {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    thead,
+    table tr:first-child {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    th {
+        background: #163c7a !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+@page { size: A4; margin: 10mm; }
+#ashrae_table { width: 100mm; max-width: 100mm; table-layout: fixed;
+	border-collapse: collapse; font-size: 11px; page-break-inside: avoid;
+    background-color: lightgray;
+}
+
+#ashrae_table td, #ashrae_table th {
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	padding: 4px;
+}
+

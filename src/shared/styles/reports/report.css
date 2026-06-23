@@ -1,0 +1,42 @@
+.preview-panel {
+    background: #f5f6fa;
+    padding: 0%;
+}
+
+.page {
+    width: 260mm;
+    background: white;
+    margin: auto;
+    padding: 18mm;
+}
+
+h1 {
+    color: #003366;
+    font-size: 16pt;
+}
+
+h2 {
+    color: #003366;
+    font-size: 13.5pt;
+}
+
+p {
+    text-align: justify;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    border: 1px solid black;
+    padding: 5px;
+    background: #003366;
+    color: white;
+}
+
+td {
+    border: 1px solid black;
+    padding: 5px;
+}

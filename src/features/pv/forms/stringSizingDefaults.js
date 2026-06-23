@@ -1,0 +1,191 @@
+export const stringSizingDefaults = {
+  moduleType: '',
+  arraySize: 0,
+};
+
+var STRING_SIZE_DEFAULTS = {
+clientName: 'Aurora Renewables LLC',
+  clientContact: 'Dana Whitfield',
+  clientEmail: 'd.whitfield@aurorarenew.com',
+  clientAddress: '4400 Desert Sky Blvd, Suite 200\nPhoenix, AZ 85048, USA',
+  consultant: 'PVinsight Inc.',
+
+plant_name: 'Sandhills Solar — Phase II',
+  projectCode: 'SH2',
+  county: 'Maricopa',
+  state: 'AZ',
+  ac_capacity: '150',
+  dc_capacity: '198',
+
+  delivery_company: 'TATA POWER',
+  poi_voltage: '198',
+  latitude: '33.4484',
+  longitude: '-112.0740',
+  revision: 'R0',
+  // Voltage Inputs
+  mv_voltage: '120',
+  lv_voltage: '660',
+  dc_ac_ratio_poi: '1.32',
+  dc_ac_ratio_inv: '1.30',
+  pv_area: '1000',
+  temp_min: '-5',
+  temp_max: '32',
+
+  // PV Module
+  module_make: 'LONGi',
+  module_model: 'LR7-72HGD 580M',
+  module_wp1: '615',
+  module_wp2: '620',
+  module_type: 'Bifacial TOPCon Half-cut cell',
+  moduleVoc: '52.00',
+  moduleVmp: '43.40',
+  moduleIsc: '14.02',
+  moduleImp: '13.37',
+  modulePmax: '580',
+  tempCoeffVoc: '-0.250',
+  module_qty_615: '250000',
+  module_qty_620: '150000',
+  module_dimensions: '2384 x 1303 x 35 mm',
+
+  modules_series: '28',
+  moduleDegradation: '0.5',
+
+  // Inverter
+  Centra_inverter_make: 'Sungrow',
+  Centarl_inverter_model: 'SG250HX',
+  Centarl_inverter_rating: '1500',
+  inverter_count: '600',
+
+  // Transformer & PCS
+  mv_transformer: '250 MVA',
+  pcs_dimensions: '6058 x 2896 x 2438',
+  annual_energy: '125000',
+  specific_yield: '1650',
+  performance_ratio: '82',
+  dc_cuf: '24',
+  ac_cuf: '22',
+
+  // Site Conditions
+  tempMin: '-5',
+  tempCellMax: '70',
+  designStd: 'IEC 62548',
+  ghi: '2100',
+  dsi: '450',
+  altitude: '1200',
+  wind_speed: '120',
+  snow_load: '20',
+  risk_category: 'CAT-II',
+  met_source: 'NASA Earth Data',
+  data_format: 'TMY (Typical Meteorological Year)',
+  // Tracker inputs
+
+tracker_make: 'Nextracker',
+  tracker_model: 'NX Horizon',
+  tracking_range: '±60°',
+
+  // tracker_type_1: '4P',
+  tracker_module_1: 28,
+  tracker_quantity_1: 1200,
+
+  tracker_type_2: '3P',
+  tracker_module_2: 28,
+  tracker_quantity_2: 800,
+
+  tracker_type_3: '2P',
+  tracker_module_3: 28,
+  tracker_quantity_3: 400,
+
+// cable Defaults 
+
+  DC_Cable_Sizes: '4, 6, 10, 16 mm²',
+  DC_Cable_Rated_Voltage: '1500 V DC',
+  DC_Cable_Conductor_Material: 'Tinned Copper',
+  DC_Cable_Conductor_Type: 'Stranded',
+  DC_Cable_Insulation_Type: 'XLPE',
+  DC_Cable_UV_Sunlight_Resistant: 'Yes',
+  DC_Cable_Temperature_Rating: '-40°C to +90°C',
+  DC_Cable_UL_Certification: 'UL 4703',
+  DC_Cable_RoHS_Compliant: 'Yes',
+  DC_Cable_NEC_Compliant: 'Yes',
+
+ // PV connector 
+  PV_Connector_Make: 'Stäubli (MC4)',
+  PV_Connector_Model: 'MC4-Evo2',
+  PV_Connector_System_Voltage: '1500 V DC',
+  PV_Connector_Connection_Type: 'Crimped Plug & Socket',
+  PV_Connector_Contact_Material: 'Tin-plated Copper',
+  PV_Connector_Life_Expectancy: '25 years',
+  PV_Connector_Protection: 'IP68 / UV Resistant',
+  PV_Connector_Ambient_Temperature: '-40°C to +85°C',
+  PV_Connector_UL_Certification: 'UL 6703 / IEC 62852',
+
+// trunk cables
+  Trunk_Cable_Make: 'Prysmian / KEI',
+  Trunk_Cable_Max_System_Voltage: '1500 V DC',
+  Trunk_Cable_Maximum_OCPD_per_String: '20 A',
+  Trunk_Cable_Selected_Trunk_System_Size: '6 mm² Cu',
+  Trunk_Cable_Max_No_of_Input_Circuits: '12',
+  Trunk_Cable_Ambient_Temperature: '50°C',
+// LBD
+
+  LBD_Manufacturer: 'ABB / Schneider Electric',
+  LBD_Max_System_Voltage: '1500 V DC',
+  LBD_Amperage_Rating: '400 A',
+  LBD_Short_Circuit_Current_Rating: '50 kA',
+  LBD_Input_Wire_Size: '2 x 240 mm² Cu',
+  LBD_Output_Wire_Size: '2 x 240 mm² Cu',
+  LBD_Max_Ambient_Temp_Rating: '50°C',
+  LBD_Certification_Standards: 'IEC 60947-3, UL 98B, NEC 690.13',
+  LBD_Enclosure_Fiberglass: 'NEMA 4X / IP65 Fiberglass Enclosure',
+
+// PCS Defaults 
+
+  PCS_Model_Name: 'Sungrow SC4000UD-MV',
+  PCS_Max_DC_Input_Voltage: '1500 V',
+  PCS_Min_PV_Input_Voltage_Start_Up_Input_Voltage: '500 V / 550 V',
+  PCS_MPP_Tracker_Voltage_Range: '500 – 1500 V',
+  PCS_Full_Power_MPP_Voltage_Range_40C: '850 – 1300 V',
+  PCS_Available_DC_Fuse_Sizes: '15 A, 20 A, 25 A',
+  PCS_No_of_Independent_MPPT: '12',
+  PCS_Max_PV_Input_Current: '40 A per MPPT',
+  PCS_Max_PV_Short_Circuit_Current: '50 A per MPPT',
+  PCS_Number_of_DC_Inputs: '24',
+  PCS_DC_Surge_Protection: 'Type II SPD',
+  PCS_Max_AC_Output_Power: '4 MW',
+  PCS_Rated_Output_Frequency_Range: '50 Hz (45–55 Hz)',
+  PCS_THD: '<3%',
+  PCS_Power_Factor: '0.8 lagging to 0.8 leading',
+  PCS_Transformer_Rated_Power: '4 MVA',
+  PCS_Transformer_LV_MV_Voltage: '0.8 kV / 33 kV',
+  PCS_Transformer_Vector: 'Dyn11',
+  PCS_Transformer_Cooling_Method: 'ONAN / ONAF',
+  PCS_DC_Input_Protection: 'DC Isolator + Fuse Protection',
+  PCS_Inverter_Output_Protection: 'AC Breaker + Relay Protection',
+  PCS_AC_MV_Output_Protection: 'VCB + Protection Relay',
+  PCS_AC_Surge_Protection: 'Type II SPD',
+  PCS_Inverter_Max_Efficiency: '99.0%',
+  PCS_Inverter_CEC_Efficiency: '98.5%',
+  PCS_Dimensions: '6058 x 2896 x 2438 mm',
+  PCS_Degree_of_Protection: 'IP65',
+  PCS_Auxiliary_Power_Supply: 'AC 400 V, 3 Phase',
+  PCS_Max_Operating_Altitude: '4000 m',
+  PCS_Communication_Standard: 'Modbus TCP/IP, RS485, Ethernet',
+  PCS_Cooling_method: 'Forced Air Cooling',
+// mv cable 
+  MVAC_Cable_Size: '3C x 300 mm² Al',
+  MVAC_Rated_Voltage: '33 kV',
+  MVAC_Conductor_Material: 'Aluminum',
+  MVAC_Conductor_Type: 'Stranded / Compact',
+  MVAC_Insulation_Type: 'XLPE',
+  MVAC_Insulation_Level: '36 kV (Um = 36 kV)',
+  MVAC_Concentric_Neutral: 'Copper wire screen / metallic screen',
+  MVAC_Operating_Temperature: '90°C',
+  MVAC_UL_Certification: 'ICEA S-93-639 / IEC 60502-2',
+  MVAC_Installation_Type: 'Direct buried / Cable trench',
+  MVAC_NEC_Compliant: 'Yes',
+  yearlyVocSummary: [],
+  yearlyIscSummary: [],
+  minVoltageDegradationTable: {},
+};
+
+export { STRING_SIZE_DEFAULTS };

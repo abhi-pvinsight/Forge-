@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List of Tables</title>
+  <style>
+    @media print {
+      @page {
+        size: A4; margin: 10mm;
+      }
+      body {
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    .report-page.lot-page {
+      padding: 3.5rem;
+      height: 100vh;
+      box-sizing: border-box;
+      page-break-after: always;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+    }
+
+    .heading {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .divider {
+      border: none;
+      height: 1px;
+      background-color: #cbd5e1;
+      margin: 1rem 0 2rem 0;
+    }
+
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .lot-row {
+      display: flex;
+      align-items: flex-end;
+      width: 100%;
+      color: #334155;
+      font-size: 0.95rem;
+    }
+
+    .title {
+      background-color: #fff;
+      padding-right: 0.5rem;
+      z-index: 1;
+    }
+
+    .label {
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .dot-leader {
+      flex-grow: 1;
+      border-bottom: 1px dotted #94a3b8;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-number {
+      background-color: #fff;
+      padding-left: 0.5rem;
+      z-index: 1;
+      text-align: right;
+      min-width: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-page lot-page">
+    <h2 class="heading">List of Tables</h2>
+    <hr class="divider" />
+    
+    <div class="list-container">
+      <!-- Populated dynamically with rows matching the reference layout -->
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 1:</strong> Project Summary</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">8</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 2:</strong> Technical Parameters of Solar Modules</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">11</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 3:</strong> Bifacial Modelling Sensitivity Case</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">12</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 4:</strong> Results of 26-years historical SAM simulation current - NSRDB</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">13</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 5:</strong> Highest 3-hour current from SAM simulation - NSRDB</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">14</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 6:</strong> Summary of ASHRAE temperature analysis</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">15</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 7:</strong> Results of 26-years historical SAM simulation voltage - NSRDB</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">16</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 8:</strong> Summary of 30 years minimum voltage degradation</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">17</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 9:</strong> DC Cable Technical Details</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">18</span>
+      </div>
+
+      <div class="lot-row">
+        <span class="title"><strong class="label">Table 10:</strong> PV Connectors Technical Details</span>
+        <span class="dot-leader"></span>
+        <span class="page-number">19</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

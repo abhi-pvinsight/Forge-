@@ -1,0 +1,71 @@
+<style>
+.cover-page {
+  page: A4;
+  width: 100%;
+  height: 100vh;
+  page-break-after: always4
+}
+
+.cover_im{
+margin-top: 0ch;
+      max-height: 100%;
+      max-width: 5000px;
+      object-fit: contain;
+    }
+
+.cover-image {
+  height: 70%;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.cover-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-blue {
+  background: #002060;
+  color: white;
+  padding: 40px;
+}
+
+.cover-green {
+  background: #005f5f;
+  color: white;
+  padding: 20px 40px;
+}
+</style>
+
+<div class="cover-page">
+
+  <div class="cover-image">
+    <img src="src\assets\pv dbr background.png" alt="pv_backgroung"  >
+  </div>
+
+  <div class="cover-blue">
+    <div class="cover-project">
+      {{PROJECT_NAME}}
+    </div>
+
+    <div class="cover-report">
+      {{REPORT_TITLE}}
+    </div>
+  </div>
+
+  <div class="cover-green">
+    <div class="cover-footer-item">
+      Submitted to {{CLIENT_NAME}}
+    </div>
+
+    <div class="cover-footer-item">
+      Prepared by {{PREPARED_BY}}
+    </div>
+  </div>
+
+</div>
+
+<div class="page-break"></div>

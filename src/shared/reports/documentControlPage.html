@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Control</title>
+  <style>
+    @media print {
+      @page {
+        size: A4;
+        width: 201mm;
+        /* margin: 10mm; */
+          page-break-after: always4
+      }
+
+      body {
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    .report-page.doc-control-page {
+      padding: 3.5rem;
+      height: 100vh;
+      box-sizing: border-box;
+      page-break-after: always;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .heading {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 auto 20px auto;
+    }
+
+    .doc_heading {}
+
+    .divider {
+      border: 0;
+      border-top: 1px solid #cbd5e1;
+      margin: 1rem 0 2rem 0;
+    }
+
+    /* Standard Layout matrix for metadata */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+      margin-top: 80px;
+    }
+
+    /* Logo area alignment wrapper */
+    .logo-row-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 60px;
+      /* Constrains logo space visually */
+      margin-top: 70px ;
+      margin-bottom: 15px;
+    }
+
+    .logo-element {
+      margin-top: 3ch;
+      max-height: 100%;
+      max-width: 180px;
+      object-fit: contain;
+    }
+
+    .logo-placeholder-graphic {
+
+      font-size: 0.75rem;
+      color: #94a3b8;
+      border: 1px dashed #cbd5e1;
+      padding: 8px 15px;
+      background-color: #f8fafc;
+      border-radius: 4px;
+      margin-top: 0cm;
+    }
+
+    .sub-heading {
+      margin-top: 10cm;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      margin: 0 0 0.75rem 0;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.25rem;
+    }
+
+    .org-name {
+      margin-top: 10cm;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: #0f172a;
+    }
+
+    .address {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-top: 0cm;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    /* Bottom dynamic layout grouping keeping elements anchored safely together */
+    .bottom-layout-group {
+      margin-top: auto;
+      /* Dynamically forces this entire group into the lower half of the page */
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      /* Precise 20px reference padding between internal sections */
+      width: 100%;
+    }
+
+    .revision-section {
+      width: 100%;
+      margin:  auto;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .th-row {
+      background-color: #f8fafc;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    .th {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .td {
+      padding: 0.75rem 1rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .seal-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .seal-container .sub-heading {
+      width: 100%;
+      text-align: center;
+    }
+
+    .seal-box {
+      width: 220px;
+      height: 220px;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8fafc;
+      border-radius: 4px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .seal-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .seal-placeholder {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 500;
+      text-align: center;
+      padding: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="report-page doc-control-page">
+    <div class="grid">
+
+      <div>
+        <div class="logo-row-container">
+          <img src="src\assets\PV insight Logo.png" alt="PVinsight Logo" class="logo-element" />
+        </div>
+
+        <h3 class="sub-heading">Prepared By</h3>
+        <p class="org-name">PVinsight Inc</p>
+        <p class="address">5717 Legacy Dr Suite 250, Plano, Texas, 75024</p>
+      </div>
+
+      <div>
+        <div class="logo-row-container">
+          <img src="src\assets\signal Energy.png" alt="Signal Energy Logo" class="logo-element" />
+        </div>
+
+        <h3 class="sub-heading">Submitted To</h3>
+        <p class="org-name">Signal Energy</p>
+        <p class="address">2034 Hamilton Place BLVD. Suite 100 Chattanooga, TN 37421</p>
+      </div>
+    </div>
+
+
+    <div class="bottom-layout-group">
+      <h2 class="heading">Design Basis Report - PV </h2>
+    </div>
+    <div class="revision-section">
+      <!-- <h3 class="sub-heading">Revision History</h3> -->
+      <table class="table">
+        <thead>
+          <tr class="th-row">
+            <th class="th" style="width: 15%;">Revision</th>
+            <th class="th" style="width: 20%;">Issue Date</th>
+            <th class="th" style="width: 40%;">Document Name</th>
+            <th class="th" style="width: 25%;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tr">
+            <td class="td">0</td>
+            <td class="td">11.07.2025</td>
+            <td class="td">Design Basis Report - PV Electrical</td>
+            <td class="td">IFC</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="seal-container">
+      <!-- <h3 class="sub-heading">Professional Engineer Seal</h3> -->
+      <div class="seal-box">
+        {{#if SEAL_IMAGE}}
+        <img src="{{SEAL_IMAGE}}" alt="Professional Engineer Seal" class="seal-img" />
+        {{else}}
+        <div class="seal-placeholder">
+          <strong>STATE OF TEXAS</strong><br>
+          JOSHUA D. MILLS<br>
+          No. 129710<br>
+          LICENSED PROFESSIONAL ENGINEER<br>
+          11/07/2025
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+</body>
+
+</html>
