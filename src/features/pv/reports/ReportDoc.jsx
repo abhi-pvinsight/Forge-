@@ -91,9 +91,15 @@ console.log("ReportDoc degradationData:", degradationData);
 console.log("ReportDoc values.minVoltageDegradationTable:", values.minVoltageDegradationTable);
 console.log("PVsyst Data:",values.pvsystData);
 
+
 const templateValues = {
   ...values,
   ...reportMeta,
+
+  weather_station_city: values.weather_station_city,
+  weather_station_state: values.weather_station_state,
+  weather_station_country: values.weather_station_country,
+  weather_station_id: values.weather_station_id,
   minVoltageDegradationTable: degradationRows.join(""),
   YEARLY_ISC_TABLE: yearlyIscTable,
   ASHRAE_TABLE: ashraeTableTemplate,
@@ -103,6 +109,7 @@ const templateValues = {
 
   N_MIN: nMin.exact,
   N_MIN_ROUNDED: nMin.rounded,
+  
 };
 
 console.log("ReportDoc values prop:", values);

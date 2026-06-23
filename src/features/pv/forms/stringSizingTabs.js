@@ -38,8 +38,8 @@ export const STRING_SIZE_TABS = [{
     placeholder: 'Preparing organization',
      required: true
   }]
-}, {
-  id: 'project',
+},
+ {id: 'project',
   name: 'Project Information',
   icon: 'map',
   blurb: 'Drives the document number, revision and project descriptors.',
@@ -76,8 +76,7 @@ export const STRING_SIZE_TABS = [{
     placeholder: 'AZ',
   },
 
-  {
-    key: 'ac_capacity',
+  {key: 'ac_capacity',
     label: 'AC capacity',
     type: 'number',
     unit: 'MW',
@@ -89,8 +88,7 @@ export const STRING_SIZE_TABS = [{
     type: 'number',
    require:true,
     unit: 'MW (POI)',
-    placeholder: '198'
-  },
+    placeholder: '198'},
   //  {
   //   key: 'location',
   //   label: 'Site location',
@@ -337,8 +335,8 @@ export const STRING_SIZE_TABS = [{
            require: true,
         }
       ]
-    }, {
-      title: 'Inverter',
+    },
+     { title: 'Inverter',
       fields: [{
         key: 'Centra_inverter_make',
         label: 'Central Inverter Manufacturer',
@@ -391,8 +389,8 @@ export const STRING_SIZE_TABS = [{
         //   placeholder: '12'
         // }
       ]
-    }, {
-      title: 'Transforme & ',
+    },
+ {title: 'Transforme & ',
       fields: [
         {
           key: 'mv_transformer',
@@ -448,8 +446,7 @@ export const STRING_SIZE_TABS = [{
     },
 
 
-    {
-      title: 'Site Conditions',
+{title: 'Site Conditions',
       fields: [{
         key: 'tempMin',
         label: 'Min. ambient temperature',
@@ -531,8 +528,7 @@ export const STRING_SIZE_TABS = [{
     }]
 },
 
- {
-  id: 'uploads',
+ {id: 'uploads',
   name: 'Datasheets & Uploads',
   icon: 'paperclip',
   blurb: 'Attach source datasheets. These feed the technical inputs and are referenced in the report appendix.',
@@ -575,8 +571,7 @@ export const STRING_SIZE_TABS = [{
   
   ]
 },
-{
-  id: "tracker",
+{id: "tracker",
   name: "Tracker System",
   icon: "moter",
   blurb: "Information about the tracker system used in the PV installation.",
@@ -611,8 +606,7 @@ export const STRING_SIZE_TABS = [{
   ]
 },
 
-{
-  id: "dcCable",
+{id: "dcCable",
   name: "DC Cable",
   icon: "git-branch",
   title: "DC Cable",
@@ -631,8 +625,7 @@ export const STRING_SIZE_TABS = [{
   ]
 },
 
-{
-  id: "pvConnector",
+{id: "pvConnector",
   name: "PV Connectors",
   icon: "plug",
   title: "PV Connectors",
@@ -650,8 +643,7 @@ export const STRING_SIZE_TABS = [{
   ]
 },
 
-{
-  id: "trunkCable",
+{id: "trunkCable",
   name: "Trunk Cable",
   icon: "link",
   blurb: "Details about the trunk cables used in the system.",
@@ -666,8 +658,7 @@ export const STRING_SIZE_TABS = [{
   ]
 },
 
-{
-  id: "lbd",
+{ id: "lbd",
   name: "Load Break Disconnect",
   icon: "toggle-right",
   title: "Load Break Disconnect",

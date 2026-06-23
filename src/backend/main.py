@@ -1,31 +1,20 @@
-# backend/main.py
-
-# from fastapi import FastAPI, UploadFile, File
-# from parsers.pvsyst_parser import extract_pvsyst_data
-# import tempfile
-
-# app = FastAPI()
-
-# @app.post("/extract/pvsyst")
-# async def extract_pvsyst(file: UploadFile = File(...)):
-
-#     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-#         tmp.write(await file.read())
-#         pdf_path = tmp.name
-
-#     result = extract_pvsyst_data(pdf_path)
-
-#     return result
 
 from fastapi import FastAPI, UploadFile, File
 import tempfile
 import os
 import traceback
 
+from Ashrae.ashrae_service import process_and_populate_report
+
 from parsers.pvsyst_parser import extract_pvsyst_data
 
 app = FastAPI()
 
+from pydantic import BaseModel
+
+class AshraeRequest(BaseModel):
+    latitude: float
+    longitude: float
 
 @app.post("/extract/pvsyst")
 async def extract_pvsyst(file: UploadFile = File(...)):
@@ -70,23 +59,47 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.post("/extract/pvsyst")
-# async def extract_pvsyst(file: UploadFile = File(...)):
 
-#     contents = await file.read()
+@app.post("/ashrae")
+def generate_ashrae(data: AshraeRequest):
 
-#     with tempfile.NamedTemporaryFile(
-#         delete=False,
-#         suffix=".pdf"
-#     ) as temp_file:
+    try:
+        process_and_populate_report(
+            data.latitude,
+            data.longitude
+        )
 
-#         temp_file.write(contents)
+        return {
+            "success": True,
+            "message": "ASHRAE data generated"
+        }
 
-#         temp_path = temp_file.name
+    except Exception as e:
+        traceback.print_exc()
 
-#     result = extract_pvsyst_data(temp_path)
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
-#     return {
-#         "success": True,
-#         "result": result
-#     }
+@app.post("/ashrae")
+def generate_ashrae(data: AshraeRequest):
+
+    try:
+        process_and_populate_report(
+            data.latitude,
+            data.longitude
+        )
+
+        return {
+            "success": True,
+            "message": "ASHRAE data generated"
+        }
+
+    except Exception as e:
+        traceback.print_exc()
+
+        return {
+            "success": False,
+            "error": str(e)
+        }

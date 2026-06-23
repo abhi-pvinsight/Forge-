@@ -57,6 +57,15 @@ def process_and_populate_report(user_lat, user_lon):
         # 3. DIRECT EXACT-MATCH KEY MAP ASSIGNMENT
     # This grabs your explicit API keys to line up identically with your HTML data-key targets.
     data_map = {
+        "weather_station_city": station.get("place", "N/A"),
+        "weather_station_state": station.get("state", "N/A"),
+        "weather_station_country": station.get("country", "N/A"),
+        "weather_station_id": station.get("wmo", "N/A"),
+
+        "station_name": station.get("place", "N/A"),
+        "wmo_id": station.get("wmo", "N/A"),
+
+        
         "station_name": station.get("place", "N/A"),
         "wmo_id": station.get("wmo", "N/A"),
         

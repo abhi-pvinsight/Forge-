@@ -10,7 +10,7 @@ import ReportDoc from "../reports/ReportDoc";
 import Papa from "papaparse";
 import { calculateYearlyVoc, calculateYearlyIsc, } from "../calculations/calculateYearlyVoc&Isc";
 import { buildMinVoltageDegradationTable } from "../forms/utils/buildVoc&IscTable";
-import { extractPvsyst } from '../api/extractionApi';
+import { extractPvsyst, generateAshrae, } from '../api/extractionApi';
 import { parseModuleExcel } from "../forms/utils/parseModuleExcel";
 
 // export default function FormScreen() {
@@ -422,6 +422,8 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
   const tab = STRING_SIZE_TABS[step];
   const isLast = step === STRING_SIZE_TABS.length - 1;
 
+
+
   const continueNext = () => {
     setShowErrors(false);
 
@@ -432,12 +434,32 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
     }
   };
 
-  const next = () => {
+  const next =  () => {
     const st = tabStatus(tab, values, files);
 
     if (st !== "complete") { setShowErrors(true); return; }
 
 
+  // ==========================
+  // ASHRAE FETCH
+  // ==========================
+if (
+  tab.id === "project" &&
+  values.latitude &&
+  values.longitude
+) {
+  generateAshrae(
+    Number(values.latitude),
+    Number(values.longitude)
+  );
+}
+
+  // }
+
+  // const next =  () => {
+  //   const st = tabStatus(tab, values, files);
+
+  //   if (st !== "complete") { setShowErrors(true); return; }
     // ==========================
     // VOC CSV PROCESSING
     // ==========================
