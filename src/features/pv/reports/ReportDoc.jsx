@@ -103,7 +103,6 @@ const templateValues = {
 
   N_MIN: nMin.exact,
   N_MIN_ROUNDED: nMin.rounded,
-
 };
 
 console.log("ReportDoc values prop:", values);
