@@ -12,4 +12,4 @@ beautifulsoup4
 scikit-learn
 lxml
 reportlab
-unstract
+llmwhisperer-client==2.7.0
