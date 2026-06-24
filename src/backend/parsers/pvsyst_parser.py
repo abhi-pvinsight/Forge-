@@ -7,9 +7,12 @@ from unstract.llmwhisperer import LLMWhispererClientV2
 # ============================================================
 # CONFIG
 # ============================================================
+API_KEY = os.getenv("LLMWHISPERER_API_KEY")
 
-API_KEY = os.getenv("9FNwn6xdd6TCJfIh8U4MUKBlvkufKGETEGKisfcHU_Q")
-
+if not API_KEY:
+    raise ValueError(
+        "Missing LLMWHISPERER_API_KEY environment variable"
+    )
 BASE_URL = (
     "https://llmwhisperer-api.us-central.unstract.com/api/v2"
 )

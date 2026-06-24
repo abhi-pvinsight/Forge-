@@ -2,3 +2,13 @@ fastapi
 uvicorn
 pandas
 python-multipart
+fastapi
+uvicorn
+python-multipart
+requests
+numpy
+pandas
+beautifulsoup4
+scikit-learn
+lxml
+reportlab
