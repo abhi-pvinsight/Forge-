@@ -1,16 +1,16 @@
 import os
 import io
 import traceback
-from flask import Flask, request, send_file, jsonify
-from flask_cors import CORS
+# from flask import Flask, request, send_file, jsonify
+# from flask_cors import CORS
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
-app = Flask(__name__)
+# app = Flask(__name__)
 # Allows secure cross-origin requests from your React frontend
-CORS(app) 
+# CORS(app) 
 
 
 # Replace your current _parse_float with this robust version
@@ -284,37 +284,37 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
 #         }), 500
 
 
-@app.route('/api/generate-solar-report-test', methods=['GET'])
-def handle_test_generation():
-    try:
-        sample = {
-            'module_wp1': 605,
-            'module_wp2': 620,
-            'modulePmax': 580,
-            'moduleVoc': 52.0,
-            'moduleVmp': 43.4,
-            'moduleIsc': 14.02,
-            'moduleImp': 13.37,
-            'tempCoeffVoc': -0.25,
-            'temp_coeff_pm': -0.30,
-            'temp_coeff_isc': 0.046,
-            'tempMin': -5.0,
-            'temp_max': 32.0
-        }
+# @app.route('/api/generate-solar-report-test', methods=['GET'])
+# def handle_test_generation():
+#     try:
+#         sample = {
+#             'module_wp1': 605,
+#             'module_wp2': 620,
+#             'modulePmax': 580,
+#             'moduleVoc': 52.0,
+#             'moduleVmp': 43.4,
+#             'moduleIsc': 14.02,
+#             'moduleImp': 13.37,
+#             'tempCoeffVoc': -0.25,
+#             'temp_coeff_pm': -0.30,
+#             'temp_coeff_isc': 0.046,
+#             'tempMin': -5.0,
+#             'temp_max': 32.0
+#         }
         
-        target_dir = r"C:\Users\AbhayPratapSingh\work\June\260605\HV DBR\Forge\forge-react\src\features\pv\calculations\module Calculation"
-        os.makedirs(target_dir, exist_ok=True)
-        out_path = os.path.join(target_dir, 'debug_report.pdf')
+#         target_dir = r"C:\Users\AbhayPratapSingh\work\June\260605\HV DBR\Forge\forge-react\src\features\pv\calculations\module Calculation"
+#         os.makedirs(target_dir, exist_ok=True)
+#         out_path = os.path.join(target_dir, 'debug_report.pdf')
         
-        # Pass the string path directly here to circumvent wrapper locks
-        generate_solar_report(sample, filename=out_path)
+#         # Pass the string path directly here to circumvent wrapper locks
+#         generate_solar_report(sample, filename=out_path)
 
-        return jsonify({"status": "ok", "path": out_path}), 200
-    except Exception:
-        error_trace = traceback.format_exc()
-        print("Exception encountered during test path write execution:")
-        print(error_trace)
-        return jsonify({"status": "error", "details": error_trace}), 500
+#         # return jsonify({"status": "ok", "path": out_path}), 200
+#     except Exception:
+#         error_trace = traceback.format_exc()
+#         print("Exception encountered during test path write execution:")
+#         print(error_trace)
+#         # return jsonify({"status": "error", "details": error_trace}), 500
 
 
 # SINGLE DEFINITIVE APP STARTUP ENTRY POINT AT THE VERY END
