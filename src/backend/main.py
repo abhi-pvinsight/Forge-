@@ -8,8 +8,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 import io
 import traceback
 
-from calculationRepo.generateSolarReport import generate_solar_report
-
+from calculationRepo.generateSolarReport import build_solar_report_data, build_solar_report_pdf 
 from Ashrae.ashrae_service import process_and_populate_report
 
 from parsers.pvsyst_parser import extract_pvsyst_data
@@ -94,8 +93,35 @@ def generate_ashrae(data: AshraeRequest):
             "error": str(e)
         }
         
-@app.post("/generate-solar-report")
-def generate_solar_report_api(payload: SolarReportRequest):
+class SolarReportRequest(BaseModel):
+    values: dict
+
+@app.post("/generate-solar-report-data")
+async def generate_solar_report_data_endpoint(payload: SolarReportRequest):
+    report_data = build_solar_report_data(payload.values)
+    return {
+        "success": True,
+        "calc_table": report_data["calc_table"],
+        "calc_values": report_data["calc_values"]
+    }
+
+@app.post("/generate-solar-report-pdf")
+async def generate_solar_report_pdf_endpoint(payload: SolarReportRequest):
+    # 1. Compute pure numbers logic
+    report_data = build_solar_report_data(payload.values)
+    
+    # 2. Build PDF completely decoupled into a dynamic buffer stream
+    pdf_buffer = io.BytesIO()
+    build_solar_report_pdf(report_data, pdf_buffer)
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=Solar_String_Sizing_Report.pdf"}
+    )        
+        
+# @app.post("/generate-solar-report")
+# def generate_solar_report_api(payload: SolarReportRequest):
     try:
         react_data = payload.values
 

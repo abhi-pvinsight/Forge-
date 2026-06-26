@@ -192,3 +192,36 @@ export function buildMinVoltageDegradationTable(
 
   return table;
 }
+
+export function buildSolarVocTemplateValues({
+    solarCalcValues,
+    tempMin,
+    tempCellMax
+}) {
+    const out = {
+        tempMin,
+        tempCellMax
+    };
+
+    for (let i = 0; i < 6; i++) {
+        out[`ashrae_voc_${i+1}`] =
+            solarCalcValues?.Voc_Tmin?.[i] ?? "";
+
+        out[`ashrae_string_${i+1}`] =
+            solarCalcValues?.max_voc_selected?.[i] ?? "";
+
+        out[`pvsyst_voc_${i+1}`] =
+            solarCalcValues?.Voc_Tmin?.[i] ?? "";
+
+        out[`pvsyst_string_${i+1}`] =
+            solarCalcValues?.max_voc_selected?.[i] ?? "";
+    }
+
+    out.ashrae_modules_series =
+        solarCalcValues?.selected_modules?.[0] ?? "";
+
+    out.pvsyst_modules_series =
+        solarCalcValues?.selected_modules?.[0] ?? "";
+
+    return out;
+}

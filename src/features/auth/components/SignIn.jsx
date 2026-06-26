@@ -76,7 +76,7 @@ export default function SignIn({ onSignIn, theme, onToggleTheme }) {
             letterSpacing: "-0.01em",
           }}
         >
-          Forge
+          PV Insight Inc
         </div>
       </div>
 

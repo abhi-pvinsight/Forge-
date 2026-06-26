@@ -1,7 +1,7 @@
 import React from 'react';
 
 import template from "../templates/pvReportTemplate.html?raw";
-import { buildVocTable, buildIscTable, buildMinVoltageDegradationTable, buildPvsystTables, calculateNMin } from "../forms/utils/buildVoc&IscTable";
+import { buildVocTable, buildIscTable, buildMinVoltageDegradationTable, buildPvsystTables, calculateNMin, buildSolarVocTemplateValues } from "../forms/utils/buildVoc&IscTable";
 import coverPage from "../../../shared/reports/coverPage.html?raw";
 import documentControlPage from "../../../shared/reports/documentControlPage.html?raw";
 import listOfTables from "../../../shared/reports/listOfTables.html?raw";
@@ -11,6 +11,7 @@ import tableOfContents from "../../../shared/reports/tableOfContents.html?raw";
 import ashraeTableTemplate from "../../../backend/Ashrae/ASHARE.html?raw";
 import { buildReportMeta } from "../../../shared/reports/buildReportMeta";
 console.log(ashraeTableTemplate);
+import { prepareTableData } from '../calculations/calculateYearlyVoc&Isc';
 
 
 
@@ -51,7 +52,7 @@ function CoverStat({ label, value }) {
 
 function DocRow({ k, v }) { return ( <tr> <td>{k}</td> <td>{v}</td> </tr> ); }
 
-export default function ReportDoc( { values = {}, files = {} })
+export default function ReportDoc( { values = {}, files = {}, solarCalcValues = null })
  {
   const safeValues = values;
   const safeFiles = files;
@@ -83,6 +84,16 @@ for (let year = 1; year <= 30; year += 1) {
   `);
 }
 
+const safeSolarCalcValues = solarCalcValues || values.solarCalcValues || values.calc_values || {};
+
+console.log("solarCalcValues in form in report state state====>>:",solarCalcValues);
+
+
+const solarVocTemplateValues = buildSolarVocTemplateValues({
+  solarCalcValues: safeSolarCalcValues,
+  tempMin: values?.tempMin,
+  tempCellMax: values?.tempCellMax,
+});
 const nMin = calculateNMin( values.PCS_Min_PV_Input_Voltage, values.vmpMaxTemp );
 const {irradiationTable,energyTable} = buildPvsystTables(values.pvsystData || {});
 const reportMeta = buildReportMeta( values, { name: "PV Electrical Design Basis Report" } );
@@ -91,11 +102,17 @@ console.log("ReportDoc degradationData:", degradationData);
 console.log("ReportDoc values.minVoltageDegradationTable:", values.minVoltageDegradationTable);
 console.log("PVsyst Data:",values.pvsystData);
 
+console.log("values =", values);
+console.log("solarCalcValues Safest Value  =", safeSolarCalcValues);
+
+
+const peakTableData = values?.peakTableData || {};
 
 const templateValues = {
   ...values,
   ...reportMeta,
-
+  ...peakTableData, // Spreads t1_datetime, t1_ghi, t2_... etc. directly into your template context
+  ...solarVocTemplateValues,
   weather_station_city: values.weather_station_city,
   weather_station_state: values.weather_station_state,
   weather_station_country: values.weather_station_country,

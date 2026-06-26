@@ -8,7 +8,7 @@ import Stepper from "./Stepper";
 import UploadZone from "./UploadZone";
 import ReportDoc from "../reports/ReportDoc";
 import Papa from "papaparse";
-import { calculateYearlyVoc, calculateYearlyIsc, } from "../calculations/calculateYearlyVoc&Isc";
+import { calculateYearlyVoc, calculateYearlyIsc, prepareTableData } from "../calculations/calculateYearlyVoc&Isc";
 import { buildMinVoltageDegradationTable } from "../forms/utils/buildVoc&IscTable";
 import { extractPvsyst, generateAshrae, } from '../api/extractionApi';
 import { parseModuleExcel } from "../forms/utils/parseModuleExcel";
@@ -111,6 +111,9 @@ function SectionTitle({ tab }) {
 }
 
 function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
+  const [solarCalcTable, setSolarCalcTable] = useState(null);
+  const [solarCalcValues, setSolarCalcValues] = useState(null);
+
   const errFor = (field, isUpload = false) => {
     if (!showErrors || !field.required) return null;
     const hasValue = isUpload
@@ -177,12 +180,14 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
           if (!result.values || Object.keys(result.values).length === 0) {
             console.warn("parseModuleExcel returned an empty or missing values object:", result);
           }
-          const API_BASE =import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-          
+          const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
           async function triggerPdfCompilation(excelMetrics) {
             try {
-              const response = await fetch(
-                `${API_BASE}/generate-solar-report`,
+              // --- STEP 1: FETCH CALCULATION VALUES & TABLES (JSON) ---
+              console.log("Fetching structured metrics data...");
+              const dataResponse = await fetch(
+                `${API_BASE}/generate-solar-report-data`,
                 {
                   method: "POST",
                   headers: {
@@ -194,33 +199,74 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
                 }
               );
 
-              if (!response.ok) {
-                let errorMessage = `Server response fault: ${response.status}`;
-
-                try {
-                  const faultData = await response.json();
-                  errorMessage =
-                    faultData?.details ||
-                    faultData?.message ||
-                    errorMessage;
-                } catch {
-                  // ignore JSON parse failure
-                }
-
-                throw new Error(errorMessage);
+              if (!dataResponse.ok) {
+                throw new Error(`Data fetch failed: ${dataResponse.status}`);
               }
 
-              const pdfBlob = await response.blob();
+              const dataResult = await dataResponse.json();
+              console.log("Solar report JSON data result:", dataResult);
+
+              // Access calculation table and structured scalar values
+              const calcTable = dataResult?.calc_table;
+              const calcValues = dataResult?.calc_values;
+
+              // Use standard react/form hooks to automatically fill placeholders
+              if (calcValues) {
+                console.log("Injecting calculated constants to placeholders:", calcValues);
+                setSolarCalcValues(calcValues);
+                setValue("solarCalcValues", calcValues);
+                console.log("solarCalcValues in form state====>>:",solarCalcValues);
+                // Set selected modules value straight into form management state
+                if (calcValues.selected_modules && calcValues.selected_modules.length > 0) {
+                  setValue("SELECTED_MODULES_IN_SERIES", calcValues.selected_modules[0]);
+                }
+              }
+              
+
+              // console.log("solarCalcValues in form state:", getValues("solarCalcValues"));
+
+              // Keep local preview synchronized
+              if (calcTable) {
+                setSolarCalcTable(calcTable);
+              }
+
+
+              // --- STEP 2: FETCH APPENDIX FILE (BINARY BLOB) ---
+              console.log("Compiling appendix document structure...");
+              const pdfResponse = await fetch(
+                `${API_BASE}/generate-solar-report-pdf`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    values: excelMetrics,
+                  }),
+                }
+              );
+
+              if (!pdfResponse.ok) {
+                throw new Error(`PDF generation failed: ${pdfResponse.status}`);
+              }
+
+              // Extracted cleanly as an isolated binary object assignment
+              const pdfBlob = await pdfResponse.blob();
+              console.log("Appendix document asset successfully compiled:", pdfBlob);
+
+              // Assign the raw blob data directly to your parent pipeline state
+              // For example: setReportAppendixFile(pdfBlob);
+
+              // Optional: Keep temporary window open handler for verification
               const sessionUrl = window.URL.createObjectURL(pdfBlob);
               window.open(sessionUrl, "_blank");
-
               setTimeout(() => {
                 window.URL.revokeObjectURL(sessionUrl);
               }, 15000);
 
             } catch (pdfError) {
-              console.error("PDF Pipeline Error:", pdfError);
-              alert(`Failed to auto-generate PDF Report: ${pdfError.message}`);
+              console.error("Solar Report Processing Error:", pdfError);
+              alert(`Failed to sync calculations or compile appendix: ${pdfError.message}`);
             }
           }
 
@@ -234,7 +280,6 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
           await triggerPdfCompilation(result.values);
 
           // 3. Fallback/Safeguard check for complex split layout variables 
-          // This guarantees defaults exist even if string splits encountered unexpected characters
           const templateFallbacks = [
             "module_length", "module_width", "module_height",
             "wind_load", "snow_load",
@@ -242,13 +287,10 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
             "warranty_product", "warranty_performance"
           ];
 
-
-
           templateFallbacks.forEach((fallbackKey) => {
             if (result.values && result.values[fallbackKey] !== undefined) {
               setValue(fallbackKey, result.values[fallbackKey]);
             } else {
-              // Prevent undefined breaking template injection by setting a blank fallback string if missing
               console.warn(`Template field "${fallbackKey}" was not captured from Excel sheet. Initializing as empty.`);
               setValue(fallbackKey, "");
             }
@@ -486,58 +528,113 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
     // ==========================
 
     // Process Voc CSV if uploaded
-    if (files?.vocCsv?.file) {
-      Papa.parse(files.vocCsv.file, {
-        header: true, skipEmptyLines: true,
-        complete: (results) => {
+    if (tab.id === "uploads") {
 
-          const vocSummary = calculateYearlyVoc(results.data);
-          if (!vocSummary.success) { alert(vocSummary.error); return; }
-          const iscSummary = calculateYearlyIsc(results.data);
-          if (!iscSummary.success) { alert(iscSummary.error); return; }
+      if (files?.vocCsv?.file) {
+        Papa.parse(files.vocCsv.file, {
+          header: true, skipEmptyLines: true,
+          complete: (results) => {
 
-          console.log("VOC Summary:");
-          console.log(vocSummary.data);
-          console.log(iscSummary.data);
+            const vocSummary = calculateYearlyVoc(results.data);
+            if (!vocSummary.success) { alert(vocSummary.error); return; }
+            const iscSummary = calculateYearlyIsc(results.data);
+            if (!iscSummary.success) { alert(iscSummary.error); return; }
 
-          setValue("yearlyVocSummary", vocSummary.data);
-          setValue("yearlyIscSummary", iscSummary.data);
+            // Parse GHI and DHI CSV files for peak table data
+            let ghiRows = [];
+            let dhiRows = [];
+            let ghiParsed = false;
+            let dhiParsed = false;
 
-          console.log("Form values for degradation:", {
-            moduleVmp: values.moduleVmp,
-            numberOfModules: values.numberOfModules,
-            moduleDegradation: values.moduleDegradation,
-          });
+            const onAllParsed = () => {
+              if (ghiParsed && dhiParsed) {
+                const peakTableData = prepareTableData(ghiRows, dhiRows);
+                if (!peakTableData.success) { console.warn("prepareTableData warning:", peakTableData.errorMessage); }
 
-          // Generate degradation table from form input
-          const initialVoltage = Number(values.moduleVmp) * Number(values.numberOfModules);
-          const degradationTable = buildMinVoltageDegradationTable(initialVoltage, Number(values.moduleDegradation), 30);
+                console.log("VOC Summary:");
+                console.log(vocSummary.data);
+                console.log("ISC Summary:");
+                console.log(iscSummary.data);
+                console.log("Peak Table Data:");
+                console.log(peakTableData.tableTemplateData);
 
-          setValue("minVoltageDegradationTable", degradationTable);
-          console.log("Saved minVoltageDegradationTable:", degradationTable);
-          continueNext();
-        },
+                setValue("yearlyVocSummary", vocSummary.data);
+                setValue("yearlyIscSummary", iscSummary.data);
+                setValue("peakTableData", peakTableData.tableTemplateData);
 
-        error: (err) => {
-          alert(
-            err?.message ||
-            "Failed to parse CSV file."
-          );
-        },
-      });
+                console.log("Form values for degradation:", {
+                  moduleVmp: values.moduleVmp,
+                  numberOfModules: values.numberOfModules,
+                  moduleDegradation: values.moduleDegradation,
+                });
 
-      return;
+                // Generate degradation table from form input
+                const initialVoltage = Number(values.moduleVmp) * Number(values.numberOfModules);
+                const degradationTable = buildMinVoltageDegradationTable(initialVoltage, Number(values.moduleDegradation), 30);
+
+                setValue("minVoltageDegradationTable", degradationTable);
+                console.log("Saved minVoltageDegradationTable:", degradationTable);
+                continueNext();
+              }
+            };
+
+            // Parse GHI CSV if available
+            if (files?.ghiCsv?.file) {
+              Papa.parse(files.ghiCsv.file, {
+                header: true, skipEmptyLines: true,
+                complete: (ghiResults) => {
+                  ghiRows = ghiResults.data;
+                  ghiParsed = true;
+                  onAllParsed();
+                },
+                error: (err) => {
+                  console.warn("GHI CSV parsing warning:", err?.message);
+                  ghiParsed = true;
+                  onAllParsed();
+                }
+              });
+            } else {
+              ghiParsed = true;
+            }
+
+            // Parse DHI CSV if available
+            if (files?.dhiCsv?.file) {
+              Papa.parse(files.dhiCsv.file, {
+                header: true, skipEmptyLines: true,
+                complete: (dhiResults) => {
+                  dhiRows = dhiResults.data;
+                  dhiParsed = true;
+                  onAllParsed();
+                },
+                error: (err) => {
+                  console.warn("DHI CSV parsing warning:", err?.message);
+                  dhiParsed = true;
+                  onAllParsed();
+                }
+              });
+            } else {
+              dhiParsed = true;
+            }
+          },
+
+          error: (err) => {
+            alert(
+              err?.message ||
+              "Failed to parse CSV file."
+            );
+          },
+        });
+
+        return;
+      }
+
+
     }
+
 
     continueNext();
   };
-  // const next = () => {
-  //   const st = tabStatus(tab, values, files);
-  //   if (st !== 'complete') { setShowErrors(true); return; }
 
-  //   setShowErrors(false);
-  //   if (!isLast) { setStep(step + 1); if (scrollRef.current) scrollRef.current.scrollTop = 0; }
-  // };
   useEffect(() => {
     console.log("FormScreen mounted");
   }, []);
@@ -613,7 +710,7 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
             </div>
             <div style={{ padding: '20px 0', display: 'grid', placeItems: 'start center' }}>
               <div style={{ transform: 'scale(0.82)', transformOrigin: 'top center' }}>
-                <ReportDoc values={values} calc={calc} files={files} mini />
+                <ReportDoc values={values} calc={calc} files={files} mini solarCalcValues={solarCalcValues} />
               </div>
             </div>
           </div>

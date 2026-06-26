@@ -40,9 +40,14 @@ def _fallback_value(data, *keys, default=None):
             return data[key]
     return default
 
+def _parse_float(value, default=0.0):
+    try:
+        return float(value) if value is not None else default
+    except (ValueError, TypeError):
+        return default
 
-def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
-    print("generate_solar_report: start")
+def build_solar_report_data(data):
+    print("build_solar_report_data: start")
     
     if not isinstance(data, dict):
         data = {}
@@ -50,6 +55,7 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
     # 1. Clear out whitespace and lowercase all incoming keys
     data_clean = {str(k).lower().strip(): v for k, v in data.items()}
     print("Cleaned incoming payload keys:", list(data_clean.keys()))
+    
     # 2. Extract all 6 dynamic variants from your Excel matrix (Rows 2 to 7)
     base_models = [
         f"{_parse_float(data_clean.get('wp_1'), 100):.0f} Wp",
@@ -143,7 +149,97 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
     selected_modules = [28] * len(base_models)
     max_voc_selected = [m * voc_t for m, voc_t in zip(selected_modules, Voc_Tmin)]
 
-    # 3. Setup Document Layout
+    # Format JSON safe calc rows
+    calc_rows = [
+        ["%Vmp = TcPmp * (Tmax + Trise - Tstc)", *[f"{pct_Vmp:.2f}" for _ in range(len(base_models))], "%"],
+        ["Vmp @ Tmax = Vmp * (1 + %Vmp)", *[f"{v:.2f}" for v in Vmp_Tmax], "V"],
+        ["%Voc = TcVoc * (Tmin - Tstc)", *[f"{pct_Voc:.2f}" for _ in range(len(base_models))], "%"],
+        ["Voc @ Tmin = VocBGF * (1 + %Voc)", *[f"{v:.2f}" for v in Voc_Tmin], "V"],
+        ["%Imp = TcIsc * (Tmax - Tstc)", *[f"{pct_Imp:.2f}" for _ in range(len(base_models))], "%"],
+        ["Imp @ Tmax = Imp@BGF * (1 + %Imp)", *[f"{i:.2f}" for i in Imp_Tmax], "A"],
+        ["%Isc = TcIsc * (Tmax - Tstc)", *[f"{pct_Isc:.2f}" for _ in range(len(base_models))], "%"],
+        ["Isc @ Tmax = Isc@BGF * (1 + %Isc)", *[f"{i:.2f}" for i in Isc_Tmax], "A"],
+        ["Total No of Modules in series (Max limit)", *[f"{t:.2f}" for t in total_modules_series], "no."],
+        ["Selected no of modules in series", *[str(m) for m in selected_modules], "no."],
+        ["Maximum Voc with selected modules", *[f"{v:.0f}" for v in max_voc_selected], "V"],
+    ]
+
+    report_data = {
+        "base_models": base_models,
+        "Pstc": Pstc,
+        "Voc_front": Voc_front,
+        "Vmp_front": Vmp_front,
+        "Isc_front": Isc_front,
+        "Imp_front": Imp_front,
+        "bgf": bgf,
+        "TcPmp": TcPmp,
+        "TcVoc": TcVoc,
+        "TcIsc": TcIsc,
+        "Vmax_system": Vmax_system,
+        "Tmax": Tmax,
+        "Tmin": Tmin,
+        "pct_Vmp": pct_Vmp,
+        "Vmp_Tmax": Vmp_Tmax,
+        "pct_Voc": pct_Voc,
+        "Voc_Tmin": Voc_Tmin,
+        "pct_Imp": pct_Imp,
+        "Imp_Tmax": Imp_Tmax,
+        "pct_Isc": pct_Isc,
+        "Isc_Tmax": Isc_Tmax,
+        "total_modules_series": total_modules_series,
+        "selected_modules": selected_modules,
+        "max_voc_selected": max_voc_selected,
+        "calc_table": {
+            "title": "Temperature Corrected & String Sizing Calculations (Dynamically Computed)",
+            "headers": ["Calculated Operational Metrics", *base_models, "Unit"],
+            "rows": calc_rows
+        },
+        "calc_values": {
+            "pct_Vmp": pct_Vmp,
+            "pct_Voc": pct_Voc,
+            "pct_Imp": pct_Imp,
+            "pct_Isc": pct_Isc,
+            "Vmp_Tmax": Vmp_Tmax,
+            "Voc_Tmin": Voc_Tmin,
+            "Imp_Tmax": Imp_Tmax,
+            "Isc_Tmax": Isc_Tmax,
+            "total_modules_series": total_modules_series,
+            "selected_modules": selected_modules,
+            "max_voc_selected": max_voc_selected,
+        }
+    }
+    return report_data
+
+def build_solar_report_pdf(report_data, filename):
+    print("build_solar_report_pdf: start")
+    
+    # Safely unpack arrays and scalars from the data structure
+    base_models = report_data["base_models"]
+    Pstc = report_data["Pstc"]
+    Voc_front = report_data["Voc_front"]
+    Vmp_front = report_data["Vmp_front"]
+    Isc_front = report_data["Isc_front"]
+    Imp_front = report_data["Imp_front"]
+    bgf = report_data["bgf"]
+    TcPmp = report_data["TcPmp"]
+    TcVoc = report_data["TcVoc"]
+    TcIsc = report_data["TcIsc"]
+    Vmax_system = report_data["Vmax_system"]
+    Tmax = report_data["Tmax"]
+    Tmin = report_data["Tmin"]
+    
+    pct_Vmp = report_data["pct_Vmp"]
+    Vmp_Tmax = report_data["Vmp_Tmax"]
+    pct_Voc = report_data["pct_Voc"]
+    Voc_Tmin = report_data["Voc_Tmin"]
+    pct_Imp = report_data["pct_Imp"]
+    Imp_Tmax = report_data["Imp_Tmax"]
+    pct_Isc = report_data["pct_Isc"]
+    Isc_Tmax = report_data["Isc_Tmax"]
+    total_modules_series = report_data["total_modules_series"]
+    selected_modules = report_data["selected_modules"]
+    max_voc_selected = report_data["max_voc_selected"]
+
     story = []
     styles = getSampleStyleSheet()
     
@@ -160,7 +256,7 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
     story.append(Paragraph("String Sizing Calculation Report", title_style))
     story.append(Spacer(1, 8))
     
-    # Table 1: Technical Specs
+    # Table 1: Technical Specs (Fixed repeated column loops to use len(base_models))
     story.append(Paragraph("1. Solar Photovoltaic Module Technical Specification (Waaree)", section_style))
     tech_data = [
         [wrap("Module Parameter", True)] + [wrap(m, True) for m in base_models] + [wrap("Unit", True)],
@@ -170,11 +266,11 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
         [wrap("Vmp (Front Side)")] + [wrap(f"{v:.2f}") for v in Vmp_front] + [wrap("V")],
         [wrap("Isc (Front Side)")] + [wrap(f"{i:.2f}") for i in Isc_front] + [wrap("A")],
         [wrap("Imp (Front Side)")] + [wrap(f"{i:.2f}") for i in Imp_front] + [wrap("A")],
-        [wrap("Bifacial Gain Factor (BGF)")] + [wrap(f"{bgf:.2f}") for _ in range(5)] + [wrap("%")],
-        [wrap("TcPmp")] + [wrap(f"{TcPmp:.2f}") for _ in range(5)] + [wrap("%/°C")],
-        [wrap("TcVoc")] + [wrap(f"{TcVoc:.3f}") for _ in range(5)] + [wrap("%/°C")],
-        [wrap("TcIsc")] + [wrap(f"{TcIsc:.2f}") for _ in range(5)] + [wrap("%/°C")],
-        [wrap("Vmax")] + [wrap(f"{Vmax_system:.0f}") for _ in range(5)] + [wrap("V")]
+        [wrap("Bifacial Gain Factor (BGF)")] + [wrap(f"{bgf:.2f}") for _ in range(len(base_models))] + [wrap("%")],
+        [wrap("TcPmp")] + [wrap(f"{TcPmp:.2f}") for _ in range(len(base_models))] + [wrap("%/°C")],
+        [wrap("TcVoc")] + [wrap(f"{TcVoc:.3f}") for _ in range(len(base_models))] + [wrap("%/°C")],
+        [wrap("TcIsc")] + [wrap(f"{TcIsc:.2f}") for _ in range(len(base_models))] + [wrap("%/°C")],
+        [wrap("Vmax")] + [wrap(f"{Vmax_system:.0f}") for _ in range(len(base_models))] + [wrap("V")]
     ]
     
     t1 = Table(tech_data, colWidths=[160, 58, 58, 58, 58, 58, 40])
@@ -186,18 +282,18 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
     ]))
     story.append(t1)
     story.append(Spacer(1, 12))
-
-    # Table 2: Calculated Dynamic Values
+    
+    # Table 2: Calculated Dynamic Values (Fixed repeated column loops to use len(base_models))
     story.append(Paragraph("2. Temperature Corrected & String Sizing Calculations (Dynamically Computed)", section_style))
     calc_data = [
         [wrap("Calculated Operational Metrics", True)] + [wrap(m, True) for m in base_models] + [wrap("Unit", True)],
-        [wrap("%Vmp = TcPmp * (Tmax + Trise - Tstc)")] + [wrap(f"{pct_Vmp:.2f}") for _ in range(5)] + [wrap("%")],
+        [wrap("%Vmp = TcPmp * (Tmax + Trise - Tstc)")] + [wrap(f"{pct_Vmp:.2f}") for _ in range(len(base_models))] + [wrap("%")],
         [wrap("Vmp @ Tmax = Vmp * (1 + %Vmp)")] + [wrap(f"{v:.2f}") for v in Vmp_Tmax] + [wrap("V")],
-        [wrap("%Voc = TcVoc * (Tmin - Tstc)")] + [wrap(f"{pct_Voc:.2f}") for _ in range(5)] + [wrap("%")],
+        [wrap("%Voc = TcVoc * (Tmin - Tstc)")] + [wrap(f"{pct_Voc:.2f}") for _ in range(len(base_models))] + [wrap("%")],
         [wrap("Voc @ Tmin = VocBGF * (1 + %Voc)")] + [wrap(f"{v:.2f}") for v in Voc_Tmin] + [wrap("V")],
-        [wrap("%Imp = TcIsc * (Tmax - Tstc)")] + [wrap(f"{pct_Imp:.2f}") for _ in range(5)] + [wrap("%")],
+        [wrap("%Imp = TcIsc * (Tmax - Tstc)")] + [wrap(f"{pct_Imp:.2f}") for _ in range(len(base_models))] + [wrap("%")],
         [wrap("Imp @ Tmax = Imp@BGF * (1 + %Imp)")] + [wrap(f"{i:.2f}") for i in Imp_Tmax] + [wrap("A")],
-        [wrap("%Isc = TcIsc * (Tmax - Tstc)")] + [wrap(f"{pct_Isc:.2f}") for _ in range(5)] + [wrap("%")],
+        [wrap("%Isc = TcIsc * (Tmax - Tstc)")] + [wrap(f"{pct_Isc:.2f}") for _ in range(len(base_models))] + [wrap("%")],
         [wrap("Isc @ Tmax = Isc@BGF * (1 + %Isc)")] + [wrap(f"{i:.2f}") for i in Isc_Tmax] + [wrap("A")],
         [wrap("Total No of Modules in series (Max limit)")] + [wrap(f"{t:.2f}") for t in total_modules_series] + [wrap("no.")],
         [wrap("Selected no of modules in series", is_bold=True)] + [wrap(f"{m}", is_bold=True) for m in selected_modules] + [wrap("no.", is_bold=True)],
@@ -230,93 +326,15 @@ def generate_solar_report(data, filename="Solar_String_Sizing_Report.pdf"):
     ]))
     story.append(t3)
 
-    # Cleaned file/stream rendering block
     try:
+        doc = SimpleDocTemplate(filename, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=54, bottomMargin=54)
+        doc.build(story)
         if isinstance(filename, (str, bytes, os.PathLike)):
-            # If it's a string path, let ReportLab handle opening it safely
-            doc = SimpleDocTemplate(filename, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=54, bottomMargin=54)
-            doc.build(story)
-            print(f"generate_solar_report: finished building PDF to path: {filename}")
+            print(f"build_solar_report_pdf: finished building PDF to path: {filename}")
         else:
-            # Assume it's an in-memory BytesIO block stream
-            doc = SimpleDocTemplate(filename, pagesize=letter, rightMargin=36, leftMargin=36, topMargin=54, bottomMargin=54)
-            doc.build(story)
             filename.seek(0)
-            print("generate_solar_report: finished building PDF to file-like stream object")
+            print("build_solar_report_pdf: finished building PDF to file-like stream object")
     except Exception:
-        print("generate_solar_report: exception during layout build phase")
+        print("build_solar_report_pdf: exception during layout build phase")
         print(traceback.format_exc())
         raise
-
-
-# =======================================================
-# FLASK ROUTING BACKEND ENDPOINTS
-# =======================================================
-
-# @app.route('/api/generate-solar-report', methods=['POST'])
-# def handle_sync_generation():
-#     try:
-#         payload = request.get_json(silent=True) or {}
-#         react_data = payload.get('values')
-        
-#         print("RECEIVED VALUES FROM REACT:", react_data)
-
-#         if not react_data:
-#             return jsonify({"status": "error", "message": "Missing form metrics values parameter object"}), 400
-
-#         pdf_buffer = io.BytesIO()
-#         generate_solar_report(data=react_data, filename=pdf_buffer)
-        
-#         return send_file(
-#             pdf_buffer,
-#             mimetype='application/pdf',
-#             as_attachment=False,
-#             download_name='Solar_String_Sizing_Report.pdf'
-#         )
-#     except Exception as e:
-#         error_trace = traceback.format_exc()
-#         print("Exception encountered during production compilation:")
-#         print(error_trace)
-#         return jsonify({
-#             "status": "error",
-#             "message": "Server error during report generation.",
-#             "details": error_trace
-#         }), 500
-
-
-# @app.route('/api/generate-solar-report-test', methods=['GET'])
-# def handle_test_generation():
-#     try:
-#         sample = {
-#             'module_wp1': 605,
-#             'module_wp2': 620,
-#             'modulePmax': 580,
-#             'moduleVoc': 52.0,
-#             'moduleVmp': 43.4,
-#             'moduleIsc': 14.02,
-#             'moduleImp': 13.37,
-#             'tempCoeffVoc': -0.25,
-#             'temp_coeff_pm': -0.30,
-#             'temp_coeff_isc': 0.046,
-#             'tempMin': -5.0,
-#             'temp_max': 32.0
-#         }
-        
-#         target_dir = r"C:\Users\AbhayPratapSingh\work\June\260605\HV DBR\Forge\forge-react\src\features\pv\calculations\module Calculation"
-#         os.makedirs(target_dir, exist_ok=True)
-#         out_path = os.path.join(target_dir, 'debug_report.pdf')
-        
-#         # Pass the string path directly here to circumvent wrapper locks
-#         generate_solar_report(sample, filename=out_path)
-
-#         # return jsonify({"status": "ok", "path": out_path}), 200
-#     except Exception:
-#         error_trace = traceback.format_exc()
-#         print("Exception encountered during test path write execution:")
-#         print(error_trace)
-#         # return jsonify({"status": "error", "details": error_trace}), 500
-
-
-# SINGLE DEFINITIVE APP STARTUP ENTRY POINT AT THE VERY END
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)

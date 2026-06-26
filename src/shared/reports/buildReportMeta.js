@@ -2,6 +2,10 @@ import coverImage from "../../assets/report-cover.jpg";
 import pvLogo from "../../assets/PV insight Logo.png";
 import defaultClientLogo from "../../assets/signal Energy.png";
 
+function formatIssueDate(date = new Date()) {
+  return new Intl.DateTimeFormat("en-GB").format(date).replaceAll("/", ".");
+}
+
 export function buildReportMeta(values = {}, report = {}) {
   return {
     PROJECT_NAME:
@@ -24,7 +28,7 @@ export function buildReportMeta(values = {}, report = {}) {
 
     ISSUE_DATE:
       values.issueDate ||
-      new Date().toLocaleDateString("en-GB"),
+      formatIssueDate(),
 
     DOCUMENT_NUMBER:
       values.documentNumber || "",

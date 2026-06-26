@@ -1,3 +1,17 @@
+let peakIscMetadata = null;
+
+export function setPeakIscMetadata(metadata) {
+  peakIscMetadata = metadata;
+}
+
+export function getPeakIscMetadata() {
+  return peakIscMetadata;
+}
+
+export function clearPeakIscMetadata() {
+  peakIscMetadata = null;
+}
+
 export function calculateYearlyVoc(rows) {
   console.log("calculateYearlyVoc CALLED");
 
@@ -142,20 +156,6 @@ export function calculateYearlyVoc(rows) {
   };
 }
 
-// Helper function to turn serial index number (0 to 8759) and year into MM/DD/YYYY HH:MM string
-// function getTimestampFromSerial(serialNo, year) {
-//   const dayOfYear = Math.floor(serialNo / 24);
-//   const hour = serialNo % 24;
-  
-//   const date = new Date(year, 0, 1); // Starts at Jan 1st
-//   date.setDate(date.getDate() + dayOfYear);
-  
-//   const mm = String(date.getMonth() + 1).padStart(2, '0');
-//   const dd = String(date.getDate()).padStart(2, '0');
-//   const hh = String(hour).padStart(2, '0');
-  
-//   return `${mm}/${dd}/${year} ${hh}:00`;
-// }
 
 export function calculateYearlyIsc(rows) {
   console.log("calculateYearlyIsc CALLED");
@@ -173,7 +173,6 @@ export function calculateYearlyIsc(rows) {
 
     let allTimeMaxIsc = -Infinity;
 
-    // Track 25-year global peak records along with their serial number positions and year
     let globalMaxH1 = { isc: -Infinity, serialNo: 0, year: "", date: "" };
     let globalMaxH2 = { isc: -Infinity, serialNo: 0, year: "", date: "" };
     let globalMaxH3 = { isc: -Infinity, serialNo: 0, year: "", date: "" };
@@ -187,105 +186,116 @@ export function calculateYearlyIsc(rows) {
         throw new Error(`No valid current values found for year ${year}.`);
       }
 
-      // Track both values and their original file indices (serial number)
-      const hr11Data = [];
-      const hr12Data = [];
-      const hr13Data = [];
+      // Track the day within this year that has the highest 3-hour average
+      let yearlyBestDay = {
+        avg: -Infinity,
+        h1Val: 0, h1Idx: 0,
+        h2Val: 0, h2Idx: 0,
+        h3Val: 0, h3Idx: 0,
+      };
 
+      // Loop through each day chronologically
       for (let day = 0; day < Math.floor(values.length / 24); day++) {
         const base = day * 24;
-        hr11Data.push({ val: values[base + 10], idx: base + 10 });
-        hr12Data.push({ val: values[base + 11], idx: base + 11 });
-        hr13Data.push({ val: values[base + 12], idx: base + 12 });
+        
+        const v1 = values[base + 11] ?? 0; // Hour 11 (10:00 - 11:00)
+        const v2 = values[base + 12] ?? 0; // Hour 12 (11:00 - 12:00)
+        const v3 = values[base + 13] ?? 0; // Hour 13 (12:00 - 13:00)
+        
+        const dailyAvg = (v1 + v2 + v3) / 3;
+
+        // If this day's average is the highest so far, lock it in
+        if (dailyAvg > yearlyBestDay.avg) {
+          yearlyBestDay = {
+            avg: dailyAvg,
+            h1Val: v1, h1Idx: base + 10,
+            h2Val: v2, h2Idx: base + 11,
+            h3Val: v3, h3Idx: base + 12,
+          };
+        }
       }
 
-      // Find highest records for this specific year along with the source index
-      const h1Record = hr11Data.reduce((max, item) => item.val > max.val ? item : max, { val: -Infinity, idx: 0 });
-      const h2Record = hr12Data.reduce((max, item) => item.val > max.val ? item : max, { val: -Infinity, idx: 0 });
-      const h3Record = hr13Data.reduce((max, item) => item.val > max.val ? item : max, { val: -Infinity, idx: 0 });
+      // Convert values to clean 2-decimal numbers
+      const h1 = Number(yearlyBestDay.h1Val.toFixed(2));
+      const h2 = Number(yearlyBestDay.h2Val.toFixed(2));
+      const h3 = Number(yearlyBestDay.h3Val.toFixed(2));
 
-      const h1 = Number(h1Record.val.toFixed(2));
-      const h2 = Number(h2Record.val.toFixed(2));
-      const h3 = Number(h3Record.val.toFixed(2));
-
-      // Update 25-year maximum records across the hourly groups
+      // Update the global trackers if this year's peak day values beat all-time values
       if (h1 > globalMaxH1.isc) {
         globalMaxH1 = {
           isc: h1,
-          serialNo: h1Record.idx,
-          year: year,
-          date: getTimestampFromSerial(h1Record.idx, year)
+          serialNo: yearlyBestDay.h1Idx,
+          year,
+          date: getTimestampFromSerial(yearlyBestDay.h1Idx, year),
         };
       }
 
       if (h2 > globalMaxH2.isc) {
         globalMaxH2 = {
           isc: h2,
-          serialNo: h2Record.idx,
-          year: year,
-          date: getTimestampFromSerial(h2Record.idx, year)
+          serialNo: yearlyBestDay.h2Idx,
+          year,
+          date: getTimestampFromSerial(yearlyBestDay.h2Idx, year),
         };
       }
 
       if (h3 > globalMaxH3.isc) {
         globalMaxH3 = {
           isc: h3,
-          serialNo: h3Record.idx,
-          year: year,
-          date: getTimestampFromSerial(h3Record.idx, year)
+          serialNo: yearlyBestDay.h3Idx,
+          year,
+          date: getTimestampFromSerial(yearlyBestDay.h3Idx, year),
         };
       }
 
-      // Tracks the absolute max current found anywhere in h1, h2, or h3 across all 25 years
       const yearlyMax = Math.max(h1, h2, h3);
       if (yearlyMax > allTimeMaxIsc) {
         allTimeMaxIsc = yearlyMax;
       }
 
-      return { 
-        year, 
-        h1, 
-        h2, 
-        h3, 
-        avg: Number(((h1 + h2 + h3) / 3).toFixed(2)), 
-      }; 
+      return {
+        year,
+        h1,
+        h2,
+        h3,
+        avg: Number(((h1 + h2 + h3) / 3).toFixed(2)),
+      };
     });
 
-    // Explicit date tracking variables extracted from our top records
-    const date1 = globalMaxH1.date;
-    const date2 = globalMaxH2.date;
-    const date3 = globalMaxH3.date;
+    const metadata = {
+      h1Record: { ...globalMaxH1 },
+      h2Record: { ...globalMaxH2 },
+      h3Record: { ...globalMaxH3 },
+    };
 
-    return { 
-      success: true, 
-      data: summary, 
+    // Store globally inside module
+    setPeakIscMetadata(metadata);
+
+    return {
+      success: true,
+      data: summary,
       allTimeMaxIsc: Number(allTimeMaxIsc.toFixed(2)),
-      
-      // Explicit date text variables
-      date1, 
-      date2, 
-      date3, 
-
-      // Raw tracking metadata so your separate GHI/DHI calculations can match row coordinates
-      metadata: {
-        h1Record: { serialNo: globalMaxH1.serialNo, year: globalMaxH1.year, isc: globalMaxH1.isc },
-        h2Record: { serialNo: globalMaxH2.serialNo, year: globalMaxH2.year, isc: globalMaxH2.isc },
-        h3Record: { serialNo: globalMaxH3.serialNo, year: globalMaxH3.year, isc: globalMaxH3.isc }
-      },
-      error: null, 
+      date1: globalMaxH1.date,
+      date2: globalMaxH2.date,
+      date3: globalMaxH3.date,
+      metadata,
+      error: null,
     };
   } catch (error) {
-    return { 
-      success: false, 
-      data: [], 
+    return {
+      success: false,
+      data: [],
       allTimeMaxIsc: null,
-      date1: "", date2: "", date3: "",
+      date1: "",
+      date2: "",
+      date3: "",
       metadata: null,
-      error: error?.message || "An unexpected error occurred while processing the CSV file.", 
+      error:
+        error?.message ||
+        "An unexpected error occurred while processing the CSV file.",
     };
   }
 }
-
 
 function getTimestampFromSerial(serialNo, year) {
   const dayOfYear = Math.floor(serialNo / 24);
@@ -298,48 +308,126 @@ function getTimestampFromSerial(serialNo, year) {
   const dd = String(date.getDate()).padStart(2, '0');
   const hh = String(hour).padStart(2, '0');
   
-  return `${mm}/${dd}/${year} ${hh}:00`;
+  return `${dd}/${mm}/${year} ${hh}:00`;
 }
 
 
-export function getIrradianceForPeaks(metadata, ghiRows = [], dhiRows = []) {
+export function getIrradianceForPeaks(ghiRows = [], dhiRows = []) {
   console.log("getIrradianceForPeaks CALLED");
 
   try {
+    const metadata = getPeakIscMetadata();
+
     if (!metadata || !metadata.h1Record || !metadata.h2Record || !metadata.h3Record) {
-      throw new Error("Invalid or missing Isc peak metadata coordinates.");
+      throw new Error("Peak ISC metadata not found. Run calculateYearlyIsc() first.");
     }
 
-    // Helper to safely fetch values out of the specific year and serial index row position
     const fetchValue = (sheet, serialNo, year) => {
-      if (sheet && sheet[serialNo] && sheet[serialNo][year] !== undefined) {
+      if (sheet?.[serialNo] && sheet[serialNo][year] !== undefined) {
         const val = Number(sheet[serialNo][year]);
-        return !isNaN(val) ? Number(val.toFixed(2)) : 0;
+        return Number.isFinite(val) ? Number(val.toFixed(2)) : 0;
       }
       return 0;
     };
 
-    // Extract records using coordinates computed during the Isc tracking step
-    const resultH1 = {
-      ghi: fetchValue(ghiRows, metadata.h1Record.serialNo, metadata.h1Record.year),
-      dhi: fetchValue(dhiRows, metadata.h1Record.serialNo, metadata.h1Record.year)
+    return {
+      success: true,
+      h1: {
+        ghi: fetchValue(ghiRows, metadata.h1Record.serialNo, metadata.h1Record.year),
+        dhi: fetchValue(dhiRows, metadata.h1Record.serialNo, metadata.h1Record.year),
+        isc: metadata.h1Record.isc,
+        datetime: metadata.h1Record.date,
+      },
+      h2: {
+        ghi: fetchValue(ghiRows, metadata.h2Record.serialNo, metadata.h2Record.year),
+        dhi: fetchValue(dhiRows, metadata.h2Record.serialNo, metadata.h2Record.year),
+        isc: metadata.h2Record.isc,
+        datetime: metadata.h2Record.date,
+      },
+      h3: {
+        ghi: fetchValue(ghiRows, metadata.h3Record.serialNo, metadata.h3Record.year),
+        dhi: fetchValue(dhiRows, metadata.h3Record.serialNo, metadata.h3Record.year),
+        isc: metadata.h3Record.isc,
+        datetime: metadata.h3Record.date,
+      },
+      error: null,
     };
-
-    const resultH2 = {
-      ghi: fetchValue(ghiRows, metadata.h2Record.serialNo, metadata.h2Record.year),
-      dhi: fetchValue(dhiRows, metadata.h2Record.serialNo, metadata.h2Record.year)
-    };
-
-    const resultH3 = {
-      ghi: fetchValue(ghiRows, metadata.h3Record.serialNo, metadata.h3Record.year),
-      dhi: fetchValue(dhiRows, metadata.h3Record.serialNo, metadata.h3Record.year)
-    };
-
-    return { success: true, h1: resultH1, h2: resultH2, h3: resultH3, error: null };
-
   } catch (error) {
-    return { success: false, h1: { ghi: 0, dhi: 0 }, h2: { ghi: 0, dhi: 0 }, h3: { ghi: 0, dhi: 0 },
-      error: error.message || "Failed to extract matching irradiance values."
+    return {
+      success: false,
+      h1: null,
+      h2: null,
+      h3: null,
+      error: error.message || "Failed to extract matching irradiance values.",
+    };
+  }
+}
+
+
+/**
+ * Prepares peak irradiance template values using stored ISC peak metadata.
+ * @param {Array} ghiRows - Rows for Global Horizontal Irradiance
+ * @param {Array} dhiRows - Rows for Diffuse Horizontal Irradiance
+ * @returns {Object} An object containing template fields or failure details.
+ */
+export function prepareTableData(ghiRows = [], dhiRows = []) {
+  const fallbackData = {
+    t1_datetime: "N/A", t1_ghi: "N/A", t1_dhi: "N/A", t1_isc: "N/A",
+    t2_datetime: "N/A", t2_ghi: "N/A", t2_dhi: "N/A", t2_isc: "N/A",
+    t3_datetime: "N/A", t3_ghi: "N/A", t3_dhi: "N/A", t3_isc: "N/A",
+  };
+
+  try {
+    const metadata = getPeakIscMetadata();
+    console.log("prepareTableData metadata:", metadata);
+
+    if (!metadata) {
+      return {
+        success: false,
+        errorMessage: "Peak ISC metadata not available. Run calculateYearlyIsc() first.",
+        tableTemplateData: fallbackData,
+      };
+    }
+
+    const irrResult = getIrradianceForPeaks(ghiRows, dhiRows);
+
+    if (!irrResult.success) {
+      return {
+        success: false,
+        errorMessage: irrResult.error,
+        tableTemplateData: fallbackData,
+      };
+    }
+
+    const tableTemplateData = {
+      t1_datetime: metadata.h1Record.date || "N/A",
+      t1_ghi: irrResult.h1?.ghi ?? "N/A",
+      t1_dhi: irrResult.h1?.dhi ?? "N/A",
+      t1_isc: metadata.h1Record.isc ?? "N/A",
+
+      t2_datetime: metadata.h2Record.date || "N/A",
+      t2_ghi: irrResult.h2?.ghi ?? "N/A",
+      t2_dhi: irrResult.h2?.dhi ?? "N/A",
+      t2_isc: metadata.h2Record.isc ?? "N/A",
+
+      t3_datetime: metadata.h3Record.date || "N/A",
+      t3_ghi: irrResult.h3?.ghi ?? "N/A",
+      t3_dhi: irrResult.h3?.dhi ?? "N/A",
+      t3_isc: metadata.h3Record.isc ?? "N/A",
+    };
+
+    console.log("prepareTableData tableTemplateData:", tableTemplateData);
+
+    return {
+      success: true,
+      errorMessage: null,
+      tableTemplateData,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      errorMessage: err.message || "Failed to prepare peak irradiance table data.",
+      tableTemplateData: fallbackData,
     };
   }
 }

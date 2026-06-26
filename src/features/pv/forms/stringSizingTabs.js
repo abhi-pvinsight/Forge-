@@ -134,8 +134,7 @@ export const STRING_SIZE_TABS = [{
   }]
 },
 
-{
-  id: "reportInfo",
+{id: "reportInfo",
   name: "Report Information",
   icon: "fileText",
   fields: [
@@ -167,8 +166,7 @@ export const STRING_SIZE_TABS = [{
   ]
 },
 
- {
-  id: 'technical',
+ {id: 'technical',
   name: 'Technical Inputs',
   icon: 'sliders',
   blurb: 'Module, inverter and site temperature data. Drives the string-sizing calculation.',
@@ -536,18 +534,28 @@ export const STRING_SIZE_TABS = [{
     key: 'moduleDs',
     label: 'Module datasheet',
     hint: 'PDF · manufacturer spec sheet',
-  require: true
+  require: false
   }, {
     key: 'inverterDs',
     label: 'Inverter datasheet',
     hint: 'PDF · manufacturer spec sheet',
-     required: true
+     required:  false
   }, {
     key: 'weatherData',
     label: 'Site weather / temperature data',
     hint: 'CSV, XLSX · TMY or measured',
      required: false
+  },{
+    key: "dhiCsv",
+    label: "Hourly DHI CSV",
+    hint: "CSV containing yearly hourly Diffuse Horizontal Irradiance data",
+   require:false
   }, {
+    key: "ghiCsv",
+    label: "Hourly GHI CSV",
+    hint: "CSV containing yearly hourly Global Horizontal Irradiance data",
+     required: false
+  },{
     key: "vocCsv",
     label: "Hourly Voc CSV",
     hint: "CSV containing yearly hourly voltage data",
@@ -561,7 +569,7 @@ export const STRING_SIZE_TABS = [{
     key: "pvsystReport",
     label: "PVsyst Loss Diagram Report",
     accept: ".pdf",
-    required: true
+    required: false
   },{
   key: "moduleExcel",
   label: "Module Datasheet Excel",

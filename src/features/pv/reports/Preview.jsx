@@ -67,7 +67,7 @@ export default function Preview({ values, calc, files, onBack, onNew }) {
         {/* doc canvas */}
         <div style={{ flex: 1, overflowY: 'auto', background: 'var(--surface-2)', padding: '34px 0' }}>
           <div style={{ display: 'grid', placeItems: 'start center' }} className="fade-up">
-            <ReportDoc values={values} calc={calc} files={files} />
+            <ReportDoc values={values} calc={calc} files={files} solarCalcValues={values?.solarCalcValues} />
           </div>
         </div>
 
