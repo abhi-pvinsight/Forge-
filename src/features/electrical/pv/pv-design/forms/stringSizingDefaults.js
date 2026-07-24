@@ -89,21 +89,21 @@ plant_name: 'Sandhills Solar — Phase II',
   data_format: 'TMY (Typical Meteorological Year)',
   // Tracker inputs
 
-tracker_make: 'Nextracker',
-  tracker_model: 'NX Horizon',
+  tracker_make: 'GAMECHANGE',
+  tracker_model: 'GENIUS TRACKER',
   tracking_range: '±60°',
 
-  // tracker_type_1: '4P',
-  tracker_module_1: 28,
-  tracker_quantity_1: 1200,
+  tracker_type_1: '4 String',
+  tracker_module_1: 116,
+  tracker_quantity_1: '1812',
 
-  tracker_type_2: '3P',
-  tracker_module_2: 28,
-  tracker_quantity_2: 800,
+  tracker_type_2: '3 String',
+  tracker_module_2: 87,
+  tracker_quantity_2: '324',
 
-  tracker_type_3: '2P',
-  tracker_module_3: 28,
-  tracker_quantity_3: 400,
+  tracker_type_3: '2 String',
+  tracker_module_3: 58,
+  tracker_quantity_3: '229',
 
 // cable Defaults 
 

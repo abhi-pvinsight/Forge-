@@ -599,27 +599,27 @@ export const STRING_SIZE_TABS = [
         { key: "tracking_range", label: "Tracking Range", type: "text", required: true },]
       },
       {
-        title: 'Tracker 1 info   ',
+        title: 'Tracker 1 info',
         fields: [
-          { key: "tracker_type_1", label: "Tracker Type 1", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_1", label: "Module Qty per Tarcker 1", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_1", label: "Tarcker Quantity 1", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_1", label: "Tracker Type 1", type: "Select", required: true, span: 2, options: ["4 String", "3 String", "2 String", "1 String", "4P", "3P", "2P", "1P"] },
+          { key: "tracker_module_1", label: "Modules per Tracker 1", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_1", label: "Tracker Quantity 1", type: "text", required: true, size: 'half' }
         ]
       },
       {
-        title: 'Tracker 2 info   ',
+        title: 'Tracker 2 info',
         fields: [
-          { key: "tracker_type_2", label: "Tracker Type 2", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_2", label: "Module Qty per Tarcker 2", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_2", label: "Tarcker Quantity 2", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_2", label: "Tracker Type 2", type: "Select", required: true, span: 2, options: ["3 String", "4 String", "2 String", "1 String", "3P", "4P", "2P", "1P"] },
+          { key: "tracker_module_2", label: "Modules per Tracker 2", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_2", label: "Tracker Quantity 2", type: "text", required: true, size: 'half' }
         ]
       },
       {
-        title: 'Tracker 3 info   ',
+        title: 'Tracker 3 info',
         fields: [
-          { key: "tracker_type_3", label: "Tracker Type 3", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_3", label: "Module Qty per Tarcker 3", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_3", label: "Tarcker Quantity 3", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_3", label: "Tracker Type 3", type: "Select", required: true, span: 2, options: ["2 String", "4 String", "3 String", "1 String", "2P", "4P", "3P", "1P"] },
+          { key: "tracker_module_3", label: "Modules per Tracker 3", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_3", label: "Tracker Quantity 3", type: "text", required: true, size: 'half' }
         ]
       },
 

@@ -75,9 +75,10 @@ const shellStyles = {
     alignItems: 'baseline'
   },
   annexureTitle: {
-    fontSize: '2rem',
-    fontWeight: '700',
-    color: '#0f172a',
+    fontSize: '14pt',
+    fontWeight: 'normal',
+    color: '#2F5597',
+    textAlign: 'left',
     margin: 0
   },
   divider: {

@@ -55,8 +55,75 @@
       padding: 5px;
     }
 
-    .toc-table-caption {
+    /* Special Front-Matter Section Headings (.heading): TOC, LOT, LOF, LOA, Annexures */
+    .heading,
+    h1.heading,
+    h2.heading {
+      font-size: 14pt !important;
       font-weight: normal !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
+      margin-top: 0 !important;
+      margin-bottom: 10px !important;
+    }
+
+    /* Document Body Section Headings */
+    .toc-heading,
+    .toc-table-caption,
+    .toc-figure-caption,
+    [data-toc-level],
+    h1.toc-heading,
+    h2.toc-heading,
+    h3.toc-heading,
+    h4.toc-heading {
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
+    }
+
+    .toc-heading[data-toc-level="1"],
+    [data-toc-level="1"] {
+      font-size: 16pt !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      margin-top: 18px !important;
+      margin-bottom: 8px !important;
+      color: #2F5597 !important;
+      font-weight: bold !important;
+    }
+
+    .toc-heading[data-toc-level="2"],
+    [data-toc-level="2"] {
+      font-size: 14pt !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      margin-top: 14px !important;
+      margin-bottom: 6px !important;
+      color: #2F5597 !important;
+      font-weight: normal !important;
+    }
+
+    .toc-heading[data-toc-level="3"],
+    [data-toc-level="3"],
+    .toc-table-caption,
+    .toc-figure-caption {
+      font-size: 12pt !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      margin-top: 10px !important;
+      margin-bottom: 4px !important;
+      color: #2F5597 !important;
+      font-weight: normal !important;
+    }
+
+    .toc-table-caption {
+      font-weight: bold !important;
     }
 
     table td {
@@ -465,11 +532,11 @@
         </tr>
         <tr>
           <td>28</td>
-          <td>Table configuration</td>
+          <td>Configuration</td>
           <td>
-            {{tracker_type_1}}X{{tracker_module_1}}<br>
-            {{tracker_type_2}}X{{tracker_module_2}}<br>
-            {{tracker_type_3}}X{{tracker_module_3}}
+            {{tracker_type_1}} String TrackerX{{tracker_module_1}}<br>
+            {{tracker_type_2}} String TrackerX{{tracker_module_2}}<br>
+            {{tracker_type_3}} String TrackerX{{tracker_module_3}}
           </td>
           <td>-</td>
         </tr>
@@ -481,19 +548,19 @@
         </tr>
         <tr>
           <td>30</td>
-          <td>Total number of 4 String Tracker</td>
+          <td>{{tracker_type_1}} String Tracker</td>
           <td>{{tracker_quantity_1}}</td>
           <td>Quantity</td>
         </tr>
         <tr>
           <td>31</td>
-          <td>Total number of 3 String Tracker</td>
+          <td>{{tracker_type_2}} String Tracker</td>
           <td>{{tracker_quantity_2}}</td>
           <td>Quantity</td>
         </tr>
         <tr>
           <td>32</td>
-          <td>Total number of 2 String Tracker</td>
+          <td>{{tracker_type_3}} String Tracker</td>
           <td>{{tracker_quantity_3}}</td>
           <td>Quantity</td>
         </tr>
@@ -2281,43 +2348,31 @@
           </tr>
 
           <tr>
-            <td>Total no. of {{tracker_type_1}} string Trackers</td>
-            <td>Quantity</td>
-            <td>{{tracker_quantity_1}}</td>
-          </tr>
-          <tr>
-            <td>Total no. of {{tracker_type_2}} string Trackers</td>
-            <td>Quantity</td>
-            <td>{{tracker_quantity_2}}</td>
-          </tr>
-          <tr>
-            <td>Total no. of {{tracker_type_3}} string Trackers</td>
-            <td>Quantity</td>
-            <td> {{tracker_quantity_3}}</td>
-          </tr>
-
-          <tr>
-            <td>Modules in Each {{tracker_type_1}} String Tracker</td>
-            <td>Quantity</td>
-            <td>{{tracker_module_1}} </td>
-          </tr>
-          <tr>
-            <td>Modules in Each {{tracker_type_2}} String Tracker</td>
-            <td>Quantity</td>
-            <td>{{tracker_module_2}} </td>
-          </tr>
-          <tr>
-            <td>Modules in Each {{tracker_type_3}} String Tracker</td>
-            <td>Quantity</td>
-            <td> {{tracker_module_3}} </td>
-          </tr>
-
-          <tr>
-            <td>Tracker Configuration</td>
+            <td>Racking type</td>
             <td>-</td>
-            <td> {{tracker_type_1}}X{{tracker_module_1}}<br>
-              {{tracker_type_2}}X{{tracker_module_2}}<br>
-              {{tracker_type_3}}X{{tracker_module_3}}
+            <td>{{tracker_make}} {{tracker_model}}</td>
+          </tr>
+          <tr>
+            <td>Table configuration</td>
+            <td>-</td>
+            <td>
+              1Px{{tracker_module_1}} ({{tracker_type_1}} String)<br>
+              1Px{{tracker_module_2}} ({{tracker_type_2}} String)<br>
+              1Px{{tracker_module_3}} ({{tracker_type_3}} String)
+            </td>
+          </tr>
+          <tr>
+            <td>Tracking Range</td>
+            <td>-</td>
+            <td>{{tracking_range}}</td>
+          </tr>
+          <tr>
+            <td>Total number of Trackers</td>
+            <td>Quantity</td>
+            <td>
+              {{tracker_quantity_1}} ({{tracker_type_1}} String)<br>
+              {{tracker_quantity_2}} ({{tracker_type_2}} String)<br>
+              {{tracker_quantity_3}} ({{tracker_type_3}} String)
             </td>
           </tr>
 
