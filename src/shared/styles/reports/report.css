@@ -61,3 +61,98 @@ td {
 [contenteditable="true"]:focus {
     outline: none;
 }
+
+/* ── EDITABLE TABLE CONTROLS ── */
+tr.editable-table-row {
+    position: relative;
+}
+
+tr.editable-table-row td:last-child {
+    position: relative;
+}
+
+tr.editable-table-row:hover .table-row-actions,
+tr.editable-table-row:focus-within .table-row-actions {
+    opacity: 1;
+    visibility: visible;
+}
+
+.table-row-actions {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    background: #ffffff;
+    border: 1px solid #94a3b8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    border-radius: 4px;
+    padding: 2px 4px;
+    user-select: none;
+    z-index: 9999;
+}
+
+.table-row-btn {
+    border: none;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+
+.table-row-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.table-row-btn.btn-del:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.table-add-row-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px dashed #93c5fd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.table-add-row-btn:hover {
+    background: #dbeafe;
+    border-color: #2563eb;
+}
+
+/* Hide edit controls in print / PDF generation */
+@media print {
+    .table-row-actions,
+    .table-action-cell,
+    .table-add-row-btn,
+    .loa-edit-controls,
+    .loa-action-cell,
+    [data-pdf-export-exclude="true"] {
+        display: none !important;
+    }
+}

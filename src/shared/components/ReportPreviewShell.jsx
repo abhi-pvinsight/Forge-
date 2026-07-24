@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Icon from "./Icon";
 import { exportPdfWithToc } from "../utils/exporter/exportPdf";
 import { exportDocx } from "../utils/exporter/exportDocx";
 import CircularProgressLoader from "./CircularProgressLoader";
-import { resyncReportDom } from "../reports/utils/tocScanner";
+import { resyncReportDom, attachTableEditControls, cleanReportEditControls } from "../reports/utils/tocScanner";
 
 const TODAY = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
@@ -81,6 +81,46 @@ export default function ReportPreviewShell({
       return next;
     });
   };
+
+  useEffect(() => {
+    let observer = null;
+    let timer = null;
+
+    if (isEditMode) {
+      const initControls = () => {
+        const reportEl = document.getElementById(reportElementId);
+        if (reportEl) {
+          attachTableEditControls(reportEl);
+        }
+      };
+
+      timer = setTimeout(initControls, 100);
+
+      const reportEl = document.getElementById(reportElementId);
+      if (reportEl) {
+        let isAttaching = false;
+        observer = new MutationObserver(() => {
+          if (isAttaching) return;
+          isAttaching = true;
+          setTimeout(() => {
+            attachTableEditControls(reportEl);
+            isAttaching = false;
+          }, 150);
+        });
+        observer.observe(reportEl, { childList: true, subtree: true });
+      }
+
+      return () => {
+        if (timer) clearTimeout(timer);
+        if (observer) observer.disconnect();
+      };
+    } else {
+      const reportEl = document.getElementById(reportElementId);
+      if (reportEl) {
+        cleanReportEditControls(reportEl);
+      }
+    }
+  }, [isEditMode, reportElementId]);
 
   const handleSaveToDatabase = async () => {
     setIsSavingToDb(true);
