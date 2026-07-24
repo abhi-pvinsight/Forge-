@@ -198,7 +198,7 @@ li {
 table {
     width: 100%;
 
-    border-collapse: collapse;
+    border-collapse: collapse !important;
 
     margin-top: 12px;
     margin-bottom: 20px;
@@ -225,7 +225,7 @@ th {
 
     text-align: center;
 
-    border: 1px solid #163c7a;
+    border: 1px solid #000000 !important;
 
     padding: 8px;
     background: #163c7a;
@@ -239,7 +239,7 @@ table tr:first-child {
 
 
 td {
-    border: 1px solid #d0d7e2;
+    border: 1px solid #000000 !important;
 
     padding: 6px;
 

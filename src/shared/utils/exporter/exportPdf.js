@@ -172,9 +172,12 @@ export async function exportPdfWithToc(
             padding: 0;
             background: white;
           }
-          table {
+          table, .doc-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse !important;
+          }
+          th, td, .doc-table th, .doc-table td {
+            border: 1px solid #000000 !important;
           }
           img {
             max-width: 100%;
@@ -196,6 +199,9 @@ export async function exportPdfWithToc(
             }
             table {
               page-break-inside: auto;
+            }
+            th, td, .doc-table th, .doc-table td {
+              border: 1px solid #000000 !important;
             }
           }
           .cover-page {

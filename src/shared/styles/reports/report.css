@@ -24,21 +24,19 @@ p {
     text-align: justify;
 }
 
-table {
+table, .doc-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse !important;
+}
+
+th, td, .doc-table th, .doc-table td {
+    border: 1px solid #000000 !important;
+    padding: 5px;
 }
 
 th {
-    border: 1px solid black;
-    padding: 5px;
     background: #003366;
     color: white;
-}
-
-td {
-    border: 1px solid black;
-    padding: 5px;
 }
 
 /* ── EDITABLE REPORT UX STYLES ── */
@@ -147,6 +145,12 @@ tr.editable-table-row:focus-within .table-row-actions {
 
 /* Hide edit controls in print / PDF generation */
 @media print {
+    table, .doc-table {
+        border-collapse: collapse !important;
+    }
+    th, td, .doc-table th, .doc-table td {
+        border: 1px solid #000000 !important;
+    }
     .table-row-actions,
     .table-action-cell,
     .table-add-row-btn,
