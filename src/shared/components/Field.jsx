@@ -93,12 +93,16 @@ export default function Field({ field, value, onChange, error }) {
       />
     );
   } else if (field.type === 'file') {
+    const cleanImgSrc = typeof value === 'string' && value.startsWith('src=')
+      ? value.replace(/^src=["']?|["']?$/g, '')
+      : value;
+
     control = (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <input
           id={id}
           type="file"
-          accept="image/*"
+          accept="image/*,.png,.jpg,.jpeg,.svg,.webp"
           className="input"
           onChange={(event) => {
             const file = event.target.files[0];
@@ -126,22 +130,34 @@ export default function Field({ field, value, onChange, error }) {
           }}
           style={error ? errStyle : null}
         />
-        {value && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {cleanImgSrc && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
             <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Current logo:</span>
             <img 
-              src={value} 
-              alt="Preview" 
+              src={cleanImgSrc} 
+              alt="Logo Preview" 
               style={{ 
-                maxHeight: 30, 
-                maxWidth: 100, 
+                maxHeight: 36, 
+                maxWidth: 120, 
                 objectFit: 'contain', 
                 border: '1px solid var(--border)', 
                 borderRadius: 'var(--r-xs)', 
-                padding: 2, 
+                padding: 4, 
                 background: 'white' 
               }} 
             />
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs"
+              onClick={() => {
+                onChange('');
+                const inputEl = document.getElementById(id);
+                if (inputEl) inputEl.value = '';
+              }}
+              style={{ color: 'var(--red-text)', fontSize: 11, padding: '2px 8px' }}
+            >
+              Remove logo
+            </button>
           </div>
         )}
       </div>

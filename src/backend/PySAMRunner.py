@@ -368,9 +368,22 @@ def apply_module_user_entered(model, module_inputs):
 
     isc = float(module_inputs["isc"])
     voc = float(module_inputs["voc"])
+    vmp = float(module_inputs["vmp"])
+    imp = float(module_inputs["imp"])
+
+    # Physical bounds checks for CEC 6-parameter model solver
+    if vmp >= voc or vmp <= 0:
+        vmp = round(voc * 0.83, 2)
+    if imp >= isc or imp <= 0:
+        imp = round(isc * 0.95, 2)
+
     aisc_pct = float(module_inputs["aisc_pct"])
     bvoc_pct = float(module_inputs["bvoc_pct"])
+    # Ensure bvoc_pct is strictly negative for CEC solver convergence
+    bvoc_pct = -abs(bvoc_pct) if bvoc_pct != 0 else -0.25
     gpmp_pct = float(module_inputs["gpmp_pct"])
+    if gpmp_pct > 0:
+        gpmp_pct = -abs(gpmp_pct)
 
     aisc_abs = (aisc_pct / 100.0) * isc
     bvoc_abs = (bvoc_pct / 100.0) * voc
@@ -387,9 +400,9 @@ def apply_module_user_entered(model, module_inputs):
 
     base = {
         "isc": isc,
-        "imp": float(module_inputs["imp"]),
+        "imp": imp,
         "voc": voc,
-        "vmp": float(module_inputs["vmp"]),
+        "vmp": vmp,
         "aisc": aisc_abs,
         "bvoc": bvoc_abs,
         "gpmp": gpmp_pct,

@@ -6,7 +6,7 @@
   <style>
     @page {
       size: letter;
-      margin: 0.8in 0.6in;
+      margin: 0.8in;
     }
 
     html,
@@ -289,352 +289,323 @@
       <thead style="display: table-header-group;">
         <colgroup>
           <col style="width: 7%">
-          <col style="width: 30%">
+          <col style="width: 38%">
           <col style="width: auto">
-          <col style="width: 15%">
+          <col style="width: 18%">
         </colgroup>
         <tr>
-          <th>Sr No</th>
+          <th>Sr. No.</th>
           <th>Particulars</th>
-          <th>Description</th>
+          <th>Descriptions</th>
           <th>Units</th>
         </tr>
       </thead>
-      <tr>
-        <td>1</td>
-        <td>Project Name</td>
-        <td>{{plant_name}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>State</td>
-        <td>{{state}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>County</td>
-        <td>{{county}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>Coordinates</td>
-        <td>{{latitude}}, {{longitude}}</td>
-        <td>-</td>
-      </tr>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Project Name</td>
+          <td>{{plant_name}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Name of the State</td>
+          <td>{{state}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Name of the County</td>
+          <td>{{county}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Geographical Coordinates</td>
+          <td>{{latitude}}, {{longitude}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>POI Voltage</td>
+          <td>{{poi_voltage}}</td>
+          <td>kV</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>MV Collection Voltage</td>
+          <td>{{mv_voltage}}</td>
+          <td>kV</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>LV Collection Voltage</td>
+          <td>{{lv_voltage}}</td>
+          <td>V</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Annual Global Solar Irradiance (GHI)</td>
+          <td>{{ghi}}</td>
+          <td>kWh/m²/Year</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Annual Diffuse Solar Irradiance (DSI)</td>
+          <td>{{dsi}}</td>
+          <td>kWh/m²/Year</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Meteorological data source</td>
+          <td>{{met_source}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Data format</td>
+          <td>{{data_format}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>PV Fenced Area</td>
+          <td>{{pv_area}}</td>
+          <td>Acres</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>Type of PV Modules</td>
+          <td>{{module_type}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td>DC capacity</td>
+          <td>{{dc_capacity}}</td>
+          <td>@STC MWdc</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td>AC capacity</td>
+          <td>{{ac_capacity}}</td>
+          <td>@POI MWac</td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td>AC capacity (Central Inverters)</td>
+          <td>{{ac_capacity_inv}}</td>
+          <td> MWac</td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td>DC/AC Ratio at POI</td>
+          <td>{{dc_ac_ratio_poi}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>DC/AC Ratio at INV</td>
+          <td>{{dc_ac_ratio_inv}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td>Ground Coverage Ratio (GCR)</td>
+          <td>{{gcr}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td>Ambient temperature (ASHRAE MEAN)</td>
+          <td>Maximum Site temperature: {{tempCellMax}}<br>Minimum Site temperature: {{tempMin}}</td>
+          <td>°C</td>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td>Altitude</td>
+          <td>{{altitude}}</td>
+          <td>Feet</td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td>Design wind speed</td>
+          <td>{{wind_speed}}</td>
+          <td>mph</td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td>Risk category</td>
+          <td>{{risk_category}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>24</td>
+          <td>Snow load (ASCE Report)</td>
+          <td>{{snow_load}}</td>
+          <td>psf</td>
+        </tr>
+        <tr>
+          <td>25</td>
+          <td>String size</td>
+          <td>{{string_size}}</td>
+          <td>modules</td>
+        </tr>
+        <tr>
+          <td>26</td>
+          <td>Tracker Manufacturer</td>
+          <td>{{tracker_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>27</td>
+          <td>Tracker Model</td>
+          <td>{{tracker_model}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>28</td>
+          <td>Table configuration</td>
+          <td>
+            {{tracker_type_1}}X{{tracker_module_1}}<br>
+            {{tracker_type_2}}X{{tracker_module_2}}<br>
+            {{tracker_type_3}}X{{tracker_module_3}}
+          </td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>29</td>
+          <td>Tracking Range</td>
+          <td>{{tracking_range}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>30</td>
+          <td>Total number of 4 String Tracker</td>
+          <td>{{tracker_quantity_1}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>31</td>
+          <td>Total number of 3 String Tracker</td>
+          <td>{{tracker_quantity_2}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>32</td>
+          <td>Total number of 2 String Tracker</td>
+          <td>{{tracker_quantity_3}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>33</td>
+          <td>PV module Manufacturer</td>
+          <td>{{module_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>34</td>
+          <td>PV Module Model</td>
+          <td>{{module_model}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>35</td>
+          <td>PV Module Watt peak</td>
+          <td>{{module_wp1}} and {{module_wp2}}</td>
+          <td>Wp</td>
+        </tr>
+        <tr>
+          <td>36</td>
+          <td>Total number of PV Modules {{module_wp1}}Wp</td>
+          <td>{{module_qty_615}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>37</td>
+          <td>Total number of PV Modules {{module_wp2}}Wp</td>
+          <td>{{module_qty_620}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>38</td>
+          <td>Solar PV module dimensions</td>
+          <td>{{module_dimensions}}</td>
+          <td>mm</td>
+        </tr>
+        <tr>
+          <td>39</td>
+          <td>Central Inverter Manufacturer</td>
+          <td>{{Centra_inverter_make}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>40</td>
+          <td>Central Inverter Model</td>
+          <td>{{Centarl_inverter_model}}</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>41</td>
+          <td>Central Inverter Rating</td>
+          <td>{{Centarl_inverter_rating}}</td>
+          <td>@40°C kVA</td>
+        </tr>
+        <tr>
+          <td>42</td>
+          <td>Total number of Central Inverters</td>
+          <td>{{inverter_count}}</td>
+          <td>Quantity</td>
+        </tr>
+        <tr>
+          <td>43</td>
+          <td>MV Transformer Capacity</td>
+          <td>{{mv_transformer}}</td>
+          <td>@40°C kVA</td>
+        </tr>
+        <tr>
+          <td>44</td>
+          <td>PCS dimension (W x H x D)</td>
+          <td>{{pcs_dimensions}}</td>
+          <td>mm</td>
+        </tr>
+        <tr>
+          <td>45</td>
+          <td>Annual electricity supplied to Grid for 1st year @P50</td>
+          <td>{{annual_energy}}</td>
+          <td>MWh</td>
+        </tr>
+        <tr>
+          <td>46</td>
+          <td>Specific production for 1st year @P50</td>
+          <td>{{specific_yield}}</td>
+          <td>kWh/kWp/year</td>
+        </tr>
+        <tr>
+          <td>47</td>
+          <td>Performance Ratio for 1st year @P50</td>
+          <td>{{performance_ratio}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>48</td>
+          <td>DC CUF</td>
+          <td>{{dc_cuf}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>49</td>
+          <td>AC CUF </td>
+          <td>{{ac_cuf}}</td>
+          <td>%</td>
+        </tr>
 
-      <tr>
-        <td>5</td>
-        <td>POI Voltage</td>
-        <td>{{poi_voltage}}</td>
-        <td>kV</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>MV Voltage</td>
-        <td>{{mv_voltage}}</td>
-        <td>kV</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>LV Voltage</td>
-        <td>{{lv_voltage}}</td>
-        <td>kV</td>
-      </tr>
-
-      <tr>
-        <td>8</td>
-        <td>GHI</td>
-        <td>{{ghi}}</td>
-        <td>kWh/m²/year</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>DSI</td>
-        <td>{{dsi}}</td>
-        <td>kWh/m²/year</td>
-      </tr>
-
-      <tr>
-        <td>10</td>
-        <td>Data Source</td>
-        <td>{{met_source}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td>Data Format</td>
-        <td>{{data_format}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>12</td>
-        <td>PV Area</td>
-        <td>{{pv_area}}</td>
-        <td>Acres</td>
-      </tr>
-
-      <tr>
-        <td>13</td>
-        <td> Type of PV Modules </td>
-        <td>{{module_type}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>14</td>
-        <td>DC Capacity</td>
-        <td>{{dc_capacity}}</td>
-        <td>MWdc</td>
-      </tr>
-      <tr>
-        <td>15</td>
-        <td>AC Capacity</td>
-        <td>{{ac_capacity}}</td>
-        <td>MWac</td>
-      </tr>
-
-      <tr>
-        <td>16</td>
-        <td>AC Capacity (INV)</td>
-        <td>{{ac_capacity_inv}}</td>
-        <td>MWac</td>
-      </tr>
-
-      <tr>
-        <td>17</td>
-        <td>DC/AC Ratio POI</td>
-        <td>{{dc_ac_ratio_poi}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>18</td>
-        <td>DC/AC Ratio INV</td>
-        <td>{{dc_ac_ratio_inv}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>19</td>
-        <td>GCR</td>DC surge protection
-        <td>TBD</td>
-        <td>%</td>
-      </tr>
-
-      <tr>
-        <td>20</td>
-        <td>Temperature</td>
-        <td>Max {{tempCellMax}} / Min {{tempMin}}</td>
-        <td>°C</td>
-      </tr>
-
-      <tr>
-        <td>21</td>
-        <td>Altitude</td>
-        <td>{{altitude}}</td>
-        <td>ft</td>
-      </tr>
-      <tr>
-        <td>22</td>
-        <td>Wind Speed</td>
-        <td>{{wind_speed}}</td>
-        <td>mph</td>
-      </tr>
-
-      <tr>
-        <td>23</td>
-        <td>Risk Category</td>
-        <td>{{risk_category}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>24</td>
-        <td>Snow Load</td>
-        <td>{{snow_load}}</td>
-        <td>psf</td>
-      </tr>
-
-      <tr>
-        <td>25</td>
-        <td>String Size</td>
-        <td>{{string_size}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>26</td>
-        <td>Tracker Make</td>
-        <td>{{tracker_make}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>27</td>
-        <td>Tracker Model</td>
-        <td>{{tracker_model}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>28</td>
-        <td>Configuration</td>
-        <td>
-          {{tracker_type_1}}X{{tracker_module_1}}<br>
-          {{tracker_type_2}}X{{tracker_module_2}}<br>
-          {{tracker_type_3}}X{{tracker_module_3}}
-        </td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>29</td>
-        <td>Tracking Range</td>
-        <td>{{tracking_range}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>30</td>
-        <td>4 String Tracker</td>
-        <td>{{tracker_quantity_1}}</td>
-        <td>Qty</td>
-      </tr>
-      <tr>
-        <td>31</td>
-        <td>3 String Tracker</td>
-        <td>{{tracker_quantity_2}}</td>
-        <td>Qty</td>
-      </tr>
-      <tr>
-        <td>32</td>
-        <td>2 String Tracker</td>
-        <td>{{tracker_quantity_3}}</td>
-        <td>Qty</td>
-      </tr>
-
-      <tr>
-        <td>33</td>
-        <td>Module Make</td>
-        <td>{{module_make}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>34</td>
-        <td>Module Model</td>
-        <td>{{module_model}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>35</td>
-        <td>Module Watt</td>
-        <td>{{module_wp1}} / {{module_wp2}}</td>
-        <td>Wp</td>
-      </tr>
-
-      <tr>
-        <td>36</td>
-        <td>Module {{module_wp1}} Qty</td>
-        <td>{{module_qty_615}}</td>
-        <td>Qty</td>
-      </tr>
-      <tr>
-        <td>37</td>
-        <td>Module {{module_wp2}} Qty</td>
-        <td>{{module_qty_620}}</td>
-        <td>Qty</td>
-      </tr>
-
-      <tr>
-        <td>38</td>
-        <td>Dimensions</td>
-        <td>{{module_dimensions}}</td>
-        <td>mm</td>
-      </tr>
-
-      <tr>
-        <td>39</td>
-        <td>Central Inverter Make</td>
-        <td>{{Centra_inverter_make}}</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>40</td>
-        <td>Central Inverter Model</td>
-        <td>{{Centarl_inverter_model}}</td>
-        <td>-</td>
-      </tr>
-
-      <tr>
-        <td>41</td>
-        <td>Central Inverter Rating</td>
-        <td>{{Centarl_inverter_rating}}</td>
-        <td>kVA</td>
-      </tr>
-
-      <tr>
-        <td>42</td>
-        <td>Total number of Central Inverters</td>
-        <td>{{inverter_count}}</td>
-        <td>Qty</td>
-      </tr>
-
-      <tr>
-        <td>43</td>
-        <td>MV Transformer</td>
-        <td>{{mv_transformer}}</td>
-        <td>kVA</td>
-      </tr>
-
-      <tr>
-        <td>44</td>
-        <td>PCS dimension (W x H x D) </td>
-        <td>{{pcs_dimensions}}</td>
-        <td>mm</td>
-      </tr>
-
-      <tr>
-        <td>45</td>
-        <td>Annual electricity supplied to Grid for 1styear @P50 </td>
-        <td>{{annual_energy}}</td>
-        <td>MWh</td>
-      </tr>
-
-      <tr>
-        <td>46</td>
-        <td>Specific production for 1st year @P50</td>
-        <td>{{specific_yield}}</td>
-        <td>kWh/kWp</td>
-      </tr>
-
-      <tr>
-        <td>47</td>
-        <td> Performance Ratio for 1st year @P50</td>
-        <td>{{performance_ratio}}</td>
-        <td>%</td>
-      </tr>
-
-      <tr>
-        <td>48</td>
-        <td>DC CUF Ratio for 1st year @P50</td>
-        <td>{{dc_cuf}}</td>
-        <td>%</td>
-      </tr>
-      <tr>
-        <td>49</td>
-        <td>AC CUF Ratio for 1st year @P50</td>
-        <td>{{ac_cuf}}</td>
-        <td>%</td>
-      </tr>
-
-      <tr>
-        <td>50</td>
-        <td>Degradation</td>
-        <td>{{moduleDegradation}}</td>
-        <td>%/year</td>
-      </tr>
+        <tr>
+          <td>50</td>
+          <td>Degradation</td>
+          <td>{{moduleDegradation}}</td>
+          <td>%/year</td>
+        </tr>
 
     </table>
 

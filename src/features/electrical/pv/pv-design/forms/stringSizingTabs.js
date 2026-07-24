@@ -31,10 +31,11 @@ export const STRING_SIZE_TABS = [
       placeholder: 'name@company.com'
     },
     {
-      key: "clientLogo",
-      label: "Client Logo",
-      type: "file",
-      required: true
+      key: 'clientLogo',
+      label: 'Client Logo',
+      type: 'file',
+      required: false,
+      hint: 'Upload company logo image (.png, .jpg, .svg, .webp)'
     },
     {
       key: 'clientAddress',
@@ -161,6 +162,37 @@ export const STRING_SIZE_TABS = [
     }]
   },
 
+  {
+    id: 'uploads',
+    name: 'Datasheets & Uploads',
+    icon: 'paperclip',
+    blurb: 'Attach source datasheets. These feed the technical inputs and are referenced in the report appendix.',
+    uploads: [
+      {
+        key: "pvsystReport",
+        label: "PVsyst Loss Diagram Report",
+        accept: ".pdf",
+        required: false
+      }, {
+        key: "moduleExcel",
+        label: "Module Datasheet Excel",
+        required: true,
+        hint: "Upload extracted module datasheet workbook"
+      }, {
+        key: "Results_of_26-year_voltage",
+        label: "Results of 26-year historical SAM simulation voltage chart",
+        hint: "Image file (PNG, JPG) · simulation chart",
+        required: false
+      }, {
+        key: "Results_of_26-year_current",
+        label: "Results of 26-year historical SAM simulation current chart",
+        hint: "Image file (PNG, JPG) · simulation chart",
+        required: false
+      }
+
+    ]
+  },
+
 
   {
     id: 'technical',
@@ -234,7 +266,6 @@ export const STRING_SIZE_TABS = [
           // }
         ]
       },
-
       {
         title: 'PV Module',
         fields: [
@@ -253,22 +284,21 @@ export const STRING_SIZE_TABS = [
           }, {
             key: 'module_wp1',
             label: 'Module Wp1',
-            type: 'text',
-            placeholder: 'e.g. 680Wp',
+            type: 'select',
+            options: ['550 Wp', '560 Wp', '570 Wp', '580 Wp', '590 Wp', '600 Wp', '615 Wp', '620 Wp', '680 Wp'],
             required: true
           }, {
             key: 'module_wp2',
             label: 'Module Wp2',
-            type: 'text',
-            placeholder: 'e600Wp',
+            type: 'select',
+            options: ['None', '550 Wp', '560 Wp', '570 Wp', '580 Wp', '590 Wp', '600 Wp', '615 Wp', '620 Wp', '680 Wp'],
             required: true
-          },
-          {
+          }, {
             key: 'module_type',
-            label: 'Module Technolgy',
+            label: 'Module Technology',
             type: 'text',
-            placeholder: 'Bifacial TOPCon Half-cut cel ',
-            required: true,
+            placeholder: 'Bifacial TOPCon Half-cut cell',
+            required: true
           }, {
             key: 'moduleVoc',
             label: 'Voc (STC)',
@@ -466,8 +496,6 @@ export const STRING_SIZE_TABS = [
           }
         ]
       },
-
-
       {
         title: 'Site Conditions',
         fields: [
@@ -557,36 +585,7 @@ export const STRING_SIZE_TABS = [
       }]
   },
 
-  {
-    id: 'uploads',
-    name: 'Datasheets & Uploads',
-    icon: 'paperclip',
-    blurb: 'Attach source datasheets. These feed the technical inputs and are referenced in the report appendix.',
-    uploads: [
-      {
-        key: "pvsystReport",
-        label: "PVsyst Loss Diagram Report",
-        accept: ".pdf",
-        required: true
-      }, {
-        key: "moduleExcel",
-        label: "Module Datasheet Excel",
-        required: true,
-        hint: "Upload extracted module datasheet workbook"
-      }, {
-        key: "Results_of_26-year_voltage",
-        label: "Results of 26-year historical SAM simulation voltage chart",
-        hint: "Image file (PNG, JPG) · simulation chart",
-        required: false
-      }, {
-        key: "Results_of_26-year_current",
-        label: "Results of 26-year historical SAM simulation current chart",
-        hint: "Image file (PNG, JPG) · simulation chart",
-        required: false
-      }
 
-    ]
-  },
   {
     id: "tracker",
     name: "Tracker System",

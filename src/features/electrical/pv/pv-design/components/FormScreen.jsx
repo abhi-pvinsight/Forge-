@@ -156,6 +156,43 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
     return hasValue ? null : 'Required';
   };
 
+  const updateStcSpecsFromSelectedWps = (wp1, wp2, variantsList) => {
+    const variants = variantsList || values.availableWpVariants || [];
+    if (!variants || variants.length === 0) return;
+
+    const num1 = parseFloat(String(wp1 || "").replace(/[^\d.]/g, ""));
+    const num2 = parseFloat(String(wp2 || "").replace(/[^\d.]/g, ""));
+
+    const selectedVariants = variants.filter(v => 
+      (!isNaN(num1) && Math.abs(v.numericWp - num1) < 1) ||
+      (!isNaN(num2) && Math.abs(v.numericWp - num2) < 1)
+    );
+
+    const targetVariant = selectedVariants.length > 0
+      ? selectedVariants.reduce((max, curr) => (curr.numericWp > max.numericWp ? curr : max), selectedVariants[0])
+      : variants.reduce((max, curr) => (curr.numericWp > max.numericWp ? curr : max), variants[0]);
+
+    if (targetVariant) {
+      console.log(`[FormScreen] Auto-anchoring STC specs to highest selected variant: ${targetVariant.wpLabel} (Module Rated Power: ${targetVariant.numericWp})`);
+      if (targetVariant.voc) setValue("moduleVoc", targetVariant.voc);
+      if (targetVariant.vmp) setValue("moduleVmp", targetVariant.vmp);
+      if (targetVariant.isc) setValue("moduleIsc", targetVariant.isc);
+      if (targetVariant.imp) setValue("moduleImp", targetVariant.imp);
+      if (targetVariant.numericWp || targetVariant.rawWp) setValue("modulePmax", String(targetVariant.numericWp || targetVariant.rawWp));
+    }
+  };
+
+  // Handler to sync electrical parameters whenever user changes module_wp1 or module_wp2
+  const handleFieldValueChange = (key, val) => {
+    setValue(key, val);
+
+    if (key === "module_wp1" || key === "module_wp2") {
+      const nextWp1 = key === "module_wp1" ? val : values.module_wp1;
+      const nextWp2 = key === "module_wp2" ? val : values.module_wp2;
+      updateStcSpecsFromSelectedWps(nextWp1, nextWp2, values.availableWpVariants);
+    }
+  };
+
   if (tab.uploads) {
 
     // ==========================
@@ -308,6 +345,24 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
             }
           });
 
+          // Store available Wp variants in form state for dynamic dropdowns
+          const variants = result.availableWpVariants || [];
+          if (variants.length > 0) {
+            setValue("availableWpVariants", variants);
+            
+            // Force reset selected module Wp values to extracted Excel variants
+            const defaultWp1 = variants[0]?.wpLabel || `${variants[0]?.numericWp} Wp`;
+            const defaultWp2 = variants.length > 1
+              ? (variants[variants.length - 1]?.wpLabel || `${variants[variants.length - 1]?.numericWp} Wp`)
+              : "None";
+
+            setValue("module_wp1", defaultWp1);
+            setValue("module_wp2", defaultWp2);
+
+            // Auto-anchor STC electrical values to the highest selected module variant
+            updateStcSpecsFromSelectedWps(defaultWp1, defaultWp2, variants);
+          }
+
           // Send the parsed payload to the backend once for calculation data.
           await syncSolarReportData(result.values);
 
@@ -333,6 +388,7 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
         }
       }
     };
+
     return (
       <div style={{ display: 'grid', gap: 12 }}>
         {tab.uploads.map((upload) => (
@@ -350,6 +406,7 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
                   setValue("solarAppendixValues", null);
                   setValue("hasSolarAppendix", false);
                   setValue("appendixPages", []);
+                  setValue("availableWpVariants", []);
                 }
               }}
             />
@@ -395,43 +452,45 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
                 display: 'grid',
                 gridTemplateColumns: isTrackerSheet ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)', gap: '16px 20px',
               }}  >
-              {group.fields.map((field) => (
-                <div
-                  key={field.key}
-                  style={{
-                    gridColumn: isTrackerSheet ? field.size === 'full' ? '1 / -1' : field.size === 'large' ? 'span 2' : 'span 1' : (field.type === 'textarea' || field.type === 'revision-table') ? '1 / -1' : 'auto',
-                  }}
-                >
-                  <Field
-                    field={field}
-                    value={values[field.key]}
-                    onChange={(value) => setValue(field.key, value)}
-                    error={errFor(field)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+              {group.fields.map((field) => {
+                let dynamicField = { ...field };
 
-  if (tab.groups) {
-    return (
-      <div style={{ display: 'grid', gap: 26 }}>
-        {tab.groups.map((group) => (
-          <div key={group.title}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 13 }}>
-              <h3 style={{ fontSize: 12.5, fontWeight: 600, margin: 0, fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-2)' }}>{group.title}</h3>
-              <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px 20px' }}>
-              {group.fields.map((field) => (
-                <div key={field.key} style={{ gridColumn: field.size === 'full' ? '1 / -1' : field.size === 'large' ? 'span 2' : 'span 1' }}>
-                  <Field field={field} value={values[field.key]} onChange={(value) => setValue(field.key, value)} error={errFor(field)} />
-                </div>
-              ))}
+                // 1. Dynamic Wp selection options
+                if ((field.key === 'module_wp1' || field.key === 'module_wp2') && values.availableWpVariants && values.availableWpVariants.length > 0) {
+                  const wpOptions = values.availableWpVariants.map(v => v.wpLabel || `${v.numericWp} Wp`);
+                  dynamicField = {
+                    ...field,
+                    type: 'select',
+                    options: field.required ? wpOptions : ["None", ...wpOptions]
+                  };
+                }
+
+                // 2. Dynamic module quantity labels
+                if (field.key === "module_qty_615") {
+                  const wp1Label = values.module_wp1 || "Primary Module";
+                  dynamicField.label = `Total Number of PV Modules (${wp1Label})`;
+                }
+                if (field.key === "module_qty_620") {
+                  const wp2Label = values.module_wp2 || "Secondary Module";
+                  dynamicField.label = `Total Number of PV Modules (${wp2Label})`;
+                }
+
+                return (
+                  <div
+                    key={field.key}
+                    style={{
+                      gridColumn: isTrackerSheet ? field.size === 'full' ? '1 / -1' : field.size === 'large' ? 'span 2' : 'span 1' : (field.type === 'textarea' || field.type === 'revision-table') ? '1 / -1' : 'auto',
+                    }}
+                  >
+                    <Field
+                      field={dynamicField}
+                      value={values[field.key]}
+                      onChange={(value) => handleFieldValueChange(field.key, value)}
+                      error={errFor(field)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -441,11 +500,30 @@ function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px 20px' }}>
-      {tab.fields.map((field) => (
-        <div key={field.key} style={{ gridColumn: (field.type === 'textarea' || field.type === 'revision-table') ? '1 / -1' : 'auto' }}>
-          <Field field={field} value={values[field.key]} onChange={(value) => setValue(field.key, value)} error={errFor(field)} />
-        </div>
-      ))}
+      {tab.fields.map((field) => {
+        let dynamicField = { ...field };
+        if ((field.key === 'module_wp1' || field.key === 'module_wp2') && values.availableWpVariants && values.availableWpVariants.length > 0) {
+          const wpOptions = values.availableWpVariants.map(v => v.wpLabel || `${v.numericWp} Wp`);
+          dynamicField = {
+            ...field,
+            type: 'select',
+            options: field.required ? wpOptions : ["None", ...wpOptions]
+          };
+        }
+        if (field.key === "module_qty_615") {
+          const wp1Label = values.module_wp1 || "Primary Module";
+          dynamicField.label = `Total Number of PV Modules (${wp1Label})`;
+        }
+        if (field.key === "module_qty_620") {
+          const wp2Label = values.module_wp2 || "Secondary Module";
+          dynamicField.label = `Total Number of PV Modules (${wp2Label})`;
+        }
+        return (
+          <div key={field.key} style={{ gridColumn: (field.type === 'textarea' || field.type === 'revision-table') ? '1 / -1' : 'auto' }}>
+            <Field field={dynamicField} value={values[field.key]} onChange={(value) => handleFieldValueChange(field.key, value)} error={errFor(field)} />
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -169,31 +169,60 @@ async def run_pysam_endpoint(payload: PySAMRequest):
         from PySAMRunner import process_all_weather_files
         
         def safe_float(val, default):
+            if val is None:
+                return float(default)
             try:
-                if val is None or str(val).strip() == "": return default
-                return float(val)
-            except: return default
+                s = str(val).strip()
+                if not s:
+                    return float(default)
+                match = re.search(r'[-+]?\d*\.?\d+', s)
+                if match:
+                    return float(match.group(0))
+                return float(default)
+            except Exception:
+                return float(default)
 
         def safe_int(val, default):
+            if val is None:
+                return int(default)
             try:
-                if val is None or str(val).strip() == "": return default
-                return int(val)
-            except: return default
+                s = str(val).strip()
+                if not s:
+                    return int(default)
+                match = re.search(r'\d+', s)
+                if match:
+                    return int(match.group(0))
+                return int(default)
+            except Exception:
+                return int(default)
 
         values = payload.values
         
         # Ensure Nser is a valid cell count (not the UI's 'modules_series' which means modules in series)
         nser = safe_int(values.get("nser"), 72)
         
+        voc = safe_float(values.get("moduleVoc"), 52.0)
+        vmp = safe_float(values.get("moduleVmp"), 43.4)
+        isc = safe_float(values.get("moduleIsc"), 14.0)
+        imp = safe_float(values.get("moduleImp"), 13.3)
+        bvoc = safe_float(values.get("tempCoeffVoc"), -0.25)
+
+        # Enforce physical sanity for CEC 6-parameter model solver
+        if vmp >= voc or vmp <= 0:
+            vmp = round(voc * 0.83, 2)
+        if imp >= isc or imp <= 0:
+            imp = round(isc * 0.95, 2)
+        bvoc = -abs(bvoc) if bvoc != 0 else -0.25
+
         config = {
             "WeatherFolder": os.path.join(os.path.dirname(__file__), "weather_cache"),
             "BaselineJson": "",
             "CellType": values.get("module_type", "monoSi"),
-            "Vmp": safe_float(values.get("moduleVmp"), 40.0),
-            "Imp": safe_float(values.get("moduleImp"), 10.0),
-            "Voc": safe_float(values.get("moduleVoc"), 48.0),
-            "Isc": safe_float(values.get("moduleIsc"), 11.0),
-            "BvocPct": safe_float(values.get("tempCoeffVoc"), -0.3),
+            "Vmp": vmp,
+            "Imp": imp,
+            "Voc": voc,
+            "Isc": isc,
+            "BvocPct": bvoc,
             "AiscPct": 0.05,
             "GpmpPct": -0.4,
             "Nser": nser,
@@ -208,7 +237,7 @@ async def run_pysam_endpoint(payload: PySAMRequest):
             "Mass": 25,
             "Standoff": "Ground or rack mounted",
             "Mounting": "One story building height or lower",
-            "ModulesPerString": int(values.get("string_size", 20)),
+            "ModulesPerString": safe_int(values.get("string_size"), 20),
             "NStrings": 100,
             "TrackingMode": "Fixed",
             "Backtracking": 0,
@@ -227,15 +256,15 @@ async def run_pysam_endpoint(payload: PySAMRequest):
             "UseWeatherAlbedo": 0,
             "UseSpatialAlbedo": 0,
             "MonthlyAlbedo": "",
-            "NominalAcVoltage": float(values.get("lv_voltage", 400)),
+            "NominalAcVoltage": safe_float(values.get("lv_voltage"), 400),
             "MaximumDcVoltage": 1500,
             "MaximumDcCurrent": 200,
             "MinimumMpptVoltage": 500,
             "NominalDcVoltage": 800,
             "MaximumMpptVoltage": 1300,
             "MpptInputs": 1,
-            "Latitude": float(values.get("latitude", 35.0)),
-            "Longitude": float(values.get("longitude", -106.0))
+            "Latitude": safe_float(values.get("latitude"), 35.0),
+            "Longitude": safe_float(values.get("longitude"), -106.0)
         }
 
         results = process_all_weather_files(config)
@@ -257,29 +286,58 @@ async def run_pysam_stream_endpoint(payload: PySAMRequest):
         from PySAMRunner import process_all_weather_files_stream
         
         def safe_float(val, default):
+            if val is None:
+                return float(default)
             try:
-                if val is None or str(val).strip() == "": return default
-                return float(val)
-            except: return default
+                s = str(val).strip()
+                if not s:
+                    return float(default)
+                match = re.search(r'[-+]?\d*\.?\d+', s)
+                if match:
+                    return float(match.group(0))
+                return float(default)
+            except Exception:
+                return float(default)
 
         def safe_int(val, default):
+            if val is None:
+                return int(default)
             try:
-                if val is None or str(val).strip() == "": return default
-                return int(val)
-            except: return default
+                s = str(val).strip()
+                if not s:
+                    return int(default)
+                match = re.search(r'\d+', s)
+                if match:
+                    return int(match.group(0))
+                return int(default)
+            except Exception:
+                return int(default)
 
         values = payload.values
         nser = safe_int(values.get("nser"), 72)
         
+        voc = safe_float(values.get("moduleVoc"), 52.0)
+        vmp = safe_float(values.get("moduleVmp"), 43.4)
+        isc = safe_float(values.get("moduleIsc"), 14.0)
+        imp = safe_float(values.get("moduleImp"), 13.3)
+        bvoc = safe_float(values.get("tempCoeffVoc"), -0.25)
+
+        # Enforce physical sanity for CEC 6-parameter model solver
+        if vmp >= voc or vmp <= 0:
+            vmp = round(voc * 0.83, 2)
+        if imp >= isc or imp <= 0:
+            imp = round(isc * 0.95, 2)
+        bvoc = -abs(bvoc) if bvoc != 0 else -0.25
+
         config = {
             "WeatherFolder": os.path.join(tempfile.gettempdir(), "weather_cache"),
             "BaselineJson": "",
             "CellType": values.get("module_type", "monoSi"),
-            "Vmp": safe_float(values.get("moduleVmp"), 40.0),
-            "Imp": safe_float(values.get("moduleImp"), 10.0),
-            "Voc": safe_float(values.get("moduleVoc"), 48.0),
-            "Isc": safe_float(values.get("moduleIsc"), 11.0),
-            "BvocPct": safe_float(values.get("tempCoeffVoc"), -0.3),
+            "Vmp": vmp,
+            "Imp": imp,
+            "Voc": voc,
+            "Isc": isc,
+            "BvocPct": bvoc,
             "AiscPct": 0.05,
             "GpmpPct": -0.4,
             "Nser": nser,
@@ -294,7 +352,7 @@ async def run_pysam_stream_endpoint(payload: PySAMRequest):
             "Mass": 25,
             "Standoff": "Ground or rack mounted",
             "Mounting": "One story building height or lower",
-            "ModulesPerString": int(values.get("string_size", 20)),
+            "ModulesPerString": safe_int(values.get("string_size"), 20),
             "NStrings": 100,
             "TrackingMode": "Fixed",
             "Backtracking": 0,

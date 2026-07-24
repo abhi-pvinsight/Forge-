@@ -42,39 +42,77 @@ export async function parseModuleExcel(file) {
 
   // Process rows loop
   rows.forEach((row, rowIndex) => {
-    const label = String(row[1] || "").trim();
-    const normalizedLabel = label.toLowerCase();
-    const cellValue = String(row[2] || "").trim();
+    if (!row || !Array.isArray(row) || row.length === 0) return;
 
-    // -- Handle Variant Rows (Columns 2 to 7 mapping) --
-    if (Object.prototype.hasOwnProperty.call(variantLookup, normalizedLabel)) {
-      const keyPrefix = variantLookup[normalizedLabel];
-      
+    // Search row[0]..row[3] for technical parameter labels
+    let labelIndex = -1;
+    let label = "";
+    let matchedPrefix = null;
+
+    for (let c = 0; c < Math.min(row.length, 4); c++) {
+      const cellText = String(row[c] || "").trim();
+      if (!cellText) continue;
+
+      const norm = cellText.toLowerCase();
+
+      if (/module rated power|maximum power|rated power|\bpmax\b|\bpstc\b|peak power|stc power|module power/i.test(norm) && !/coeff|temp/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "wp";
+        break;
+      } else if (/open[- ]circuit voltage|\bvoc\b/i.test(norm) && !/coeff|temp/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "voc";
+        break;
+      } else if (/optimum operating voltage|maximum power voltage|\bvmp\b/i.test(norm) && !/coeff|temp/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "vmp";
+        break;
+      } else if (/short[- ]circuit current|\bisc\b/i.test(norm) && !/coeff|temp/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "isc";
+        break;
+      } else if (/optimum operating current|maximum power current|\bimp\b/i.test(norm) && !/coeff|temp/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "imp";
+        break;
+      } else if (/module efficiency|\befficiency\b|\beff\b/i.test(norm)) {
+        labelIndex = c;
+        label = cellText;
+        matchedPrefix = "eff";
+        break;
+      }
+    }
+
+    if (matchedPrefix && labelIndex >= 0) {
+      const valCells = row.slice(labelIndex + 1)
+        .map(cell => (cell != null ? String(cell).trim() : ""))
+        .filter(c => c !== "");
+
       html += `
         <tr>
           <td>${label}</td>
-          <td>${row[2] || ""}</td>
-          <td>${row[3] || ""}</td>
-          <td>${row[4] || ""}</td>
-          <td>${row[5] || ""}</td>
-          <td>${row[6] || ""}</td>
-          <td>${row[7] || ""}</td>
-          <td>${row[8] || ""}</td>
+          ${valCells.slice(0, 7).map(c => `<td>${c}</td>`).join('')}
         </tr>
       `;
 
-      const cells = [row[2], row[3], row[4], row[5], row[6], row[7]];
-      cells.forEach((cell, index) => {
-        values[`${keyPrefix}_${index + 1}`] = cell != null ? String(cell).trim() : "";
+      valCells.forEach((cell, index) => {
+        if (index < 6) {
+          values[`${matchedPrefix}_${index + 1}`] = cell;
+          if (matchedPrefix === "wp") {
+            values[`pstc_${index + 1}`] = cell;
+          }
+        }
       });
 
-      if (keyPrefix === "wp") {
-        const wpCells = cells
-          .map(c => (c != null ? String(c).trim() : ""))
-          .filter(c => c !== "");
+      if (matchedPrefix === "wp") {
         let maxVal = 0;
         let maxStr = "";
-        wpCells.forEach(cell => {
+        valCells.forEach(cell => {
           const num = parseFloat(cell.replace(/[^\d.]/g, ""));
           if (!isNaN(num) && num > maxVal) {
             maxVal = num;
@@ -88,57 +126,113 @@ export async function parseModuleExcel(file) {
       return;
     }
 
-    // -- Base Metadata --
-    if (/module model/i.test(normalizedLabel)) {
-      values.module_model = cellValue;
-    }
+    // Search for static/base metadata labels across row[0]..row[3]
+    let baseLabelIndex = -1;
+    let baseLabel = "";
 
-    // -- Direct Base Mappings --
-    if (Object.prototype.hasOwnProperty.call(staticLookup, normalizedLabel)) {
-      values[staticLookup[normalizedLabel]] = cellValue;
-    }
-
-    // -- Dimensions (Splitting "2382 x 1134 x 33") --
-    if (/length x width x height/i.test(normalizedLabel)) {
-      const parts = cellValue.split(/x/i).map(p => p.trim());
-      values.module_length = parts[0] || "";
-      values.module_width = parts[1] || "";
-      values.module_height = parts[2] || "";
-    }
-
-    // -- Load Rating (Splitting "2400Pa (Wind) and 5400Pa (Snow)") --
-    if (/load rating/i.test(normalizedLabel)) {
-      const windMatch = cellValue.match(/([\d\w\s+-]+)\s*\(Wind\)/i);
-      const snowMatch = cellValue.match(/([\d\w\s+-]+)\s*\(Snow\)/i);
-      values.wind_load = windMatch ? windMatch[1].trim() : "";
-      values.snow_load = snowMatch ? snowMatch[1].trim() : "";
-    }
-
-    // -- Degradation Sub-Rows (Sequential parsing) --
-    if (/degradation/i.test(normalizedLabel)) {
-      values.deg_year1 = cellValue; // First row entry
-      
-      // Look forward to adjacent layout rows where column 1 label is blank
-      let nextRowIdx = rowIndex + 1;
-      while (nextRowIdx < rows.length && String(rows[nextRowIdx][1] || "").trim() === "") {
-        const nextVal = String(rows[nextRowIdx][2] || "").trim();
-        if (/30th/i.test(nextVal)) values.deg_year30 = nextVal;
-        if (/year on year/i.test(nextVal)) values.deg_yearly = nextVal;
-        nextRowIdx++;
+    for (let c = 0; c < Math.min(row.length, 4); c++) {
+      const val = String(row[c] || "").trim();
+      if (val && isNaN(Number(val))) { // ignore numeric serial numbers like "1", "2", "3"
+        baseLabelIndex = c;
+        baseLabel = val;
+        break;
       }
     }
 
-    // -- Warranty Sub-Rows (Sequential parsing) --
-    if (/warranty/i.test(normalizedLabel)) {
-      values.warranty_product = cellValue; // First row entry
-      
-      let nextRowIdx = rowIndex + 1;
-      if (nextRowIdx < rows.length && String(rows[nextRowIdx][1] || "").trim() === "") {
-        const nextVal = String(rows[nextRowIdx][2] || "").trim();
-        if (nextVal) values.warranty_performance = nextVal;
+    if (baseLabel) {
+      const normalizedLabel = baseLabel.toLowerCase();
+      const cellValue = String(row[baseLabelIndex + 1] || "").trim();
+
+      // -- Base Metadata & Direct Mappings --
+      if (/module model/i.test(normalizedLabel) && !values.module_model) {
+        values.module_model = cellValue;
+      }
+      if (/manufacturer|make/i.test(normalizedLabel) && !values.module_make) {
+        values.module_make = cellValue;
+      }
+      if (/temp.*coeff.*voc|temperature coefficient of (voltage|voc)/i.test(normalizedLabel) && !values.temp_coeff_voc) {
+        values.temp_coeff_voc = cellValue;
+        values.tempCoeffVoc = cellValue;
+      }
+
+      // -- Static Lookup fallback --
+      if (Object.prototype.hasOwnProperty.call(staticLookup, normalizedLabel)) {
+        values[staticLookup[normalizedLabel]] = cellValue;
+      }
+
+      // -- Dimensions --
+      if (/length x width x height|dimensions/i.test(normalizedLabel)) {
+        const parts = cellValue.split(/x/i).map(p => p.trim());
+        if (parts.length >= 3) {
+          values.module_length = parts[0] || "";
+          values.module_width = parts[1] || "";
+          values.module_height = parts[2] || "";
+          values.module_dimensions = cellValue;
+        }
+      }
+
+      // -- Load Rating --
+      if (/load rating/i.test(normalizedLabel)) {
+        const windMatch = cellValue.match(/([\d\w\s+-]+)\s*\(Wind\)/i);
+        const snowMatch = cellValue.match(/([\d\w\s+-]+)\s*\(Snow\)/i);
+        values.wind_load = windMatch ? windMatch[1].trim() : "";
+        values.snow_load = snowMatch ? snowMatch[1].trim() : "";
+      }
+
+      // -- Degradation Sub-Rows --
+      if (/degradation/i.test(normalizedLabel)) {
+        values.deg_year1 = cellValue;
+        let nextRowIdx = rowIndex + 1;
+        while (nextRowIdx < rows.length && String(rows[nextRowIdx][1] || "").trim() === "") {
+          const nextVal = String(rows[nextRowIdx][2] || "").trim();
+          if (/30th/i.test(nextVal)) values.deg_year30 = nextVal;
+          if (/year on year/i.test(nextVal)) values.deg_yearly = nextVal;
+          nextRowIdx++;
+        }
+      }
+
+      // -- Warranty Sub-Rows --
+      if (/warranty/i.test(normalizedLabel)) {
+        values.warranty_product = cellValue;
+        let nextRowIdx = rowIndex + 1;
+        if (nextRowIdx < rows.length && String(rows[nextRowIdx][1] || "").trim() === "") {
+          const nextVal = String(rows[nextRowIdx][2] || "").trim();
+          if (nextVal) values.warranty_performance = nextVal;
+        }
       }
     }
   });
 
-  return { rows, variantTable: html, values };
+  // 3. Construct structured availableWpVariants array
+  const availableWpVariants = [];
+  const seenNumericWps = new Set();
+
+  for (let i = 1; i <= 6; i++) {
+    const rawWp = values[`wp_${i}`] || values[`pstc_${i}`] || "";
+    if (rawWp) {
+      const numWp = parseFloat(String(rawWp).replace(/[^\d.]/g, ""));
+      if (!isNaN(numWp) && numWp > 0 && !seenNumericWps.has(numWp)) {
+        seenNumericWps.add(numWp);
+        availableWpVariants.push({
+          index: i,
+          wpLabel: `${numWp} Wp`,
+          numericWp: numWp,
+          rawWp: String(values[`wp_${i}`] || rawWp).trim(),
+          ratedPower: String(values[`wp_${i}`] || numWp).trim(),
+          voc: values[`voc_${i}`] || "",
+          vmp: values[`vmp_${i}`] || "",
+          isc: values[`isc_${i}`] || "",
+          imp: values[`imp_${i}`] || "",
+          pstc: values[`pstc_${i}`] || String(numWp),
+          eff: values[`eff_${i}`] || "",
+        });
+      }
+    }
+  }
+
+  // Sort availableWpVariants ascending by numeric Wp
+  availableWpVariants.sort((a, b) => a.numericWp - b.numericWp);
+  values.availableWpVariants = availableWpVariants;
+
+  return { rows, variantTable: html, values, availableWpVariants };
 }
