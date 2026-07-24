@@ -34,8 +34,15 @@ plant_name: 'Sandhills Solar — Phase II',
   dc_ac_ratio_inv: '1.30',
   pv_area: '1000',
   Pitch: '6.0',
+  gcr: '33.2',
   temp_min: '-5',
   temp_max: '32',
+
+  // PCS & Feeder Inputs
+  max_lbd_per_pcs: '12',
+  pcs_loop_count: '7',
+  feeder_capacity: '12.5',
+  total_feeders: '12',
 
   // PV Module
   module_make: 'LONGi',

@@ -728,7 +728,7 @@
 
     <p>
       Each PCS is equipped with a feature allowing it to connect or loop with nearby PCS units on the
-      medium-voltage (MV) side of the transformer. A maximum of Seven ({{pcs_loop_count}}) such PCS units can be
+      medium-voltage (MV) side of the transformer. A maximum of ({{pcs_loop_count}}) such PCS units can be
       looped together, forming an integrated system. The final medium-voltage (MV) feeder resulting
       from this looped configuration is then connected to the PV plant substation. Each feeder circuit
       is designed to handle {{feeder_capacity}} MW maximum, and in total, there are Twelve ({{total_feeders}}) feeder
@@ -2317,7 +2317,7 @@
           <tr>
             <td>GCR</td>
             <td>%</td>
-            <td>TBD</td>
+            <td>{{gcr}}</td>
           </tr>
 
           <tr>
@@ -2356,9 +2356,9 @@
             <td>Table configuration</td>
             <td>-</td>
             <td>
-              1Px{{tracker_module_1}} ({{tracker_type_1}} String)<br>
-              1Px{{tracker_module_2}} ({{tracker_type_2}} String)<br>
-              1Px{{tracker_module_3}} ({{tracker_type_3}} String)
+              1Px{{tracker_module_1}} ({{tracker_type_1}} )<br>
+              1Px{{tracker_module_2}} ({{tracker_type_2}} )<br>
+              1Px{{tracker_module_3}} ({{tracker_type_3}})
             </td>
           </tr>
           <tr>
@@ -2370,9 +2370,9 @@
             <td>Total number of Trackers</td>
             <td>Quantity</td>
             <td>
-              {{tracker_quantity_1}} ({{tracker_type_1}} String)<br>
-              {{tracker_quantity_2}} ({{tracker_type_2}} String)<br>
-              {{tracker_quantity_3}} ({{tracker_type_3}} String)
+              {{tracker_quantity_1}} ({{tracker_type_1}})<br>
+              {{tracker_quantity_2}} ({{tracker_type_2}} )<br>
+              {{tracker_quantity_3}} ({{tracker_type_3}} )
             </td>
           </tr>
 

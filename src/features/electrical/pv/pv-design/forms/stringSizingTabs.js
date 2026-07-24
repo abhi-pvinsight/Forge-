@@ -246,6 +246,13 @@ export const STRING_SIZE_TABS = [
           unit: 'm',
           required: true,
           placeholder: '6.0'
+        }, {
+          key: 'gcr',
+          label: 'Ground Coverage Ratio (GCR)',
+          type: 'text',
+          unit: '%',
+          required: true,
+          placeholder: '33.2'
         }
           // }, {
           //   key: 'temp_min',
@@ -456,6 +463,31 @@ export const STRING_SIZE_TABS = [
             type: 'text',
             placeholder: 'e.g.  6058 x 2896 x 2438',
             unit: 'mm',
+            required: true
+          }, {
+            key: 'max_lbd_per_pcs',
+            label: 'Max LBDs per PCS',
+            type: 'number',
+            placeholder: '12',
+            required: true
+          }, {
+            key: 'pcs_loop_count',
+            label: 'Max PCS Looped Together',
+            type: 'number',
+            placeholder: '7',
+            required: true
+          }, {
+            key: 'feeder_capacity',
+            label: 'Feeder Capacity',
+            type: 'text',
+            unit: 'MW',
+            placeholder: '12.5',
+            required: true
+          }, {
+            key: 'total_feeders',
+            label: 'Total Feeder Circuits',
+            type: 'number',
+            placeholder: '12',
             required: true
           }, {
             key: 'annual_energy',
