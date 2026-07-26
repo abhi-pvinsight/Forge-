@@ -358,6 +358,15 @@ export function cleanReportEditControls(containerEl) {
   if (!containerEl) return;
   const excludeEls = containerEl.querySelectorAll('.table-action-cell, .table-row-actions, .table-add-row-btn');
   excludeEls.forEach((el) => el.remove());
+
+  // Clean inline position: relative added to td:last-child during edit mode
+  const positionedCells = containerEl.querySelectorAll('td[style*="position"]');
+  positionedCells.forEach((cell) => {
+    cell.style.position = "";
+    if (!cell.getAttribute("style")) {
+      cell.removeAttribute("style");
+    }
+  });
 }
 
 export function attachTableEditControls(containerEl) {

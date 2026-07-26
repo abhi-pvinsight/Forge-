@@ -175,6 +175,12 @@ export async function exportPdfWithToc(
           table, .doc-table {
             width: 100%;
             border-collapse: collapse !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+          }
+          table tr, .doc-table tr {
+            page-break-inside: auto !important;
+            break-inside: avoid-column;
           }
           th, td, .doc-table th, .doc-table td {
             border: 1px solid #000000 !important;
@@ -197,8 +203,9 @@ export async function exportPdfWithToc(
             tfoot {
               display: table-footer-group;
             }
-            table {
-              page-break-inside: auto;
+            table, .doc-table {
+              page-break-inside: auto !important;
+              break-inside: auto !important;
             }
             th, td, .doc-table th, .doc-table td {
               border: 1px solid #000000 !important;

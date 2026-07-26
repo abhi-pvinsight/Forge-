@@ -39,6 +39,13 @@
     border-collapse: collapse !important;
     font-size: 10.5pt;
     margin-bottom: 14px;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  .doc-table tr {
+    page-break-inside: auto;
+    break-inside: avoid-column;
   }
 
   .doc-table th,
@@ -191,7 +198,7 @@
     </ol>
 
     <p class="table-caption"><b class="toc-table-caption">Table 1: MPT Impedance and X/R Ratios</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>{{mptRatingMva}}</th>
