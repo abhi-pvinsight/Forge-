@@ -168,32 +168,28 @@ export async function exportPdfWithToc(
           p, td, th, div, span, h1, h2, h3, h4, h5, h6, table {
             font-family: "Segoe UI", sans-serif !important;
           }
-          html,
-          body {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            background: white;
+
+          h1, h2, h3, h4, h5, h6,
+          .doc-h1, .doc-h2, .doc-h3,
+          .toc-heading,
+          .table-caption, .toc-table-caption {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
           }
+
           table, .doc-table {
             width: 100%;
             border-collapse: collapse !important;
             page-break-inside: auto !important;
             break-inside: auto !important;
           }
-          table tr, .doc-table tr {
-            page-break-inside: auto !important;
-            break-inside: avoid-column;
-          }
           th, td, .doc-table th, .doc-table td {
             border: 1px solid #000000 !important;
-          }
-          img {
-            max-width: 100%;
           }
           .page-break {
             page-break-before: always;
           }
+
           @media print {
             th {
               color: white !important;
@@ -209,9 +205,6 @@ export async function exportPdfWithToc(
             table, .doc-table {
               page-break-inside: auto !important;
               break-inside: auto !important;
-            }
-            th, td, .doc-table th, .doc-table td {
-              border: 1px solid #000000 !important;
             }
           }
           .cover-page {

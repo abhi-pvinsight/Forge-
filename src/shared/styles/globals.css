@@ -448,6 +448,13 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   color: var(--accent);
 }
 
+/* Prevent headings and table captions from being orphaned at the bottom of pages */
+h1, h2, h3, h4, h5, h6,
+.doc-h1, .doc-h2, .doc-h3,
+.toc-heading,
+.table-caption, .toc-table-caption {
+  page-break-after: avoid !important;
+  break-after: avoid !important;
 /* Center-align report body tables (excluding document control revision table) */
 #PV_DBR-report table:not(.no-edit),
 #bess-report table:not(.no-edit),
@@ -458,10 +465,21 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   margin-right: auto !important;
 }
 
+/* Ensure all PV DBR and report body table cells have solid borders */
+#PV_DBR-report table th,
+#PV_DBR-report table td,
+#bess-report table:not(.no-edit) th,
+#bess-report table:not(.no-edit) td,
+#hv-dbr-report table th,
+#hv-dbr-report table td,
+.doc-table th,
+.doc-table td {
+  border: 1px solid #cbd5e1;
+}
+
 /* Compact Table Styling for PV DBR Reports */
 #PV_DBR-report .compact-table,
 .compact-table {
-  width: 100% !important;
   max-width: 100% !important;
   table-layout: fixed !important;
   border-collapse: collapse !important;
