@@ -110,8 +110,11 @@ export async function exportPdfWithToc(
 
   const docTitle = fileName.replace(".pdf", "");
   const sizeValue = pageSize.toLowerCase() === "a4" ? "A4" : "Letter";
-  // Subtract 20mm total margin (10mm top, 10mm bottom) from total page height
-  const innerHeight = sizeValue === "A4" ? "277mm" : "259.4mm";
+  // Keep the existing effective horizontal spacing (10mm page margin +
+  // 10mm container padding), but apply it entirely at page level so the same
+  // spacing repeats at the top and bottom of every fragmented PDF page.
+  const pageMargin = "20mm";
+  const innerHeight = sizeValue === "A4" ? "257mm" : "239.4mm";
 
   // Parse HTML and extract styles to avoid preceding text nodes or wrappers in body
   const parser = new DOMParser();
@@ -149,7 +152,7 @@ export async function exportPdfWithToc(
             size: ${sizeValue};
             width: auto;
             height: auto;
-            margin: 10mm;
+            margin: ${pageMargin};
           }
 
           @page cover {
@@ -231,7 +234,7 @@ export async function exportPdfWithToc(
             max-width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 10mm 10mm !important;
+            padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
@@ -245,18 +248,19 @@ export async function exportPdfWithToc(
             flex-direction: column !important;
             justify-content: space-between !important;
             box-sizing: border-box !important;
-            padding: 10mm 12mm !important;
+            padding: 0 !important;
           }
           .doc-control-top {
             width: 100% !important;
             box-sizing: border-box !important;
-            padding: 0 4mm !important;
+            padding: 0 !important;
+            margin: 0 !important;
           }
           .doc-control-middle {
             width: 100% !important;
             text-align: center !important;
             margin: auto 0 !important;
-            padding: 10mm 4mm !important;
+            padding: 0 !important;
             box-sizing: border-box !important;
           }
           .doc-control-middle .heading {
@@ -268,17 +272,32 @@ export async function exportPdfWithToc(
           }
           .doc-control-bottom,
           .report-page.doc-control-page .bottom-layout-group {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            justify-content: flex-end !important;
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
             margin-top: auto !important;
-            padding: 0 4mm !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding: 0 !important;
           }
-          .revision-section {
+          [id*="-report"] .doc-control-page .revision-section,
+          .report-page.doc-control-page .revision-section,
+          .doc-control-page .revision-section {
+            display: block !important;
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
             margin: 5mm 0 !important;
+            padding: 0 !important;
+            align-self: stretch !important;
+            position: static !important;
+            left: auto !important;
+            right: auto !important;
+            transform: none !important;
           }
           .doc-control-page table.table,
           .revision-section table {
@@ -287,27 +306,31 @@ export async function exportPdfWithToc(
             table-layout: fixed !important;
             border-collapse: collapse !important;
             box-sizing: border-box !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .doc-control-page table.table th,
           .revision-section table th {
-            padding: 6px 8px !important;
+            box-sizing: border-box !important;
+            padding: 10px !important;
             font-size: 8.5pt !important;
             font-weight: 600 !important;
             background-color: #163c7a !important;
             color: #ffffff !important;
             text-align: center !important;
             word-break: break-word !important;
+            border: 1px solid #163c7a !important;
           }
           .doc-control-page table.table td,
           .revision-section table td {
-            padding: 6px 8px !important;
+            box-sizing: border-box !important;
+            padding: 10px !important;
             font-size: 8.5pt !important;
             color: #475569 !important;
+            line-height: 1.3 !important;
             text-align: center !important;
             word-break: break-word !important;
-            overflow-wrap: break-word !important;
+            border: 1px solid #cbd5e1 !important;
           }
 
           .compact-table {
@@ -435,7 +458,7 @@ export async function exportPdfWithToc(
             max-width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 10mm 10mm !important;
+            padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;

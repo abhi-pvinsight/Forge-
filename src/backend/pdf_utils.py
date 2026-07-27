@@ -13,6 +13,23 @@ import os
 import json
 from dotenv import load_dotenv
 
+import sys
+
+# Register MSYS2 GTK DLL directory on Windows Python 3.8+
+if sys.platform == "win32":
+    possible_gtk_paths = [
+        r"C:\msys64\ucrt64\bin",
+        r"C:\msys64\mingw64\bin",
+        r"C:\Program Files\GTK3-Runtime Win64\bin",
+    ]
+    for gtk_path in possible_gtk_paths:
+        if os.path.exists(gtk_path):
+            try:
+                os.add_dll_directory(gtk_path)
+                os.environ["PATH"] = gtk_path + os.pathsep + os.environ.get("PATH", "")
+            except Exception:
+                pass
+
 # Conditional WeasyPrint and xhtml2pdf imports to prevent startup crashes when running locally on Windows without GTK
 try:
     from weasyprint import HTML, CSS

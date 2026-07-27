@@ -448,9 +448,12 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   color: var(--accent);
 }
 
-/* Center-align report tables */
-#PV_DBR-report table,
-#bess-report table {
+/* Center-align report body tables (excluding document control revision table) */
+#PV_DBR-report table:not(.no-edit),
+#bess-report table:not(.no-edit),
+#hv-dbr-report table:not(.no-edit),
+#bess-grounding-report table:not(.no-edit),
+#bess-ampacity-report table:not(.no-edit) {
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -523,7 +526,8 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   display: block !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  padding: 0 1rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .doc-control-middle {
@@ -531,7 +535,7 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   width: 100% !important;
   text-align: center !important;
   margin: auto 0 !important;
-  padding: 2rem 1rem !important;
+  padding: 1.5rem 0 !important;
   box-sizing: border-box !important;
 }
 
@@ -545,22 +549,35 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
 
 .doc-control-bottom,
 .bottom-layout-group {
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
   text-align: center !important;
   margin-top: auto !important;
-  padding: 0 1rem !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
 }
 
-.revision-section {
+[id*="-report"] .doc-control-page .revision-section,
+.report-page.doc-control-page .revision-section,
+.doc-control-page .revision-section {
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
-  margin: 1rem 0 1.5rem 0 !important;
+  margin: 1rem 0 !important;
+  padding: 0 !important;
+  align-self: stretch !important;
   clear: both !important;
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
 }
 
 .doc-control-page table,
@@ -568,8 +585,8 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   display: table !important;
   width: 100% !important;
   max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   table-layout: fixed !important;
   border-collapse: collapse !important;
   box-sizing: border-box !important;
@@ -578,7 +595,8 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
 
 .doc-control-page table th,
 .revision-section table th {
-  padding: 10px 12px !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
   font-weight: 600 !important;
   background-color: #163c7a !important;
   color: #ffffff !important;
@@ -587,18 +605,20 @@ textarea.input { height: auto; min-height: 78px; padding: 9px 11px; line-height:
   line-height: 1.3 !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
+  border: 1px solid #163c7a !important;
 }
 
 .doc-control-page table td,
 .revision-section table td {
-  padding: 10px 12px !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
   color: #475569 !important;
   line-height: 1.4 !important;
   text-align: center !important;
   font-size: 9pt !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
-  border-bottom: 1px solid #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
 }
 
 /* Table of Contents - Pin-straight Right-Aligned Page Numbers */
@@ -697,4 +717,4 @@ table#ashrae_table {
   box-sizing: border-box !important;
   margin-left: auto !important;
   margin-right: auto !important;
-}
+}

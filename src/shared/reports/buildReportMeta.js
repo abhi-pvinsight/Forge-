@@ -10,7 +10,7 @@ function formatIssueDate(date = new Date()) {
 
 function renderRevisionHistoryRows(values, reportName, issueDate, revision) {
   const rows = [];
-  const tdStyle = `padding: 10px 12px; border-bottom: 1px solid #e2e8f0; color: #475569; line-height: 1.4; text-align: center; font-size: 9pt; word-break: break-word; overflow-wrap: break-word;`;
+  const tdStyle = `padding: 10px; border: 1px solid #cbd5e1; color: #475569; line-height: 1.4; text-align: center; font-size: 9pt; word-break: break-word; overflow-wrap: break-word;`;
 
   const defaultDocNo = values.documentNumber || values.documentNo || (values.projectCode ? `${values.projectCode}-STR-${revision || values.revision || "R0"}` : "—");
 
