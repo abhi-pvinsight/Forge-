@@ -102,28 +102,26 @@ export default function Field({ field, value, onChange, error }) {
         <input
           id={id}
           type="file"
-          accept="image/*,.png,.jpg,.jpeg,.svg,.webp"
+          accept={field.accept || "image/*,.png,.jpg,.jpeg,.svg,.webp"}
           className="input"
           onChange={(event) => {
             const file = event.target.files[0];
             if (file) {
-              // Safety size limit (20MB)
-              const maxFileSize = 20 * 1024 * 1024;
+              const maxFileSize = 25 * 1024 * 1024;
               if (file.size > maxFileSize) {
-                alert(`File size exceeds 20MB limit. Please upload a smaller image.`);
+                alert(`File size exceeds 25MB limit.`);
                 return;
               }
               const reader = new FileReader();
               reader.onloadend = async () => {
                 const originalDataUrl = reader.result;
-                const originalLength = originalDataUrl.length;
-                console.log(`[Field] Logo uploaded, original size: ${(originalLength / 1024).toFixed(1)} KB`);
-
-                const compressedDataUrl = await compressImage(originalDataUrl, 1200, 0.8);
-                const compressedLength = compressedDataUrl.length;
-                console.log(`[Field] Compressed logo size: ${(compressedLength / 1024).toFixed(1)} KB (Reduced by ${((originalLength - compressedLength) / originalLength * 100).toFixed(1)}%)`);
-
-                onChange(compressedDataUrl);
+                if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+                  console.log(`[Field] PDF uploaded, size: ${(originalDataUrl.length / 1024).toFixed(1)} KB`);
+                  onChange(originalDataUrl);
+                } else {
+                  const compressedDataUrl = await compressImage(originalDataUrl, 1200, 0.8);
+                  onChange(compressedDataUrl);
+                }
               };
               reader.readAsDataURL(file);
             }
@@ -132,20 +130,28 @@ export default function Field({ field, value, onChange, error }) {
         />
         {cleanImgSrc && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Current logo:</span>
-            <img 
-              src={cleanImgSrc} 
-              alt="Logo Preview" 
-              style={{ 
-                maxHeight: 36, 
-                maxWidth: 120, 
-                objectFit: 'contain', 
-                border: '1px solid var(--border)', 
-                borderRadius: 'var(--r-xs)', 
-                padding: 4, 
-                background: 'white' 
-              }} 
-            />
+            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+              {typeof cleanImgSrc === 'string' && cleanImgSrc.startsWith('data:application/pdf') ? 'Attached Document:' : 'Current logo:'}
+            </span>
+            {typeof cleanImgSrc === 'string' && cleanImgSrc.startsWith('data:application/pdf') ? (
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#163c7a', background: '#e2e8f0', padding: '4px 8px', borderRadius: 4 }}>
+                📄 PVsyst PDF Attached
+              </span>
+            ) : (
+              <img 
+                src={cleanImgSrc} 
+                alt="Preview" 
+                style={{ 
+                  maxHeight: 36, 
+                  maxWidth: 120, 
+                  objectFit: 'contain', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--r-xs)', 
+                  padding: 4, 
+                  backgroundColor: '#ffffff'
+                }} 
+              />
+            )}
             <button
               type="button"
               className="btn btn-ghost btn-xs"

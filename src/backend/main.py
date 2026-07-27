@@ -501,6 +501,17 @@ async def generate_pdf_with_toc_endpoint(payload: dict, request: Request):
         appendix_buffer.close()
         log_memory("After native appendix merge")
 
+    pvsyst_pdf_base64 = payload.get("pvsyst_pdf_base64")
+    if pvsyst_pdf_base64 and isinstance(pvsyst_pdf_base64, str):
+        try:
+            import base64
+            raw_b64 = pvsyst_pdf_base64.split(",")[-1]
+            pvsyst_bytes = base64.b64decode(raw_b64)
+            pdf_bytes = merge_pdf_documents(pdf_bytes, pvsyst_bytes)
+            print(f"[PROFILE] Successfully merged uploaded PVsyst PDF ({len(pvsyst_bytes)} bytes)")
+        except Exception as e:
+            print(f"[ERROR] Failed to merge uploaded PVsyst PDF: {e}")
+
     return StreamingResponse(
         io.BytesIO(pdf_bytes),
         media_type="application/pdf",

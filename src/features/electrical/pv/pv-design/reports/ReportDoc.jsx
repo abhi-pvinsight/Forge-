@@ -255,19 +255,6 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     ...pvsystLossTemplateValues,
     submittedTo: values.clientContact || "Signal Energy",
     submittedToAddress: values.clientAddress || "2034 Hamilton Place BLVD. Suite 100 Chattanooga, TN 37421",
-    weather_database: values.weather_database || "SOLCAST(DNV)",
-    albedo_jan: values.albedo_jan ?? "0.20",
-    albedo_feb: values.albedo_feb ?? "0.20",
-    albedo_mar: values.albedo_mar ?? "0.20",
-    albedo_apr: values.albedo_apr ?? "0.20",
-    albedo_may: values.albedo_may ?? "0.20",
-    albedo_jun: values.albedo_jun ?? "0.20",
-    albedo_jul: values.albedo_jul ?? "0.20",
-    albedo_aug: values.albedo_aug ?? "0.20",
-    albedo_sep: values.albedo_sep ?? "0.20",
-    albedo_oct: values.albedo_oct ?? "0.20",
-    albedo_nov: values.albedo_nov ?? "0.20",
-    albedo_dec: values.albedo_dec ?? "0.20",
     albedo_avg: values.albedo_avg ?? calcAlbedoAvg,
     albedo_high: values.albedo_high ?? calcAlbedoHigh,
     albedo_low: values.albedo_low ?? calcAlbedoLow,
@@ -343,16 +330,39 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const hasSolarAppendix = Boolean(
     values.hasSolarAppendix || values.solarAppendixValues || appendixPages.length
   );
+  const hasPvsystPdf = Boolean(values.pvsyst_pdf_file || values.pvsyst_pdf);
+
+  // Build List of Annexures (LOA) for Front Matter
+  const annexuresList = [];
+  if (hasSolarAppendix) {
+    annexuresList.push({ title: "Annexure 1: Solar String Sizing Calculations & Specs" });
+  }
+  if (hasPvsystPdf) {
+    annexuresList.push({ title: "Annexure 2: PVsyst Report" });
+  }
+
   let appendixTemplate = "";
 
   if (hasSolarAppendix) {
-    appendixTemplate = `
+    appendixTemplate += `
       <div class="report-page appendix-page" style="page-break-before: always; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;">
-        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Appendix</h1>
-        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations & Specs</p>
+        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Annexure 1</h1>
+        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations &amp; Specs</p>
       </div>
       <div class="page appendix-native-preview" data-pdf-export-exclude="true" style="page-break-before: always; min-height: 180px; padding: 40px !important; display: flex; justify-content: center; align-items: center; text-align: center; color: #64748b;">
-        Native appendix pages will be merged into the downloaded PDF.
+        Native Annexure 1 pages will be merged into the downloaded PDF.
+      </div>
+    `;
+  }
+
+  if (hasPvsystPdf) {
+    appendixTemplate += `
+      <div class="report-page appendix-page" style="page-break-before: always; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;">
+        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Annexure 2</h1>
+        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">PVsyst Report</p>
+      </div>
+      <div class="page appendix-native-preview" data-pdf-export-exclude="true" style="page-break-before: always; min-height: 180px; padding: 40px !important; display: flex; justify-content: center; align-items: center; text-align: center; color: #64748b;">
+        Uploaded PVsyst Report PDF will be appended as Annexure 2 in the downloaded PDF.
       </div>
     `;
   }
@@ -369,6 +379,7 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     TOC_PLACEHOLDER: renderSimpleList(headings),
     LIST_OF_TABLES_PLACEHOLDER: renderSectionIfNotEmpty("List of Tables", tables, { key: "title" }),
     LIST_OF_FIGURES_PLACEHOLDER: renderSectionIfNotEmpty("List of Figures", figures, { key: "title" }),
+    LIST_OF_ANNEXURES_PLACEHOLDER: renderSectionIfNotEmpty("List of Annexures", annexuresList, { key: "title" }),
     LIST_OF_ABBREVIATIONS_PLACEHOLDER: renderAbbreviationsTable(abbreviations),
   };
 

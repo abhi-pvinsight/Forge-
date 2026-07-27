@@ -483,6 +483,11 @@ export async function exportPdfWithToc(
       );
     }
 
+    const pvsystPdfData = options.values?.pvsyst_pdf_file || options.solarAppendixValues?.pvsyst_pdf_file;
+    if (pvsystPdfData) {
+      requestPayload.pvsyst_pdf_base64 = pvsystPdfData;
+    }
+
     const payloadSizeMB = (new Blob([JSON.stringify(requestPayload)]).size / (1024 * 1024)).toFixed(2);
     console.log(`[PROFILE] POST Payload size: ${payloadSizeMB} MB`);
 

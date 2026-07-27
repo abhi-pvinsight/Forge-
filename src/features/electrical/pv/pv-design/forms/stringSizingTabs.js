@@ -646,6 +646,27 @@ export const STRING_SIZE_TABS = [
   },
 
   {
+    id: "annexures",
+    name: "Annexure Attachments",
+    icon: "file-text",
+    blurb: "Upload Annexure documents (such as PVsyst Report PDF) to append to the end of the final PDF report.",
+    groups: [
+      {
+        title: "Annexure Attachments",
+        fields: [
+          {
+            key: "pvsyst_pdf_file",
+            label: "Upload PVsyst Report (PDF)",
+            type: "file",
+            accept: ".pdf,application/pdf",
+            required: false
+          }
+        ]
+      }
+    ]
+  },
+
+  {
     id: "tracker",
     name: "Tracker System",
     icon: "moter",

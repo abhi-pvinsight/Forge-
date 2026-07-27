@@ -212,8 +212,8 @@ export default function BessReportDoc({ values = {}, files = {}, showStamp = fal
   if (appendixPages.length > 0) {
     appendixTemplate = `
       <div class="report-page appendix-page" style="page-break-before: always; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;">
-        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Appendix</h1>
-        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations & Specs</p>
+        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Annexures</h1>
+        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations &amp; Specs</p>
       </div>
       
       ${appendixPages.map((imgData, index) => `
