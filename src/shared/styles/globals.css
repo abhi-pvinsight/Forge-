@@ -455,6 +455,8 @@ h1, h2, h3, h4, h5, h6,
 .table-caption, .toc-table-caption {
   page-break-after: avoid !important;
   break-after: avoid !important;
+}
+
 /* Center-align report body tables (excluding document control revision table) */
 #PV_DBR-report table:not(.no-edit),
 #bess-report table:not(.no-edit),
