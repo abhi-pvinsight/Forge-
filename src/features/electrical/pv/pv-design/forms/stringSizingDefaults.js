@@ -94,6 +94,23 @@ plant_name: 'Sandhills Solar — Phase II',
   risk_category: 'CAT-II',
   met_source: 'NASA Earth Data',
   data_format: 'TMY (Typical Meteorological Year)',
+
+  // Albedo Inputs
+  weather_database: 'SOLCAST(DNV)',
+  albedo_jan: '0.20',
+  albedo_feb: '0.20',
+  albedo_mar: '0.20',
+  albedo_apr: '0.20',
+  albedo_may: '0.20',
+  albedo_jun: '0.20',
+  albedo_jul: '0.20',
+  albedo_aug: '0.20',
+  albedo_sep: '0.20',
+  albedo_oct: '0.20',
+  albedo_nov: '0.20',
+  albedo_dec: '0.20',
+  albedo_avg: '0.20',
+
   // Tracker inputs
 
   tracker_make: 'GAMECHANGE',

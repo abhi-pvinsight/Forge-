@@ -617,6 +617,33 @@ export const STRING_SIZE_TABS = [
       }]
   },
 
+  {
+    id: "albedo",
+    name: "Albedo Inputs",
+    icon: "sun",
+    blurb: "Monthly Ground Albedo values obtained from weather database for site bifacial gain calculations.",
+    groups: [
+      {
+        title: "Weather & Monthly Albedo Inputs",
+        fields: [
+          { key: "weather_database", label: "Weather Database", type: "text", defaultValue: "SOLCAST(DNV)", placeholder: "SOLCAST(DNV)", required: true },
+          { key: "albedo_jan", label: "January Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_feb", label: "February Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_mar", label: "March Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_apr", label: "April Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_may", label: "May Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_jun", label: "June Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_jul", label: "July Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_aug", label: "August Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_sep", label: "September Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_oct", label: "October Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_nov", label: "November Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_dec", label: "December Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_avg", label: "Average Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" }
+        ]
+      }
+    ]
+  },
 
   {
     id: "tracker",

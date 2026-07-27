@@ -158,14 +158,14 @@ export function buildPvsystTables(pvsystData) {
 export function calculateNMin(pcsMinPvInputVoltage, vmpMaxTemp) {
   const minVoltage = typeof pcsMinPvInputVoltage === 'string'
     ? parseFloat(pcsMinPvInputVoltage.replace(/[^\d.]/g, ''))
-    : Number(pcsMinPvInputVoltage);
+    : Number(pcsMinPvInputVoltage || 875);
   const vmp = Number(vmpMaxTemp);
 
   if (isNaN(minVoltage) || isNaN(vmp) || vmp === 0) {
     return { exact: "—", rounded: "—" };
   }
   const raw = minVoltage / vmp;
-  return { exact: raw.toFixed(2), rounded: Math.round(raw) };
+  return { exact: raw.toFixed(2), rounded: Math.ceil(raw) };
 }
 
 // building an Degradation Table 

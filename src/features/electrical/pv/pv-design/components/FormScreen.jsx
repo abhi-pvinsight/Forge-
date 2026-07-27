@@ -659,7 +659,24 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
   const status = overallStatus(values, files);
   const scrollRef = useRef(null);
 
-  useEffect(() => { setStep(0); setShowErrors(false); setBanner(null); }, [report.id]);
+  useEffect(() => { 
+    setStep(0); 
+    setShowErrors(false); 
+    setBanner(null); 
+
+    // Pre-fill fields with defaultValue if empty or not present in form state
+    STRING_SIZE_TABS.forEach((tabItem) => {
+      const fields = tabItem.fields || (tabItem.groups || []).flatMap((g) => g.fields || []);
+      fields.forEach((f) => {
+        if (f.defaultValue !== undefined) {
+          const currentVal = values[f.key];
+          if (currentVal === undefined || currentVal === null || String(currentVal).trim() === "") {
+            setValue(f.key, f.defaultValue);
+          }
+        }
+      });
+    });
+  }, [report.id]);
 
   const loadLastEntry = async () => {
     try {

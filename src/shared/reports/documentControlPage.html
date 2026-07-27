@@ -9,8 +9,7 @@
   <style>
     .report-page.doc-control-page,
     .doc-control-page {
-      padding: 0 !important;
-      margin: 0 auto !important;
+
       box-sizing: border-box !important;
       width: 100% !important;
       max-width: 100% !important;
@@ -55,15 +54,21 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      height: 60px;
+      height: 72px;
       margin: 0;
       padding: 0;
     }
 
     .logo-element {
       max-height: 100%;
-      max-width: 180px;
+      max-width: 206px;
       object-fit: contain;
+    }
+
+    .logo-element.pv-logo {
+      max-width: 225px;
+      transform: scale(1.08);
+      transform-origin: left center;
     }
 
     .sub-heading {
@@ -107,21 +112,12 @@
       padding: 0 !important;
     }
 
-    [id*="-report"] .doc-control-page .revision-section,
-    .report-page.doc-control-page .revision-section,
-    .doc-control-page .revision-section {
+    .revision-section {
       display: block !important;
       width: 100% !important;
-      max-width: 100% !important;
-      margin: 1rem 0 !important;
-      padding: 0 !important;
-      align-self: stretch !important;
+      max-width: 90% !important;
       box-sizing: border-box !important;
       clear: both !important;
-      position: static !important;
-      left: auto !important;
-      right: auto !important;
-      transform: none !important;
     }
 
     table.table.no-edit,
@@ -139,7 +135,6 @@
 
     .doc-control-page table.table th,
     .revision-section table th {
-      box-sizing: border-box !important;
       padding: 10px 10px !important;
       font-weight: 600 !important;
       background-color: #163c7a !important;
@@ -154,7 +149,6 @@
 
     .doc-control-page table.table td,
     .revision-section table td {
-      box-sizing: border-box !important;
       padding: 10px 12px !important;
       color: #475569 !important;
       line-height: 1.4 !important;
@@ -216,7 +210,7 @@
           <td
             style="width: 50%; border: none !important; padding: 0 1.25rem 0 0; vertical-align: top; text-align: left;">
             <div class="logo-row-container" style="justify-content: flex-start;">
-              <img src="{{PV_LOGO}}" alt="PVinsight Logo" class="logo-element" />
+              <img src="{{PV_LOGO}}" alt="PVinsight Logo" class="logo-element pv-logo" />
             </div>
 
             <h3 class="sub-heading">Prepared By</h3>
@@ -241,22 +235,16 @@
       <h2 class="heading">{{REPORT_NAME}}</h2>
     </div>
 
-    <div class="revision-section">
-      <table class="table no-edit" border="1">
-        <colgroup>
-          <col style="width: 10%;">
-          <col style="width: 16%;">
-          <col style="width: 24%;">
-          <col style="width: 30%;">
-          <col style="width: 20%;">
-        </colgroup>
+    <div class="revision-section" style="width: 100%; ">
+      <table class="table no-edit" border="1"
+        style="width: 90%; border-collapse: collapse; table-layout: fixed; text-align: center; font-size: 9pt;">
         <thead>
           <tr style="background-color: #163c7a; color: #ffffff;">
-            <th style="padding: 10px; text-align: center; border: 1px solid #163c7a;">Revision</th>
-            <th style="padding: 10px; text-align: center; border: 1px solid #163c7a;">Issue Date</th>
-            <th style="padding: 10px; text-align: center; border: 1px solid #163c7a;">Document No.</th>
-            <th style="padding: 10px; text-align: center; border: 1px solid #163c7a;">Document Name</th>
-            <th style="padding: 10px; text-align: center; border: 1px solid #163c7a;">Description</th>
+            <th style="width: 10%; padding: 10px; text-align: center; border: 1px solid #163c7a;">Revision</th>
+            <th style="width: 16%; padding: 10px; text-align: center; border: 1px solid #163c7a;">Issue Date</th>
+            <th style="width: 24%; padding: 10px; text-align: center; border: 1px solid #163c7a;">Document No.</th>
+            <th style="width: 30%; padding: 10px; text-align: center; border: 1px solid #163c7a;">Document Name</th>
+            <th style="width: 20%; padding: 10px; text-align: center; border: 1px solid #163c7a;">Description</th>
           </tr>
         </thead>
         <tbody>

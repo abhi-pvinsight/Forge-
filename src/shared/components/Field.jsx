@@ -76,7 +76,7 @@ export default function Field({ field, value, onChange, error }) {
 
   const commonProps = {
     id,
-    value: value || '',
+    value: (value !== undefined && value !== null && String(value).trim() !== '') ? value : (field.defaultValue ?? ''),
     placeholder: field.placeholder,
     onChange: (event) => onChange(event.target.value),
     onKeyDown: handleKeyDown,

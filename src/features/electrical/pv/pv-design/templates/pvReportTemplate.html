@@ -720,7 +720,7 @@
 
     <p>
 
-      MV Transformer is rated for {{mv_voltage}}/{{lv_voltage}}, {{mv_transformer}}, KNAN type. MV side of the
+      MV Transformer is rated for {{mv_voltage}}kVA/{{lv_voltage}}kVA, {{mv_transformer}}, KNAN type. MV side of the
       transformer is
       protected with Expulsion fuse, Backup fuse and Two Position Load Break Switch for system
       isolation.
@@ -768,7 +768,8 @@
           <th colspan="6">Data</th>
           <th>Units</th>
         </tr>
-
+      </thead>
+      <tbody>
         <tr>
           <td>1</td>
           <td>Module Model</td>
@@ -982,7 +983,7 @@
           </td>
           <td>-</td>
         </tr>
-      </thead>
+      </tbody>
     </table>
 
     <div class="page-break"></div>
@@ -1016,6 +1017,74 @@
       it’s crucial to account for the highest possible Bifacial factor under the lowest ambient
       temperature prevailing at the site. </p>
 
+    <p>
+      The monthly albedo values obtained from the hourly TMY file of the {{weather_database}} weather
+      database for the site are as follows.
+    </p>
+
+    <h4><b class="toc-table-caption">Table 3: Monthly Albedo</b></h4>
+    <table border="1" style="width: 50%; border-collapse: collapse; text-align: center;">
+      <thead style="display: table-header-group;">
+        <tr>
+          <th style="padding: 8px; text-align: center;">Month</th>
+          <th style="padding: 8px; text-align: center;">Albedo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Jan</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_jan}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Feb</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_feb}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Mar</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_mar}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Apr</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_apr}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">May</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_may}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Jun</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_jun}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Jul</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_jul}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Aug</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_aug}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Sep</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_sep}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Oct</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_oct}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Nov</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_nov}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;">Dec</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_dec}}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; text-align: center;"><b>Average</b></td>
+          <td style="padding: 6px; text-align: center;"><b>{{albedo_avg}}</b></td>
+        </tr>
+      </tbody>
+    </table>
 
     <p>
       The proposed project modules are {{module_make}} {{module_model}} series modules.
@@ -1034,68 +1103,34 @@
       The following table represents sensitivity cases based on albedo variations:
     </p>
 
-    <h4><b class="toc-table-caption">Table 3: Bifacial Modelling Sensitivity Case</b></h4>
-    <!-- 
-    <table border="1">
+    <h4><b class="toc-table-caption">Table 4: Bifacial Modelling Sensitivity Case</b></h4>
+    <table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
       <thead style="display: table-header-group;">
         <tr>
-          <th>Cases</th>
-          <th>Ground Albedo</th>
-          <th>PERC ΦBifi</th>
-          <th>Si-HJT ΦBifi</th>
-        </tr>
-
-        <tr>
-          <td>High Case</td>
-          <td>{{albedo_high}}</td>
-          <td>{{perc_high}}</td>
-          <td>{{hjt_high}}</td>
-        </tr>
-
-        <tr>
-          <td>Average Case</td>
-          <td>{{albedo_avg}}</td>
-          <td>{{perc_avg}}</td>
-          <td>{{hjt_avg}}</td>
-        </tr>
-
-        <tr>
-          <td>Low Case</td>
-          <td>{{albedo_low}}</td>
-          <td>{{perc_low}}</td>
-          <td>{{hjt_low}}</td>
-        </tr>
-
-      </thead>
-    </table> -->
-
-    <table border="1">
-      <thead style="display: table-header-group;">
-        <tr>
-          <th>Cases</th>
-          <th>Ground Albedo</th>
-          <th>PERC ΦBifi</th>
-          <th>Si-HJT ΦBifi</th>
+          <th style="padding: 8px; text-align: center;">Cases</th>
+          <th style="padding: 8px; text-align: center;">Ground Albedo</th>
+          <th style="padding: 8px; text-align: center;">PERC ΦBifi</th>
+          <th style="padding: 8px; text-align: center;">Si-HJT ΦBifi</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>High Case</td>
-          <td>0.30</td>
-          <td>0.75</td>
-          <td>0.95</td>
+          <td style="padding: 6px; text-align: center;">High Case</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_high}}</td>
+          <td style="padding: 6px; text-align: center;">{{perc_high}}</td>
+          <td style="padding: 6px; text-align: center;">{{hjt_high}}</td>
         </tr>
         <tr>
-          <td>Average Case</td>
-          <td>0.20</td>
-          <td>0.70</td>
-          <td>0.90</td>
+          <td style="padding: 6px; text-align: center;">Average Case</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_avg}}</td>
+          <td style="padding: 6px; text-align: center;">{{perc_avg}}</td>
+          <td style="padding: 6px; text-align: center;">{{hjt_avg}}</td>
         </tr>
         <tr>
-          <td>Low Case</td>
-          <td>0.15</td>
-          <td>0.65</td>
-          <td>0.85</td>
+          <td style="padding: 6px; text-align: center;">Low Case</td>
+          <td style="padding: 6px; text-align: center;">{{albedo_low}}</td>
+          <td style="padding: 6px; text-align: center;">{{perc_low}}</td>
+          <td style="padding: 6px; text-align: center;">{{hjt_low}}</td>
         </tr>
       </tbody>
     </table>
@@ -1453,7 +1488,7 @@
     </div>
 
     <p>
-      Therefore, the minimum string size should be 25 modules in series.
+      Therefore, the minimum string size should be {{N_MIN_ROUNDED}} modules in series.
     </p>
 
     <p>
@@ -2422,11 +2457,11 @@
 
         </table>
 
-        <h2 class="toc-heading" data-toc-level="1">PVsyst Irradiation Analysis</h2>
+        <h3 class="toc-heading" data-toc-level="2">PVsyst Irradiation Analysis</h3>
 
         {{PVSYST_IRRADIATION_TABLE}}
 
-        <h2 class="toc-heading" data-toc-level="1">PVsyst Energy Loss Analysis</h2>
+        <h3 class="toc-heading" data-toc-level="2">PVsyst Energy Loss Analysis</h3>
 
         {{PVSYST_ENERGY_TABLE}}
 

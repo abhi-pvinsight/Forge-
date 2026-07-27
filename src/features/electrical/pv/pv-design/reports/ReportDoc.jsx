@@ -149,7 +149,7 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const vmpMaxTempVal = calc.VmpHot
     ? Number(calc.VmpHot)
     : (safeSolarCalcValues?.Vmp_Tmax?.[0] || 36.9);
-  const nMin = calculateNMin(values.PCS_Min_PV_Input_Voltage, vmpMaxTempVal);
+  const nMin = calculateNMin(values.PCS_Min_PV_Input_Voltage || 875, vmpMaxTempVal);
   const { irradiationTable, energyTable } = buildPvsystTables(values.pvsystData || {});
   const pvsystLossTemplateValues = buildPvsystLossTemplateValues(values.pvsystData || {});
   const reportMeta = buildReportMeta(values, { name: values.reportName || values?.report?.name || "Design Basis Report" });
@@ -219,6 +219,29 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const dcCapVal = Number(values.dc_capacity || 0);
   const pvAreaPerMwDcStr = dcCapVal > 0 ? (pvAreaVal / dcCapVal).toFixed(2) : "—";
 
+  const albedoMonths = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  const monthlyAlbedoList = albedoMonths
+    .map((m) => values[`albedo_${m}`])
+    .filter((v) => v !== undefined && v !== null && v !== "" && !isNaN(Number(v)))
+    .map(Number);
+
+  let calcAlbedoHigh = "0.30";
+  let calcAlbedoLow = "0.15";
+  let calcAlbedoAvg = "0.20";
+
+  if (monthlyAlbedoList.length > 0) {
+    const maxVal = Math.max(...monthlyAlbedoList);
+    const minVal = Math.min(...monthlyAlbedoList);
+    const sumVal = monthlyAlbedoList.reduce((acc, curr) => acc + curr, 0);
+    const avgVal = sumVal / monthlyAlbedoList.length;
+
+    calcAlbedoHigh = maxVal.toFixed(2);
+    calcAlbedoLow = minVal.toFixed(2);
+    calcAlbedoAvg = avgVal.toFixed(2);
+  } else if (values.albedo_avg != null && values.albedo_avg !== "" && !isNaN(Number(values.albedo_avg))) {
+    calcAlbedoAvg = Number(values.albedo_avg).toFixed(2);
+  }
+
   const templateValues = {
     ...values,
     allTimeMaxVoc: typeof allTimeMaxVocVal === 'number' ? allTimeMaxVocVal.toFixed(2) : allTimeMaxVocVal,
@@ -232,6 +255,28 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     ...pvsystLossTemplateValues,
     submittedTo: values.clientContact || "Signal Energy",
     submittedToAddress: values.clientAddress || "2034 Hamilton Place BLVD. Suite 100 Chattanooga, TN 37421",
+    weather_database: values.weather_database || "SOLCAST(DNV)",
+    albedo_jan: values.albedo_jan ?? "0.20",
+    albedo_feb: values.albedo_feb ?? "0.20",
+    albedo_mar: values.albedo_mar ?? "0.20",
+    albedo_apr: values.albedo_apr ?? "0.20",
+    albedo_may: values.albedo_may ?? "0.20",
+    albedo_jun: values.albedo_jun ?? "0.20",
+    albedo_jul: values.albedo_jul ?? "0.20",
+    albedo_aug: values.albedo_aug ?? "0.20",
+    albedo_sep: values.albedo_sep ?? "0.20",
+    albedo_oct: values.albedo_oct ?? "0.20",
+    albedo_nov: values.albedo_nov ?? "0.20",
+    albedo_dec: values.albedo_dec ?? "0.20",
+    albedo_avg: values.albedo_avg ?? calcAlbedoAvg,
+    albedo_high: values.albedo_high ?? calcAlbedoHigh,
+    albedo_low: values.albedo_low ?? calcAlbedoLow,
+    perc_high: values.perc_high ?? "0.75",
+    perc_avg: values.perc_avg ?? "0.70",
+    perc_low: values.perc_low ?? "0.65",
+    hjt_high: values.hjt_high ?? "0.95",
+    hjt_avg: values.hjt_avg ?? "0.90",
+    hjt_low: values.hjt_low ?? "0.85",
     weather_station_city: values.weather_station_city,
     weather_station_state: values.weather_station_state,
     weather_station_country: values.weather_station_country,
