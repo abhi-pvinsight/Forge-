@@ -412,16 +412,10 @@ export const BESS_TABS = [
     id: 'layout',
     name: 'BESS Layout Design',
     icon: 'layout',
-    blurb: 'Clearance requirements and layout media for the BESS site plan.',
+    blurb: 'Clearance requirements for the BESS site plan.',
     fields: [
       { key: 'bessClearance', label: 'Min Clearance Between Enclosures', type: 'number', required: true, unit: 'ft' },
       { key: 'bessPcsClearance', label: 'Min Clearance Enclosure to PCS', type: 'number', required: true, unit: 'ft' },
-    ],
-    uploads: [
-      { key: 'singleLineDiagram', label: 'Single Line Diagram', hint: 'Image · Electrical single line diagram', required: false },
-      { key: 'loadProfileChart', label: 'Load Profile Chart', hint: 'Image/Chart · Daily BESS load profile', required: false },
-      { key: 'sitePhoto', label: 'Site Layout / Aerial Photo', hint: 'Image · Site layout or aerial view', required: false },
-      { key: 'siteMap', label: 'Site Location Map', hint: 'Image · Site location map', required: false },
     ]
   },
 
