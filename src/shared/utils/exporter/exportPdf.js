@@ -67,6 +67,35 @@ async function inlineImages(htmlString) {
   return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
 }
 
+function prepareReportTablesForPdf(doc) {
+  // Row controls position the final cell so the floating edit actions can be
+  // anchored in the preview. Those editor-only layout changes must not reach
+  // the PDF renderer.
+  doc.querySelectorAll("tr.editable-table-row").forEach((row) => {
+    row.classList.remove("editable-table-row");
+    const lastCell = row.querySelector("td:last-child, th:last-child");
+    if (lastCell?.style.position === "relative") {
+      lastCell.style.removeProperty("position");
+    }
+  });
+
+  doc.querySelectorAll("table").forEach((table) => {
+    const isBorderlessLayoutTable =
+      table.getAttribute("border") === "0" ||
+      table.classList.contains("cover-table") ||
+      table.classList.contains("doc-header-table");
+
+    if (isBorderlessLayoutTable) return;
+
+    table.style.setProperty("border-collapse", "collapse", "important");
+    table.style.setProperty("border-spacing", "0", "important");
+
+    table.querySelectorAll("th, td").forEach((cell) => {
+      cell.style.setProperty("border", "1px solid #000000", "important");
+    });
+  });
+}
+
 
 function buildSolarAppendixValues(values = {}) {
   const storedValues = values.solarAppendixValues || {};
@@ -134,6 +163,8 @@ export async function exportPdfWithToc(
   tempDoc
     .querySelectorAll(".appendix-page ~ .page")
     .forEach((node) => node.remove());
+
+  prepareReportTablesForPdf(tempDoc);
 
   const bodyContent = tempDoc.body.innerHTML.trim();
 

@@ -38,21 +38,25 @@
 } */
     table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: collapse !important;
       font-size: 10.5pt;
       page-break-inside: auto;
       break-inside: auto;
     }
 
     table tr {
-
       page-break-inside: auto;
       break-inside: avoid-column;
     }
 
+    table th,
+    table td {
+      border: 1px solid #000000 !important;
+      padding: 5px;
+    }
+
     table th {
       font-weight: normal;
-      padding: 5px;
     }
 
     /* Special Front-Matter Section Headings (.heading): TOC, LOT, LOF, LOA, Annexures */

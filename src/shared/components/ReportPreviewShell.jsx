@@ -83,7 +83,6 @@ export default function ReportPreviewShell({
   };
 
   useEffect(() => {
-    let observer = null;
     let timer = null;
 
     if (isEditMode) {
@@ -96,23 +95,8 @@ export default function ReportPreviewShell({
 
       timer = setTimeout(initControls, 100);
 
-      const reportEl = document.getElementById(reportElementId);
-      if (reportEl) {
-        let isAttaching = false;
-        observer = new MutationObserver(() => {
-          if (isAttaching) return;
-          isAttaching = true;
-          setTimeout(() => {
-            attachTableEditControls(reportEl);
-            isAttaching = false;
-          }, 150);
-        });
-        observer.observe(reportEl, { childList: true, subtree: true });
-      }
-
       return () => {
         if (timer) clearTimeout(timer);
-        if (observer) observer.disconnect();
       };
     } else {
       const reportEl = document.getElementById(reportElementId);

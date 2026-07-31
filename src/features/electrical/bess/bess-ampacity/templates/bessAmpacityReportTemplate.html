@@ -34,6 +34,7 @@
     text-align: justify;
   }
 
+  table,
   .doc-table {
     width: 100%;
     border-collapse: collapse !important;
@@ -43,14 +44,17 @@
     break-inside: auto;
   }
 
+  table tr,
   .doc-table tr {
     page-break-inside: auto;
     break-inside: avoid-column;
   }
 
+  table th,
+  table td,
   .doc-table th,
   .doc-table td {
-    border: 1px solid black !important;
+    border: 1px solid #000000 !important;
     padding: 5px;
     text-align: left;
     vertical-align: top;

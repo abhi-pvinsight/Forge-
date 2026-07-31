@@ -359,7 +359,7 @@ export function cleanReportEditControls(containerEl) {
   const excludeEls = containerEl.querySelectorAll('.table-action-cell, .table-row-actions, .table-add-row-btn');
   excludeEls.forEach((el) => el.remove());
 
-  // Clean inline position: relative added to td:last-child during edit mode
+  // Clean inline position: relative added to td:last-child during edit mode while preserving border style
   const positionedCells = containerEl.querySelectorAll('td[style*="position"]');
   positionedCells.forEach((cell) => {
     cell.style.position = "";
@@ -392,11 +392,17 @@ export function attachTableEditControls(containerEl) {
       return;
     }
 
-    // Make all table data cells editable
+    // Ensure collapse style on table
+    table.style.borderCollapse = "collapse";
+
+    // Make all table data cells editable and enforce explicit cell border
     const cells = table.querySelectorAll("td, th");
     cells.forEach((cell) => {
       cell.setAttribute("contenteditable", "true");
       cell.setAttribute("suppresscontenteditablewarning", "true");
+      if (!cell.style.border) {
+        cell.style.border = "1px solid #000000";
+      }
     });
 
     const allTrs = Array.from(table.querySelectorAll("tr"));
@@ -452,11 +458,12 @@ if (typeof window !== "undefined") {
     const oldActions = newTr.querySelector(".table-row-actions");
     if (oldActions) oldActions.remove();
 
-    // Clear content of contenteditable cells in the cloned row
+    // Clear content of contenteditable cells in the cloned row and enforce borders
     const cells = newTr.querySelectorAll("td, th");
     cells.forEach((cell) => {
       cell.setAttribute("contenteditable", "true");
       cell.setAttribute("suppresscontenteditablewarning", "true");
+      cell.style.border = "1px solid #000000";
       cell.textContent = "—";
     });
 
@@ -513,6 +520,7 @@ if (typeof window !== "undefined") {
         if (oldActions) oldActions.remove();
         newTr.querySelectorAll("td, th").forEach((cell) => {
           cell.setAttribute("contenteditable", "true");
+          cell.style.border = "1px solid #000000";
           cell.textContent = "—";
         });
         const lastTd = newTr.querySelector("td:last-child");
