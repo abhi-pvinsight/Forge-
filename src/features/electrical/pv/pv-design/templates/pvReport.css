@@ -16,6 +16,14 @@ body, *, p, td, th, div, span, h1, h2, h3, h4, h5, h6 {
     font-family: "Segoe UI", sans-serif !important;
 }
 
+table {
+    border-collapse: collapse !important;
+}
+
+th, td, table th, table td {
+    border: 1px solid #000000 !important;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -46,12 +54,22 @@ body {
     overflow-y: auto;
 }
 
-.preview-panel,.cover-page, .report-page.lot-page, .report-page.toc-page, .report-page.doc-control-page {
+.preview-panel {
     width: 210mm;
     min-height: 297mm;
     margin: 0 auto;
     padding: 0;
     overflow: hidden;
+    background: #ffffff;
+}
+
+.cover-page, .report-page.lot-page, .report-page.toc-page, .report-page.lof-page, .report-page.loa-page, .report-page.doc-control-page {
+    width: 210mm;
+    min-height: 297mm;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    overflow: visible;
     background: #ffffff;
 }
 

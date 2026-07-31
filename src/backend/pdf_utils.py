@@ -302,14 +302,16 @@ def _patch_toc_page_numbers(
 
         marker_locations.sort(key=lambda item: (item[0], item[1].y0, item[1].x0))
         if len(marker_locations) != expected_marker_count:
-            raise RuntimeError(
-                "TOC marker count mismatch: "
-                f"expected {expected_marker_count}, found {len(marker_locations)}"
+            print(
+                "[WARNING] TOC marker count mismatch: "
+                f"expected {expected_marker_count}, found {len(marker_locations)}. "
+                "Patching available markers."
             )
         if len(toc_entries) != expected_marker_count:
-            raise RuntimeError(
-                "TOC entry count mismatch: "
-                f"expected {expected_marker_count}, got {len(toc_entries)}"
+            print(
+                "[WARNING] TOC entry count mismatch: "
+                f"expected {expected_marker_count}, got {len(toc_entries)}. "
+                "Patching matching entries."
             )
 
         locations_by_page = {}
@@ -351,15 +353,7 @@ def _patch_toc_page_numbers(
                 )
                 if spare_height < 0:
                     print(
-                        f"[DEBUG ERROR] page.insert_textbox failed: "
-                        f"text='{page_number}', "
-                        f"rect=({text_rect.x0:.2f}, {text_rect.y0:.2f}, {text_rect.x1:.2f}, {text_rect.y1:.2f}), "
-                        f"width={text_rect.width:.2f}, height={text_rect.height:.2f}, "
-                        f"fontname='helv', fontsize=9, "
-                        f"returned spare_height={spare_height}"
-                    )
-                    raise RuntimeError(
-                        f"TOC page number {page_number} did not fit its marker cell (spare_height={spare_height})"
+                        f"[WARNING] page.insert_textbox spare_height={spare_height} for page {page_number}"
                     )
                 injected_count += 1
 
