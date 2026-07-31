@@ -1680,947 +1680,947 @@
 
     <h3 id="DCTrunkCableSpecifications" class="toc-heading" data-toc-level="2">DC Trunk Cable Specifications</h3>
 
-      <p>
-        Technical specifications of the Trunk cable are as below.
-      </p>
+    <p>
+      Technical specifications of the Trunk cable are as below.
+    </p>
 
-      <h4><b class="toc-table-caption">Table 11: Trunk Cable Technical Specifications</b></h4>
+    <h4><b class="toc-table-caption">Table 11: Trunk Cable Technical Specifications</b></h4>
 
-      <table border="1" style="text-align: center;">
+    <table border="1" style="text-align: center;">
+      <tr>
+        <th>Sr. No</th>
+        <th>Technical Parameters</th>
+        <th>Data</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>Make</td>
+        <td>{{Trunk_Cable_Make}}</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Max. System Voltage</td>
+        <td>{{Trunk_Cable_Max_System_Voltage}}</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Maximum OCPD per String</td>
+        <td>{{Trunk_Cable_Maximum_OCPD_per_String}}</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Selected Trunk System Size</td>
+        <td>{{Trunk_Cable_Selected_Trunk_System_Size}}</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Max. No. of Input Circuits</td>
+        <td>{{Trunk_Cable_Max_No_of_Input_Circuits}}</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Ambient temperature</td>
+        <td>{{Trunk_Cable_Ambient_Temperature}}</td>
+      </tr>
+    </table>
+
+    <h3 id="LoadBreakDisconnectLBD" class="toc-heading" data-toc-level="2">Load Break Disconnect (LBD)</h3>
+
+    <p>
+      Technical specifications of the LBD are as below. Each block would be having 12 to 16 LBDs which would be
+      connected to the 4400kVA Central inverter through sufficiently sized DC cable rated for 2 kV.
+    </p>
+
+    <h4><b class="toc-table-caption">Table 12: Load Break Disconnect Technical Specifications</b></h4>
+
+    <table border="1" style="text-align: center;">
+      <tr>
+        <th>Sr. No</th>
+        <th>Technical Parameters</th>
+        <th>Data</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>Manufacturer</td>
+        <td>{{LBD_Manufacturer}}</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Max. System Voltage</td>
+        <td>{{LBD_Max_System_Voltage}}</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Amperage Rating</td>
+        <td>{{LBD_Amperage_Rating}}</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Short Circuit Current Rating (Isc)</td>
+        <td>{{LBD_Short_Circuit_Current_Rating}}</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Input Wire Size</td>
+        <td>{{LBD_Input_Wire_Size}}</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Output Wire Size</td>
+        <td>{{LBD_Output_Wire_Size}}</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Max. Ambient Temp. Rating</td>
+        <td>{{LBD_Max_Ambient_Temp_Rating}}</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Certification Standards</td>
+        <td>{{LBD_Certification_Standards}}</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Enclosure Fiberglass (Standard)</td>
+        <td>{{LBD_Enclosure_Fiberglass}}</td>
+      </tr>
+
+    </table>
+
+    <h3 id="ACDesignBasis" class="toc-heading" data-toc-level="1">AC Design Basis</h3>
+
+    <h3 id="PowerConversionStationTechnicalSpecifications" class="toc-heading" data-toc-level="2">Power Conversion
+      Station Technical Specifications</h3>
+
+    <p>
+      The technical specifications of the PCS manufactured by {{Centra_inverter_make}} are as follows:
+    </p>
+
+    <h4><b class="toc-table-caption">Table 13: PCS Technical Specifications</b></h4>
+
+    <table border="1" style="text-align: center;">
+      <thead style="display: table-header-group;">
         <tr>
           <th>Sr. No</th>
           <th>Technical Parameters</th>
           <th>Data</th>
         </tr>
+      </thead>
+      <tr>
+        <td>1</td>
+        <td>Model Name</td>
+        <td>{{PCS_Model_Name}}</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Max. DC Input Voltage</td>
+        <td>{{PCS_Max_DC_Input_Voltage}}</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Min. PV input Voltage/ Start-up input Voltage</td>
+        <td>{{PCS_Min_PV_Input_Voltage}}/{{Start_Up_Input_Voltage}}</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>MPP tracker (MPPT) voltage range</td>
+        <td>{{PCS_MPP_Tracker_Min_Voltage_Range}}-{{PCS_MPP_Tracker_Max_Voltage_Range}}</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Full power MPP Voltage range @40°C</td>
+        <td>{{PCS_Full_Power_MPP_Voltage_Range_40C}}</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Available DC Fuse Sizes</td>
+        <td>{{PCS_Available_DC_Fuse_Sizes}}</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>No. of independent MPPT</td>
+        <td>{{PCS_No_of_Independent_MPPT}}</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Max. PV input current</td>
+        <td>{{PCS_Max_PV_Input_Current}}</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Max. PV short circuit current</td>
+        <td>{{PCS_Max_PV_Short_Circuit_Current}}</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Number of DC Inputs</td>
+        <td>{{PCS_Number_of_DC_Inputs}}</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>DC surge protection</td>
+        <td>{{PCS_DC_Surge_Protection}}</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>Max. AC output power</td>
+        <td>{{PCS_Max_AC_Output_Power}}</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>Rated output frequency / range</td>
+        <td>{{PCS_Rated_Output_Frequency_Range}}</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>THD</td>
+        <td>{{PCS_THD}}</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>Power factor at nominal power / Adjustable power factor</td>
+        <td>{{PCS_Power factor at nominal power / Adjustable power factor}}</td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td>Transformer rated power/ Max. power</td>
+        <td>{{PCS_Transformer_Rated_Power}}</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td>Transformer LV/MV Voltage</td>
+        <td>{{PCS_Transformer_LV_MV_Voltage}}</td>
+      </tr>
+      <tr>
+        <td>18</td>
+        <td>Transformer Vector</td>
+        <td>{{PCS_Transformer_Vector}}</td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td>Transformer cooling method</td>
+        <td>{{PCS_Transformer_Cooling_Method}}</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>DC input protection</td>
+        <td>{{PCS_DC_Input_Protection}}</td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td>Inverter output protection</td>
+        <td>{{PCS_Inverter_Output_Protection}}</td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td>AC MV output protection</td>
+        <td>{{PCS_AC_MV_Output_Protection}}</td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>AC surge protection</td>
+        <td>{{PCS_AC_Surge_Protection}}</td>
+      </tr>
+      <tr>
+        <td>24</td>
+        <td>Inverter Max. efficiency</td>
+        <td>{{PCS_Inverter_Max_Efficiency}}</td>
+      </tr>
+      <tr>
+        <td>25</td>
+        <td>Inverter CEC efficiency</td>
+        <td>{{PCS_Inverter_CEC_Efficiency}}</td>
+      </tr>
+      <tr>
+        <td>26</td>
+        <td>Dimensions (W*H*D)</td>
+        <td>{{PCS_Dimensions}}</td>
+      </tr>
+      <tr>
+        <td>27</td>
+        <td>Degree of Protection</td>
+        <td>{{PCS_Degree_of_Protection}}</td>
+      </tr>
+      <tr>
+        <td>28</td>
+        <td>Auxiliary power supply</td>
+        <td>{{PCS_Auxiliary_Power_Supply}}</td>
+      </tr>
+      <tr>
+        <td>29</td>
+        <td>Max. Operating altitude</td>
+        <td>{{PCS_Max_Operating_Altitude}}</td>
+      </tr>
+      <tr>
+        <td>30</td>
+        <td>Communication Standard:</td>
+        <td>{{PCS_Communication_Standard}}</td>
+      </tr>
+      <tr>
+        <td>31</td>
+        <td>Cooling method</td>
+        <td>{{PCS_Cooling_method}}</td>
+      </tr>
 
+    </table>
+
+    <h3 id="GeneralReferenceStandardsforCables" class="toc-heading" data-toc-level="2">General Reference Standards
+      for Cables</h3>
+
+    <p>
+      The General reference standards used for the selection of cable are presented in the following table.
+    </p>
+
+    <h4><b class="toc-table-caption">Table 14: Cable standards</b></h4>
+
+    <table border="1" style="text-align: center;">
+      <thead style="display: table-header-group;">
         <tr>
-          <td>1</td>
-          <td>Make</td>
-          <td>{{Trunk_Cable_Make}}</td>
+          <th>Standard</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>NFPA 70</td>
+        <td>National Electrical Code</td>
+      </tr>
+      <tr>
+        <td>UL-44</td>
+        <td>Standard for Safety Thermoset-Insulated Wires and Cables</td>
+      </tr>
+      <tr>
+        <td>UL-83</td>
+        <td>Standard for Safety Thermoplastic-Insulated Wires and Cables</td>
+      </tr>
+      <tr>
+        <td>UL-854</td>
+        <td>Standard for Service-Entrance Cables</td>
+      </tr>
+      <tr>
+        <td>UL-1277</td>
+        <td>Standard for Safety Electrical Power and Control Tray Cables with Optional Optical-Fiber Members</td>
+      </tr>
+      <tr>
+        <td>ANSI/NEMA WC 74/ICEA S-93-639-2017</td>
+        <td>5-46 kV Shielded Power Cable for Use in the Transmission and Distribution of Electric Energy</td>
+      </tr>
+      <tr>
+        <td>ANSI/NEMA WC 70/ICEA S-95-658-2021</td>
+        <td>Power Cables Rated 2,000 Volts or Less for the Distribution of Electrical Energy</td>
+      </tr>
+      <tr>
+        <td>ICEA S-97-682</td>
+        <td>Standard for Utility Shielded Power Cables Rated 5 through 46kV</td>
+      </tr>
+      <tr>
+        <td>IEEE-48</td>
+        <td>Test Procedures and Requirements for Alternating-Current Cable Terminations Used on Shielded Cables
+          Having
+          Laminated Insulation Rated 2.5kV through 765kV or Extruded Insulation Rated 2.5kV through 500kV</td>
+      </tr>
+      <tr>
+        <td>IEEE-404</td>
+        <td>Extruded and Laminated Dielectric Shielded Cable Joints Rated 2.5kV to 500kV</td>
+      </tr>
+      <tr>
+        <td>IEEE-1202</td>
+        <td>Flame testing of cables for use in cable tray</td>
+      </tr>
+      <tr>
+        <td>IEEE-1210</td>
+        <td>Standard Tests for Determining Compatibility of Cable-Pulling Lubricants with Wire and Cable</td>
+      </tr>
+      <tr>
+        <td>ASTM-B3</td>
+        <td>Standard Specification for Soft or Annealed Copper Wire</td>
+      </tr>
+      <tr>
+        <td>ASTM-B8</td>
+        <td>Standard Specification for Concentric-Lay-Stranded Copper Conductors, Hard, Medium-Hard, or Soft</td>
+      </tr>
+      <tr>
+        <td>ASTM-B33</td>
+        <td>Standard Specification for Tin-Coated Soft or Annealed Copper Wire for Electrical Purposes</td>
+      </tr>
+      <tr>
+        <td>ASTM-B172</td>
+        <td>Standard Specification for Rope-Lay-Stranded Copper Conductors Having Bunch-Stranded Members, for
+          Electrical Conductors</td>
+      </tr>
+      <tr>
+        <td>ASTM-B189</td>
+        <td>Standard Specification for Lead-Coated and Lead-Alloy-Coated Soft Copper Wire for Electrical Purposes
+        </td>
+      </tr>
+      <tr>
+        <td>SEA- AS23190C</td>
+        <td>Straps, Clamps, and Mounting Hardware, Plastic and Metal for Cable Harness Tying and Support</td>
+      </tr>
+      <tr>
+        <td>TIA-455-25-C</td>
+        <td>FOTP- 25 Impact Testing of Optical Fiber Cables</td>
+      </tr>
+      <tr>
+        <td>TIA-455-204</td>
+        <td>FOTP-204 Measurement of Bandwidth on Multimode Fiber</td>
+      </tr>
+      <tr>
+        <td>TIA-455-33-B</td>
+        <td>FOTP-33 Optical Fiber Cable Tensile Loading and Bending Test</td>
+      </tr>
+      <tr>
+        <td>TIA-455-41-A</td>
+        <td>FOTP- 41 Compressive Loading Resistance of Optical Fiber Cables</td>
+      </tr>
+      <tr>
+        <td>TIA-455-78B</td>
+        <td>Measurement Methods and Test Procedure – Attenuation</td>
+      </tr>
+      <tr>
+        <td>TIA-455-177-B</td>
+        <td>FOTP-177 IEC-60793-1-43 Optical Fibers – Part 1-43: Measurement Methods and Test Procedures –
+          Numerical
+          Aperture - REPLACES TIA/EIA-455-7 AND TIA/EIA-455-47</td>
+      </tr>
+      <tr>
+        <td>TIA-455-104-A</td>
+        <td>FOTP-104 Fiber Optic Cable Cyclic Flexing Test</td>
+      </tr>
+
+    </table>
+
+    <h3 id="MVACCables" class="toc-heading" data-toc-level="2">MV AC Cables</h3>
+
+    <p>
+      MV AC cables are specialized electrical cables designed for use in MV distribution or collection systems. MV
+      AC
+      cables play a major role in collecting and transmitting the generated energy from the MV transformers to PV
+      plant substation. The typical specifications of the MV cables are listed below.
+    </p>
+
+    <h4><b class="toc-table-caption">Table 15: MVAC Cable Technical Details</b></h4>
+
+    <table border="1" style="text-align: center;">
+      <tr>
+        <th>Sr. No</th>
+        <th>Technical Description</th>
+        <th>Data</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>Cable sizes</td>
+        <td>500 &amp; 1000 KCMIL</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Rated Voltage</td>
+        <td>35 kV</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Conductor Material</td>
+        <td>Aluminium</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Conductor Type</td>
+        <td>Stranded</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Insulation Type</td>
+        <td>TR-XLPE</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Insulation Level</td>
+        <td>100%</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Concentric Neutral</td>
+        <td>Copper Wires</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Nominal operating Temperature</td>
+        <td>105°C</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>UL Certification</td>
+        <td>UL 1072</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Suitable Installation Type</td>
+        <td>Direct Buried</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>NEC Compliant</td>
+        <td>Yes</td>
+      </tr>
+
+    </table>
+    <h3 style="font-size:13.5pt;" class="toc-heading" data-toc-level="2">Wiring Color Codes</h3>
+
+    <h2 style="font-size:13.5pt;"><b class="toc-table-caption">Table 16: Wiring Color Code</b></h2>
+
+    <table style="width:100%; border-collapse:collapse; font-size:10.5pt;">
+
+      <thead>
+        <tr>
+          <th style="border:1px solid black;">Voltage
+            Class</th>
+          <th style="border:1px solid black;">Wire & Cable
+          </th>
+          <th style="border:1px solid black;">Color</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <!-- 120V -->
+        <tr>
+          <td style="border:1px solid black;" rowspan="4">
+            120 / 208V</td>
+          <td>Line A</td>
+          <td>Black</td>
         </tr>
         <tr>
-          <td>2</td>
-          <td>Max. System Voltage</td>
-          <td>{{Trunk_Cable_Max_System_Voltage}}</td>
+          <td>Line B</td>
+          <td>Red</td>
         </tr>
         <tr>
-          <td>3</td>
-          <td>Maximum OCPD per String</td>
-          <td>{{Trunk_Cable_Maximum_OCPD_per_String}}</td>
+          <td>Line C</td>
+          <td>Blue</td>
         </tr>
         <tr>
-          <td>4</td>
-          <td>Selected Trunk System Size</td>
-          <td>{{Trunk_Cable_Selected_Trunk_System_Size}}</td>
+          <td>Neutral</td>
+          <td>White</td>
+        </tr>
+
+        <!-- 480 -->
+        <tr>
+          <td style="border:1px solid black;" rowspan="4">
+            480 / 800V</td>
+          <td>Line A</td>
+          <td>Brown</td>
         </tr>
         <tr>
-          <td>5</td>
-          <td>Max. No. of Input Circuits</td>
-          <td>{{Trunk_Cable_Max_No_of_Input_Circuits}}</td>
+          <td>Line B</td>
+          <td>Orange</td>
         </tr>
         <tr>
-          <td>6</td>
-          <td>Ambient temperature</td>
-          <td>{{Trunk_Cable_Ambient_Temperature}}</td>
+          <td>Line C</td>
+          <td>Yellow</td>
         </tr>
-      </table>
-
-        <h3 id="LoadBreakDisconnectLBD" class="toc-heading" data-toc-level="2">Load Break Disconnect (LBD)</h3>
-
-        <p>
-          Technical specifications of the LBD are as below. Each block would be having 12 to 16 LBDs which would be
-          connected to the 4400kVA Central inverter through sufficiently sized DC cable rated for 2 kV.
-        </p>
-
-        <h4><b class="toc-table-caption">Table 12: Load Break Disconnect Technical Specifications</b></h4>
-
-        <table border="1" style="text-align: center;">
-          <tr>
-            <th>Sr. No</th>
-            <th>Technical Parameters</th>
-            <th>Data</th>
-          </tr>
-
-          <tr>
-            <td>1</td>
-            <td>Manufacturer</td>
-            <td>{{LBD_Manufacturer}}</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Max. System Voltage</td>
-            <td>{{LBD_Max_System_Voltage}}</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Amperage Rating</td>
-            <td>{{LBD_Amperage_Rating}}</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Short Circuit Current Rating (Isc)</td>
-            <td>{{LBD_Short_Circuit_Current_Rating}}</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Input Wire Size</td>
-            <td>{{LBD_Input_Wire_Size}}</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Output Wire Size</td>
-            <td>{{LBD_Output_Wire_Size}}</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Max. Ambient Temp. Rating</td>
-            <td>{{LBD_Max_Ambient_Temp_Rating}}</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Certification Standards</td>
-            <td>{{LBD_Certification_Standards}}</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>Enclosure Fiberglass (Standard)</td>
-            <td>{{LBD_Enclosure_Fiberglass}}</td>
-          </tr>
-
-        </table>
-
-        <h3 id="ACDesignBasis" class="toc-heading" data-toc-level="1">AC Design Basis</h3>
-
-        <h3 id="PowerConversionStationTechnicalSpecifications" class="toc-heading" data-toc-level="2">Power Conversion
-          Station Technical Specifications</h3>
-
-        <p>
-          The technical specifications of the PCS manufactured by {{Centra_inverter_make}} are as follows:
-        </p>
-
-        <h4><b class="toc-table-caption">Table 13: PCS Technical Specifications</b></h4>
-
-        <table border="1" style="text-align: center;">
-          <thead style="display: table-header-group;">
-            <tr>
-              <th>Sr. No</th>
-              <th>Technical Parameters</th>
-              <th>Data</th>
-            </tr>
-          </thead>
-          <tr>
-            <td>1</td>
-            <td>Model Name</td>
-            <td>{{PCS_Model_Name}}</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Max. DC Input Voltage</td>
-            <td>{{PCS_Max_DC_Input_Voltage}}</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Min. PV input Voltage/ Start-up input Voltage</td>
-            <td>{{PCS_Min_PV_Input_Voltage}}/{{Start_Up_Input_Voltage}}</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>MPP tracker (MPPT) voltage range</td>
-            <td>{{PCS_MPP_Tracker_Min_Voltage_Range}}-{{PCS_MPP_Tracker_Max_Voltage_Range}}</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Full power MPP Voltage range @40°C</td>
-            <td>{{PCS_Full_Power_MPP_Voltage_Range_40C}}</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Available DC Fuse Sizes</td>
-            <td>{{PCS_Available_DC_Fuse_Sizes}}</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>No. of independent MPPT</td>
-            <td>{{PCS_No_of_Independent_MPPT}}</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Max. PV input current</td>
-            <td>{{PCS_Max_PV_Input_Current}}</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>Max. PV short circuit current</td>
-            <td>{{PCS_Max_PV_Short_Circuit_Current}}</td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td>Number of DC Inputs</td>
-            <td>{{PCS_Number_of_DC_Inputs}}</td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td>DC surge protection</td>
-            <td>{{PCS_DC_Surge_Protection}}</td>
-          </tr>
-          <tr>
-            <td>12</td>
-            <td>Max. AC output power</td>
-            <td>{{PCS_Max_AC_Output_Power}}</td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td>Rated output frequency / range</td>
-            <td>{{PCS_Rated_Output_Frequency_Range}}</td>
-          </tr>
-          <tr>
-            <td>14</td>
-            <td>THD</td>
-            <td>{{PCS_THD}}</td>
-          </tr>
-          <tr>
-            <td>15</td>
-            <td>Power factor at nominal power / Adjustable power factor</td>
-            <td>{{PCS_Power factor at nominal power / Adjustable power factor}}</td>
-          </tr>
-          <tr>
-            <td>16</td>
-            <td>Transformer rated power/ Max. power</td>
-            <td>{{PCS_Transformer_Rated_Power}}</td>
-          </tr>
-          <tr>
-            <td>17</td>
-            <td>Transformer LV/MV Voltage</td>
-            <td>{{PCS_Transformer_LV_MV_Voltage}}</td>
-          </tr>
-          <tr>
-            <td>18</td>
-            <td>Transformer Vector</td>
-            <td>{{PCS_Transformer_Vector}}</td>
-          </tr>
-          <tr>
-            <td>19</td>
-            <td>Transformer cooling method</td>
-            <td>{{PCS_Transformer_Cooling_Method}}</td>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td>DC input protection</td>
-            <td>{{PCS_DC_Input_Protection}}</td>
-          </tr>
-          <tr>
-            <td>21</td>
-            <td>Inverter output protection</td>
-            <td>{{PCS_Inverter_Output_Protection}}</td>
-          </tr>
-          <tr>
-            <td>22</td>
-            <td>AC MV output protection</td>
-            <td>{{PCS_AC_MV_Output_Protection}}</td>
-          </tr>
-          <tr>
-            <td>23</td>
-            <td>AC surge protection</td>
-            <td>{{PCS_AC_Surge_Protection}}</td>
-          </tr>
-          <tr>
-            <td>24</td>
-            <td>Inverter Max. efficiency</td>
-            <td>{{PCS_Inverter_Max_Efficiency}}</td>
-          </tr>
-          <tr>
-            <td>25</td>
-            <td>Inverter CEC efficiency</td>
-            <td>{{PCS_Inverter_CEC_Efficiency}}</td>
-          </tr>
-          <tr>
-            <td>26</td>
-            <td>Dimensions (W*H*D)</td>
-            <td>{{PCS_Dimensions}}</td>
-          </tr>
-          <tr>
-            <td>27</td>
-            <td>Degree of Protection</td>
-            <td>{{PCS_Degree_of_Protection}}</td>
-          </tr>
-          <tr>
-            <td>28</td>
-            <td>Auxiliary power supply</td>
-            <td>{{PCS_Auxiliary_Power_Supply}}</td>
-          </tr>
-          <tr>
-            <td>29</td>
-            <td>Max. Operating altitude</td>
-            <td>{{PCS_Max_Operating_Altitude}}</td>
-          </tr>
-          <tr>
-            <td>30</td>
-            <td>Communication Standard:</td>
-            <td>{{PCS_Communication_Standard}}</td>
-          </tr>
-          <tr>
-            <td>31</td>
-            <td>Cooling method</td>
-            <td>{{PCS_Cooling_method}}</td>
-          </tr>
-
-        </table>
-
-        <h3 id="GeneralReferenceStandardsforCables" class="toc-heading" data-toc-level="2">General Reference Standards
-          for Cables</h3>
-
-        <p>
-          The General reference standards used for the selection of cable are presented in the following table.
-        </p>
-
-        <h4><b class="toc-table-caption">Table 14: Cable standards</b></h4>
-
-        <table border="1" style="text-align: center;">
-          <thead style="display: table-header-group;">
-            <tr>
-              <th>Standard</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tr>
-            <td>NFPA 70</td>
-            <td>National Electrical Code</td>
-          </tr>
-          <tr>
-            <td>UL-44</td>
-            <td>Standard for Safety Thermoset-Insulated Wires and Cables</td>
-          </tr>
-          <tr>
-            <td>UL-83</td>
-            <td>Standard for Safety Thermoplastic-Insulated Wires and Cables</td>
-          </tr>
-          <tr>
-            <td>UL-854</td>
-            <td>Standard for Service-Entrance Cables</td>
-          </tr>
-          <tr>
-            <td>UL-1277</td>
-            <td>Standard for Safety Electrical Power and Control Tray Cables with Optional Optical-Fiber Members</td>
-          </tr>
-          <tr>
-            <td>ANSI/NEMA WC 74/ICEA S-93-639-2017</td>
-            <td>5-46 kV Shielded Power Cable for Use in the Transmission and Distribution of Electric Energy</td>
-          </tr>
-          <tr>
-            <td>ANSI/NEMA WC 70/ICEA S-95-658-2021</td>
-            <td>Power Cables Rated 2,000 Volts or Less for the Distribution of Electrical Energy</td>
-          </tr>
-          <tr>
-            <td>ICEA S-97-682</td>
-            <td>Standard for Utility Shielded Power Cables Rated 5 through 46kV</td>
-          </tr>
-          <tr>
-            <td>IEEE-48</td>
-            <td>Test Procedures and Requirements for Alternating-Current Cable Terminations Used on Shielded Cables
-              Having
-              Laminated Insulation Rated 2.5kV through 765kV or Extruded Insulation Rated 2.5kV through 500kV</td>
-          </tr>
-          <tr>
-            <td>IEEE-404</td>
-            <td>Extruded and Laminated Dielectric Shielded Cable Joints Rated 2.5kV to 500kV</td>
-          </tr>
-          <tr>
-            <td>IEEE-1202</td>
-            <td>Flame testing of cables for use in cable tray</td>
-          </tr>
-          <tr>
-            <td>IEEE-1210</td>
-            <td>Standard Tests for Determining Compatibility of Cable-Pulling Lubricants with Wire and Cable</td>
-          </tr>
-          <tr>
-            <td>ASTM-B3</td>
-            <td>Standard Specification for Soft or Annealed Copper Wire</td>
-          </tr>
-          <tr>
-            <td>ASTM-B8</td>
-            <td>Standard Specification for Concentric-Lay-Stranded Copper Conductors, Hard, Medium-Hard, or Soft</td>
-          </tr>
-          <tr>
-            <td>ASTM-B33</td>
-            <td>Standard Specification for Tin-Coated Soft or Annealed Copper Wire for Electrical Purposes</td>
-          </tr>
-          <tr>
-            <td>ASTM-B172</td>
-            <td>Standard Specification for Rope-Lay-Stranded Copper Conductors Having Bunch-Stranded Members, for
-              Electrical Conductors</td>
-          </tr>
-          <tr>
-            <td>ASTM-B189</td>
-            <td>Standard Specification for Lead-Coated and Lead-Alloy-Coated Soft Copper Wire for Electrical Purposes
-            </td>
-          </tr>
-          <tr>
-            <td>SEA- AS23190C</td>
-            <td>Straps, Clamps, and Mounting Hardware, Plastic and Metal for Cable Harness Tying and Support</td>
-          </tr>
-          <tr>
-            <td>TIA-455-25-C</td>
-            <td>FOTP- 25 Impact Testing of Optical Fiber Cables</td>
-          </tr>
-          <tr>
-            <td>TIA-455-204</td>
-            <td>FOTP-204 Measurement of Bandwidth on Multimode Fiber</td>
-          </tr>
-          <tr>
-            <td>TIA-455-33-B</td>
-            <td>FOTP-33 Optical Fiber Cable Tensile Loading and Bending Test</td>
-          </tr>
-          <tr>
-            <td>TIA-455-41-A</td>
-            <td>FOTP- 41 Compressive Loading Resistance of Optical Fiber Cables</td>
-          </tr>
-          <tr>
-            <td>TIA-455-78B</td>
-            <td>Measurement Methods and Test Procedure – Attenuation</td>
-          </tr>
-          <tr>
-            <td>TIA-455-177-B</td>
-            <td>FOTP-177 IEC-60793-1-43 Optical Fibers – Part 1-43: Measurement Methods and Test Procedures –
-              Numerical
-              Aperture - REPLACES TIA/EIA-455-7 AND TIA/EIA-455-47</td>
-          </tr>
-          <tr>
-            <td>TIA-455-104-A</td>
-            <td>FOTP-104 Fiber Optic Cable Cyclic Flexing Test</td>
-          </tr>
-
-        </table>
-
-        <h3 id="MVACCables" class="toc-heading" data-toc-level="2">MV AC Cables</h3>
-
-        <p>
-          MV AC cables are specialized electrical cables designed for use in MV distribution or collection systems. MV
-          AC
-          cables play a major role in collecting and transmitting the generated energy from the MV transformers to PV
-          plant substation. The typical specifications of the MV cables are listed below.
-        </p>
-
-        <h4><b class="toc-table-caption">Table 15: MVAC Cable Technical Details</b></h4>
-
-        <table border="1" style="text-align: center;">
-          <tr>
-            <th>Sr. No</th>
-            <th>Technical Description</th>
-            <th>Data</th>
-          </tr>
-
-          <tr>
-            <td>1</td>
-            <td>Cable sizes</td>
-            <td>500 &amp; 1000 KCMIL</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Rated Voltage</td>
-            <td>35 kV</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Conductor Material</td>
-            <td>Aluminium</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>Conductor Type</td>
-            <td>Stranded</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>Insulation Type</td>
-            <td>TR-XLPE</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>Insulation Level</td>
-            <td>100%</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>Concentric Neutral</td>
-            <td>Copper Wires</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>Nominal operating Temperature</td>
-            <td>105°C</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>UL Certification</td>
-            <td>UL 1072</td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td>Suitable Installation Type</td>
-            <td>Direct Buried</td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td>NEC Compliant</td>
-            <td>Yes</td>
-          </tr>
-
-        </table>
-        <h3 style="font-size:13.5pt;" class="toc-heading" data-toc-level="2">Wiring Color Codes</h3>
-
-        <h2 style="font-size:13.5pt;"><b class="toc-table-caption">Table 16: Wiring Color Code</b></h2>
-
-        <table style="width:100%; border-collapse:collapse; font-size:10.5pt;">
-
-          <thead>
-            <tr>
-              <th style="border:1px solid black;">Voltage
-                Class</th>
-              <th style="border:1px solid black;">Wire & Cable
-              </th>
-              <th style="border:1px solid black;">Color</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <!-- 120V -->
-            <tr>
-              <td style="border:1px solid black;" rowspan="4">
-                120 / 208V</td>
-              <td>Line A</td>
-              <td>Black</td>
-            </tr>
-            <tr>
-              <td>Line B</td>
-              <td>Red</td>
-            </tr>
-            <tr>
-              <td>Line C</td>
-              <td>Blue</td>
-            </tr>
-            <tr>
-              <td>Neutral</td>
-              <td>White</td>
-            </tr>
-
-            <!-- 480 -->
-            <tr>
-              <td style="border:1px solid black;" rowspan="4">
-                480 / 800V</td>
-              <td>Line A</td>
-              <td>Brown</td>
-            </tr>
-            <tr>
-              <td>Line B</td>
-              <td>Orange</td>
-            </tr>
-            <tr>
-              <td>Line C</td>
-              <td>Yellow</td>
-            </tr>
-            <tr>
-              <td>Neutral</td>
-              <td>Grey</td>
-            </tr>
-
-            <!-- MV -->
-            <tr>
-              <td style="border:1px solid black;" rowspan="3">
-                35kV</td>
-              <td>Line A</td>
-              <td rowspan="3">A / B / C phase labeling</td>
-            </tr>
-            <tr>
-              <td>Line B</td>
-            </tr>
-            <tr>
-              <td>Line C</td>
-            </tr>
-
-            <!-- DC -->
-            <tr>
-              <td rowspan="2">DC Conductors</td>
-              <td>Positive</td>
-              <td>Red</td>
-            </tr>
-            <tr>
-              <td>Negative</td>
-              <td>Black</td>
-            </tr>
-
-            <!-- GROUND -->
-            <tr>
-              <td colspan="2">Ground Conductor</td>
-              <td>Green / Bare</td>
-            </tr>
-
-          </tbody>
-
-        </table>
-
-        <h3 id="EnergyGenerationEstimation" class="toc-heading" data-toc-level="1">Energy Generation Estimation</h3>
-
-        <h3 id="UnderstandingAnnualEnergyYieldMethodology" class="toc-heading" data-toc-level="2">Understanding Annual
-          Energy Yield - Methodology</h3>
-
-        <p>
-          For the proposed PV power plant, annual energy yield is defined as the amount of energy fed into the grid
-          after
-          due consideration of all types of generation and distribution losses. The solar PV-based power plant
-          comprises
-          optical energy input and electrical output.
-        </p>
-
-        <p>
-          The optical energy is essentially dependent on the geographical location, seasonal conditions, climatic
-          conditions, and operating parameters with time.
-        </p>
-
-        <p>
-          Electrical output is dependent on the technical specifications of electrical equipment utilized. PVsyst, the
-          industry-standard software, which is used to measure energy yields- has been used for the Energy Generation
-          Assessment.
-        </p>
-
-        <p>
-          The analysis was conducted using the .PAN file for the highest bin wattage 620Wp module.
-        </p>
-
-        <h3 id="LossAssumptions" class="toc-heading" data-toc-level="2">Loss Assumptions</h3>
-
-        <p>
-          In the {{clientContact}}, {{module_make}} {{module_type}}technology PV modules, {{Centra_inverter_make}}
-          Central inverters and {{tracker_make}} single axis tracker in {{tracker_type_1}}x{{tracker_quantity_1}},
-          {{tracker_type_2}}x{{tracker_quantity_2}}, {{tracker_type_3}}x{{tracker_quantity_3}} configuration
-          have been chosen as the major equipment suppliers. The loss assumptions provided in the table below are
-          based on
-          the 90% design calculated values wherever applicable.
-        </p>
-
-        <p>
-          Meteo data from {{met_source}} has been considered for solar radiation and other weatherrelated information
-          for
-          the given location.
-        </p>
-
-        <p>
-          Expected Energy Generation: The simulation of the entire solar PV plant at the proposed location is expected
-          to
-          generate about TBD of energy for the first year at DC-CUF of {{dc_cuf}} at the P50 base value.
-          The 3D
-          shading scene has been used in the current version of the PVsyst.
-        </p>
-
-        <h4><b class="toc-table-caption">Table 17: Anticipated Technical Losses from PVsyst</b></h4>
-
-        <table border="1" style="text-align: center;">
-          <thead style="display: table-header-group;">
-
-            <tr>
-              <th>Description</th>
-              <th>Units</th>
-              <th>Data Inputs</th>
-            </tr>
-          </thead>
-          <tr>
-            <td>Module Make</td>
-            <td>-</td>
-            <td>{{module_make}}-{{module_model}}</td>
-          </tr>
-          <tr>
-            <td>Inverter Make</td>
-            <td>-</td>
-            <td>{{Centra_inverter_make}}-{{Centarl_inverter_model}}</td>
-          </tr>
-          <tr>
-            <td>Scenario</td>
-            <td>-</td>
-            <td>IFC</td>
-          </tr>
-          <tr>
-            <td>Tracker Manufacturer</td>
-            <td>-</td>
-            <td>{{tracker_make}}</td>
-          </tr>
-
-          <tr>
-            <td>North-South Spacing</td>
-            <td>Ft</td>
-            <td>TBD</td>
-          </tr>
-          <tr>
-            <td>Pitch</td>
-            <td>Mtr</td>
-            <td>{{Pitch}}</td>
-          </tr>
-          <tr>
-            <td>GCR</td>
-            <td>%</td>
-            <td>{{gcr}}</td>
-          </tr>
-
-          <tr>
-            <td>Total Area of the Plant Acres</td>
-            <td>Acres</td>
-            <td>{{Total Area of the Plant}}</td>
-          </tr>
-          <tr>
-            <td>Total PV Fence Area</td>
-            <td>Acres</td>
-            <td>{{pv_area}}</td>
-          </tr>
-          <tr>
-            <td>Acres per MW DC</td>
-            <td>Acres</td>
-            <td>{{pvAreaPerMwDc}}</td>
-          </tr>
-
-          <tr>
-            <td>Module Power</td>
-            <td>Wp</td>
-            <td>{{module_wp1}} and {{module_wp2}}</td>
-          </tr>
-          <tr>
-            <td>Inverter Power</td>
-            <td>kVA</td>
-            <td>{{Centarl_inverter_rating}}</td>
-          </tr>
-
-          <tr>
-            <td>Racking type</td>
-            <td>-</td>
-            <td>{{tracker_make}} {{tracker_model}}</td>
-          </tr>
-          <tr>
-            <td>Table configuration</td>
-            <td>-</td>
-            <td>
-              1Px{{tracker_module_1}} ({{tracker_type_1}} )<br>
-              1Px{{tracker_module_2}} ({{tracker_type_2}} )<br>
-              1Px{{tracker_module_3}} ({{tracker_type_3}})
-            </td>
-          </tr>
-          <tr>
-            <td>Tracking Range</td>
-            <td>-</td>
-            <td>{{tracking_range}}</td>
-          </tr>
-          <tr>
-            <td>Total number of Trackers</td>
-            <td>Quantity</td>
-            <td>
-              {{tracker_quantity_1}} ({{tracker_type_1}})<br>
-              {{tracker_quantity_2}} ({{tracker_type_2}} )<br>
-              {{tracker_quantity_3}} ({{tracker_type_3}} )
-            </td>
-          </tr>
-
-          <tr>
-            <td>Total Modules (615Wp)</td>
-            <td>Quantity</td>
-            <td>{{module_qty_615}}</td>
-          </tr>
-          <tr>
-            <td>Total Modules (620Wp)</td>
-            <td>Quantity</td>
-            <td>{{module_qty_620}}</td>
-          </tr>
-
-          <tr>
-            <td>No. of PCS</td>
-            <td>Quantity</td>
-            <td>{{inverter_count}}</td>
-          </tr>
-
-          <tr>
-            <td>AC Capacity</td>
-            <td>MW</td>
-            <td>{{ac_capacity}}</td>
-          </tr>
-          <tr>
-            <td>DC Capacity</td>
-            <td>MWdc</td>
-            <td>{{dc_capacity}}</td>
-          </tr>
-          <tr>
-            <td>Inverter AC Capacity</td>
-            <td>MW</td>
-            <td>{{ac_capacity_inv}}</td>
-          </tr>
-
-          <tr>
-            <td>DC/AC Ratio @POI</td>
-            <td>-</td>
-            <td>{{dc_ac_ratio_poi}}</td>
-          </tr>
-          <tr>
-            <td>DC/AC Ratio @Inverter Capacity</td>
-            <td>-</td>
-            <td>{{dc_ac_ratio_inv}}</td>
-          </tr>
-
-        </table>
-
-        <h3>PVsyst Irradiation Analysis</h3>
-
-        {{PVSYST_IRRADIATION_TABLE}}
-
-        <h3>PVsyst Energy Loss Analysis</h3>
-
-        {{PVSYST_ENERGY_TABLE}}
-
-        <h3 style="color:#2F5597; margin-bottom:5px;" class="toc-heading" data-toc-level="2">
-          Description &amp; Basis of Losses Considered in PVsyst
-        </h3>
-
-        <p><b class="toc-table-caption">Table 18: Losses Description- PVSyst</b></p>
-
-        <table style="width:100%; border-collapse:collapse; ">
-          <thead>
-            <tr style="background-color:#002060; color:white;">
-              <th style="border:1px solid #000; padding:8px; text-align:left;">Loss Parameter</th>
-              <th style="border:1px solid #000; padding:8px; text-align:left;">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Near shading loss</td>
-              <td style="border:1px solid #000; padding:8px;">
-                Modules are arranged in portrait with a collector bandwidth of 2.382m. PVsyst estimates the near shading
-                losses based on the configuration of the table and the interrow pitch which has been maintained at 6.858
-                meters.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">IAM factor</td>
-              <td style="border:1px solid #000; padding:8px;">
-                IAM losses of the modules have been considered based on the definition of PV modules option from the
-                .PAN file provided by {{IAM_factor}}.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Soiling loss factor</td>
-              <td style="border:1px solid #000; padding:8px;">
-                {{Soiling_loss_factor}} soiling loss has been considered per Appendix B Project Energy Model Inputs.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Ground reflection on the front side</td>
-              <td style="border:1px solid #000; padding:8px;">
-                PVsyst takes into consideration the contribution of the irradiance reflected by the ground which is
-                between the rows and reaches the front side of the PV collectors considering the albedo, geometry, and
-                full calculation of the ground points.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Ground reflection loss (albedo)</td>
-              <td style="border:1px solid #000; padding:8px;">
-                PVsyst considers the loss of irradiance due to the reflection (1 - Albedo).
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">PV loss due to irradiance level</td>
-              <td style="border:1px solid #000; padding:8px;">
-                The efficiency of a PV Module reduces at low light intensities. The loss in energy due to low irradiance
-                is calculated by the software based on the Module Technical parameters, i.e., from Rshunt and Rseries
-                considering a single diode model.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">PV loss due to temperature</td>
-              <td style="border:1px solid #000; padding:8px;">
-                PV modules performance reduces with an increase in the temperature. PVsyst calculates the loss factor
-                associated with rising temperature based on the module temperature coefficients and imported weather
-                data.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Electrical Shading Effect</td>
-              <td style="border:1px solid #000; padding:8px;">
-                Shading losses accounting for partial shading on the solar modules. PVI has considered the string
-                partition into account while performing the EYA analysis.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Module quality loss</td>
-              <td style="border:1px solid #000; padding:8px;">
-                Module quality loss is considered as {{Module_quality_loss}} for gain.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">LID – Light-induced degradation</td>
-              <td style="border:1px solid #000; padding:8px;">
-                LID losses have been considered as {{LID – Light-induced_degradation}}.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Mismatch loss, modules, and strings</td>
-              <td style="border:1px solid #000; padding:8px;">
-                Modules are sorted according to the parameters obtained during the flash test and every module would not
-                have the same voltage and current characteristics. A mismatch loss has been considered at
-                {{Mismatch_loss_modules}} (Module)
-                and {{Mismatch_loss_String}} (String) per Appendix B Project Energy Model Inputs.
-              </td>
-            </tr>
-
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">DC Ohmic wiring loss</td>
-              <td style="border:1px solid #000; padding:8px;">
-                The estimated DC losses at IFC design stage are {{DC_Ohmic_wiring_loss}} at STC.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Inverter Loss during operation</td>
-              <td style="border:1px solid #000; padding:8px;">
-                PVsyst estimates the inverter loss during the operation considering the efficiency of the inverters.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Inverter Loss over nominal inv. Power</td>
-              <td style="border:1px solid #000; padding:8px;">
-                The "Overload loss" is the sum of differences between the available Pmpp and the effective limited power
-                accepted by the inverter according to Pnom. This value is computed at each simulation time step by the
-                PVsyst software.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Auxiliaries</td>
-              <td style="border:1px solid #000; padding:8px;">
-                For the Yield Assessment, an auxiliary consumption of {{Auxiliaries}} has been considered based on the
-                estimate of
-                these losses in similar capacity projects.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">AC ohmic loss</td>
-              <td style="border:1px solid #000; padding:8px;">
-                AC ohmic loss from Inverter to Transformer has been calculated at {{AC_ohmic_loss}} at STC based on IFC
-                design
-                takeoffs.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Medium voltage transformer loss</td>
-              <td style="border:1px solid #000; padding:8px;">
-                MV transformer losses have been considered based on the available data provided in the "Transformer Spec
-                Sheet" for a {{Medium_voltage_transformer_loss}} MVA transformer.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">HV Transformer</td>
-              <td style="border:1px solid #000; padding:8px;">
-                HV transformer losses have been considered based on the available data provided in the "Transformer Spec
-                Sheet" for a 220 MVA transformer.
-              </td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #000; padding:8px;">Unused energy (grid limitation)</td>
-              <td style="border:1px solid #000; padding:8px;">
-                Energy loss due to grid limitation of 280 MWac.
-              </td>
-            </tr>
-        </table>
+        <tr>
+          <td>Neutral</td>
+          <td>Grey</td>
+        </tr>
+
+        <!-- MV -->
+        <tr>
+          <td style="border:1px solid black;" rowspan="3">
+            35kV</td>
+          <td>Line A</td>
+          <td rowspan="3">A / B / C phase labeling</td>
+        </tr>
+        <tr>
+          <td>Line B</td>
+        </tr>
+        <tr>
+          <td>Line C</td>
+        </tr>
+
+        <!-- DC -->
+        <tr>
+          <td rowspan="2">DC Conductors</td>
+          <td>Positive</td>
+          <td>Red</td>
+        </tr>
+        <tr>
+          <td>Negative</td>
+          <td>Black</td>
+        </tr>
+
+        <!-- GROUND -->
+        <tr>
+          <td colspan="2">Ground Conductor</td>
+          <td>Green / Bare</td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <h3 id="EnergyGenerationEstimation" class="toc-heading" data-toc-level="1">Energy Generation Estimation</h3>
+
+    <h3 id="UnderstandingAnnualEnergyYieldMethodology" class="toc-heading" data-toc-level="2">Understanding Annual
+      Energy Yield - Methodology</h3>
+
+    <p>
+      For the proposed PV power plant, annual energy yield is defined as the amount of energy fed into the grid
+      after
+      due consideration of all types of generation and distribution losses. The solar PV-based power plant
+      comprises
+      optical energy input and electrical output.
+    </p>
+
+    <p>
+      The optical energy is essentially dependent on the geographical location, seasonal conditions, climatic
+      conditions, and operating parameters with time.
+    </p>
+
+    <p>
+      Electrical output is dependent on the technical specifications of electrical equipment utilized. PVsyst, the
+      industry-standard software, which is used to measure energy yields- has been used for the Energy Generation
+      Assessment.
+    </p>
+
+    <p>
+      The analysis was conducted using the .PAN file for the highest bin wattage 620Wp module.
+    </p>
+
+    <h3 id="LossAssumptions" class="toc-heading" data-toc-level="2">Loss Assumptions</h3>
+
+    <p>
+      In the {{clientContact}}, {{module_make}} {{module_type}}technology PV modules, {{Centra_inverter_make}}
+      Central inverters and {{tracker_make}} single axis tracker in {{tracker_type_1}}x{{tracker_quantity_1}},
+      {{tracker_type_2}}x{{tracker_quantity_2}}, {{tracker_type_3}}x{{tracker_quantity_3}} configuration
+      have been chosen as the major equipment suppliers. The loss assumptions provided in the table below are
+      based on
+      the 90% design calculated values wherever applicable.
+    </p>
+
+    <p>
+      Meteo data from {{met_source}} has been considered for solar radiation and other weatherrelated information
+      for
+      the given location.
+    </p>
+
+    <p>
+      Expected Energy Generation: The simulation of the entire solar PV plant at the proposed location is expected
+      to
+      generate about TBD of energy for the first year at DC-CUF of {{dc_cuf}} at the P50 base value.
+      The 3D
+      shading scene has been used in the current version of the PVsyst.
+    </p>
+
+    <h4><b class="toc-table-caption">Table 17: Anticipated Technical Losses from PVsyst</b></h4>
+
+    <table border="1" style="text-align: center;">
+      <thead style="display: table-header-group;">
+
+        <tr>
+          <th>Description</th>
+          <th>Units</th>
+          <th>Data Inputs</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>Module Make</td>
+        <td>-</td>
+        <td>{{module_make}}-{{module_model}}</td>
+      </tr>
+      <tr>
+        <td>Inverter Make</td>
+        <td>-</td>
+        <td>{{Centra_inverter_make}}-{{Centarl_inverter_model}}</td>
+      </tr>
+      <tr>
+        <td>Scenario</td>
+        <td>-</td>
+        <td>IFC</td>
+      </tr>
+      <tr>
+        <td>Tracker Manufacturer</td>
+        <td>-</td>
+        <td>{{tracker_make}}</td>
+      </tr>
+
+      <tr>
+        <td>North-South Spacing</td>
+        <td>Ft</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td>Pitch</td>
+        <td>Mtr</td>
+        <td>{{Pitch}}</td>
+      </tr>
+      <tr>
+        <td>GCR</td>
+        <td>%</td>
+        <td>{{gcr}}</td>
+      </tr>
+
+      <tr>
+        <td>Total Area of the Plant Acres</td>
+        <td>Acres</td>
+        <td>{{Total Area of the Plant}}</td>
+      </tr>
+      <tr>
+        <td>Total PV Fence Area</td>
+        <td>Acres</td>
+        <td>{{pv_area}}</td>
+      </tr>
+      <tr>
+        <td>Acres per MW DC</td>
+        <td>Acres</td>
+        <td>{{pvAreaPerMwDc}}</td>
+      </tr>
+
+      <tr>
+        <td>Module Power</td>
+        <td>Wp</td>
+        <td>{{module_wp1}} and {{module_wp2}}</td>
+      </tr>
+      <tr>
+        <td>Inverter Power</td>
+        <td>kVA</td>
+        <td>{{Centarl_inverter_rating}}</td>
+      </tr>
+
+      <tr>
+        <td>Racking type</td>
+        <td>-</td>
+        <td>{{tracker_make}} {{tracker_model}}</td>
+      </tr>
+      <tr>
+        <td>Table configuration</td>
+        <td>-</td>
+        <td>
+          1Px{{tracker_module_1}} ({{tracker_type_1}} )<br>
+          1Px{{tracker_module_2}} ({{tracker_type_2}} )<br>
+          1Px{{tracker_module_3}} ({{tracker_type_3}})
+        </td>
+      </tr>
+      <tr>
+        <td>Tracking Range</td>
+        <td>-</td>
+        <td>{{tracking_range}}</td>
+      </tr>
+      <tr>
+        <td>Total number of Trackers</td>
+        <td>Quantity</td>
+        <td>
+          {{tracker_quantity_1}} ({{tracker_type_1}})<br>
+          {{tracker_quantity_2}} ({{tracker_type_2}} )<br>
+          {{tracker_quantity_3}} ({{tracker_type_3}} )
+        </td>
+      </tr>
+
+      <tr>
+        <td>Total Modules (615Wp)</td>
+        <td>Quantity</td>
+        <td>{{module_qty_615}}</td>
+      </tr>
+      <tr>
+        <td>Total Modules (620Wp)</td>
+        <td>Quantity</td>
+        <td>{{module_qty_620}}</td>
+      </tr>
+
+      <tr>
+        <td>No. of PCS</td>
+        <td>Quantity</td>
+        <td>{{inverter_count}}</td>
+      </tr>
+
+      <tr>
+        <td>AC Capacity</td>
+        <td>MW</td>
+        <td>{{ac_capacity}}</td>
+      </tr>
+      <tr>
+        <td>DC Capacity</td>
+        <td>MWdc</td>
+        <td>{{dc_capacity}}</td>
+      </tr>
+      <tr>
+        <td>Inverter AC Capacity</td>
+        <td>MW</td>
+        <td>{{ac_capacity_inv}}</td>
+      </tr>
+
+      <tr>
+        <td>DC/AC Ratio @POI</td>
+        <td>-</td>
+        <td>{{dc_ac_ratio_poi}}</td>
+      </tr>
+      <tr>
+        <td>DC/AC Ratio @Inverter Capacity</td>
+        <td>-</td>
+        <td>{{dc_ac_ratio_inv}}</td>
+      </tr>
+
+    </table>
+
+    <h3>PVsyst Irradiation Analysis</h3>
+
+    {{PVSYST_IRRADIATION_TABLE}}
+
+    <h3>PVsyst Energy Loss Analysis</h3>
+
+    {{PVSYST_ENERGY_TABLE}}
+
+    <h3 style="color:#2F5597; margin-bottom:5px;" class="toc-heading" data-toc-level="2">
+      Description &amp; Basis of Losses Considered in PVsyst
+    </h3>
+
+    <p><b class="toc-table-caption">Table 18: Losses Description- PVSyst</b></p>
+
+    <table style="width:100%; border-collapse:collapse; ">
+      <thead>
+        <tr style="background-color:#002060; color:white;">
+          <th style="border:1px solid #000; padding:8px; text-align:left;">Loss Parameter</th>
+          <th style="border:1px solid #000; padding:8px; text-align:left;">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Near shading loss</td>
+          <td style="border:1px solid #000; padding:8px;">
+            Modules are arranged in portrait with a collector bandwidth of 2.382m. PVsyst estimates the near shading
+            losses based on the configuration of the table and the interrow pitch which has been maintained at 6.858
+            meters.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">IAM factor</td>
+          <td style="border:1px solid #000; padding:8px;">
+            IAM losses of the modules have been considered based on the definition of PV modules option from the
+            .PAN file provided by {{IAM_factor}}.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Soiling loss factor</td>
+          <td style="border:1px solid #000; padding:8px;">
+            {{Soiling_loss_factor}} soiling loss has been considered per Appendix B Project Energy Model Inputs.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Ground reflection on the front side</td>
+          <td style="border:1px solid #000; padding:8px;">
+            PVsyst takes into consideration the contribution of the irradiance reflected by the ground which is
+            between the rows and reaches the front side of the PV collectors considering the albedo, geometry, and
+            full calculation of the ground points.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Ground reflection loss (albedo)</td>
+          <td style="border:1px solid #000; padding:8px;">
+            PVsyst considers the loss of irradiance due to the reflection (1 - Albedo).
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">PV loss due to irradiance level</td>
+          <td style="border:1px solid #000; padding:8px;">
+            The efficiency of a PV Module reduces at low light intensities. The loss in energy due to low irradiance
+            is calculated by the software based on the Module Technical parameters, i.e., from Rshunt and Rseries
+            considering a single diode model.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">PV loss due to temperature</td>
+          <td style="border:1px solid #000; padding:8px;">
+            PV modules performance reduces with an increase in the temperature. PVsyst calculates the loss factor
+            associated with rising temperature based on the module temperature coefficients and imported weather
+            data.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Electrical Shading Effect</td>
+          <td style="border:1px solid #000; padding:8px;">
+            Shading losses accounting for partial shading on the solar modules. PVI has considered the string
+            partition into account while performing the EYA analysis.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Module quality loss</td>
+          <td style="border:1px solid #000; padding:8px;">
+            Module quality loss is considered as {{Module_quality_loss}} for gain.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">LID – Light-induced degradation</td>
+          <td style="border:1px solid #000; padding:8px;">
+            LID losses have been considered as {{LID – Light-induced_degradation}}.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Mismatch loss, modules, and strings</td>
+          <td style="border:1px solid #000; padding:8px;">
+            Modules are sorted according to the parameters obtained during the flash test and every module would not
+            have the same voltage and current characteristics. A mismatch loss has been considered at
+            {{Mismatch_loss_modules}} (Module)
+            and {{Mismatch_loss_String}} (String) per Appendix B Project Energy Model Inputs.
+          </td>
+        </tr>
+
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">DC Ohmic wiring loss</td>
+          <td style="border:1px solid #000; padding:8px;">
+            The estimated DC losses at IFC design stage are {{DC_Ohmic_wiring_loss}} at STC.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Inverter Loss during operation</td>
+          <td style="border:1px solid #000; padding:8px;">
+            PVsyst estimates the inverter loss during the operation considering the efficiency of the inverters.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Inverter Loss over nominal inv. Power</td>
+          <td style="border:1px solid #000; padding:8px;">
+            The "Overload loss" is the sum of differences between the available Pmpp and the effective limited power
+            accepted by the inverter according to Pnom. This value is computed at each simulation time step by the
+            PVsyst software.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Auxiliaries</td>
+          <td style="border:1px solid #000; padding:8px;">
+            For the Yield Assessment, an auxiliary consumption of {{Auxiliaries}} has been considered based on the
+            estimate of
+            these losses in similar capacity projects.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">AC ohmic loss</td>
+          <td style="border:1px solid #000; padding:8px;">
+            AC ohmic loss from Inverter to Transformer has been calculated at {{AC_ohmic_loss}} at STC based on IFC
+            design
+            takeoffs.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Medium voltage transformer loss</td>
+          <td style="border:1px solid #000; padding:8px;">
+            MV transformer losses have been considered based on the available data provided in the "Transformer Spec
+            Sheet" for a {{Medium_voltage_transformer_loss}} MVA transformer.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">HV Transformer</td>
+          <td style="border:1px solid #000; padding:8px;">
+            HV transformer losses have been considered based on the available data provided in the "Transformer Spec
+            Sheet" for a 220 MVA transformer.
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000; padding:8px;">Unused energy (grid limitation)</td>
+          <td style="border:1px solid #000; padding:8px;">
+            Energy loss due to grid limitation of 280 MWac.
+          </td>
+        </tr>
+    </table>
 
   </div>
 
