@@ -738,3 +738,29 @@ table#ashrae_table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* =========================================================
+   UNIVERSAL REPORT TABLE BORDER ENFORCEMENT
+   Ensures table cell borders are preserved across all reports
+   (PV, BESS, HV DBR, etc.) during row addition and deletion.
+   ========================================================= */
+table,
+.doc-table,
+[id*="report" i] table,
+.preview-panel table,
+.report-page table {
+  border-collapse: collapse !important;
+}
+
+table th,
+table td,
+.doc-table th,
+.doc-table td,
+[id*="report" i] table th,
+[id*="report" i] table td,
+.preview-panel table th,
+.preview-panel table td,
+.report-page table th,
+.report-page table td {
+  border: 1px solid #000000 !important;
+}

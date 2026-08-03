@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import SignIn from "../features/auth/components/SignIn";
 import { saveReportApi } from "../features/electrical/pv/pv-design/api/reportsApi";
@@ -8,6 +8,7 @@ import Sidebar from "../features/dashboard/components/Sidebar";
 import Topbar from "../features/dashboard/components/Topbar";
 import Welcome from "../features/dashboard/components/Welcome";
 import ReportList from "../features/dashboard/components/ReportList";
+import SelectClientScreen from "../features/dashboard/components/SelectClientScreen";
 
 import FormScreen from "../features/electrical/pv/pv-design/components/FormScreen.jsx";
 import Generating from "../features/electrical/pv/pv-design/reports/Generating.jsx";
@@ -19,7 +20,7 @@ import { USER } from "../data/constants";
 import { STRING_SIZE_DEFAULTS } from "../features/electrical/pv/pv-design/forms/stringSizingDefaults.js";
 import computeStringSizing from "../features/electrical/pv/pv-design/calculations/stringSizing";
 
-import { findReport } from "../data/navigation";
+import { NAV, findReport } from "../data/navigation";
 
 import BessFormScreen from "../features/electrical/bess/bess-sizing/components/BessFormScreen";
 import { BESS_DEFAULTS } from "../features/electrical/bess/bess-sizing/forms/bessDefaults";
@@ -44,6 +45,7 @@ import HvDbrPreview from "../features/electrical/hv/hv-dbr/reports/HvDbrPreview"
 
 export default function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, signOut, user: authUser } = useAuth();
   // const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   // temorary 
@@ -116,24 +118,60 @@ export default function App() {
     error: null,
   });
 
-  const [sel, setSel] = useState({
-    vertical: null,
-    sub: null,
-    report: null,
-  });
+  // Parse path parts: /dashboard/:vId/:sId/:rId/:phaseParam
+  const pathParts = useMemo(() => {
+    const raw = location.pathname.replace(/^\/(dashboard|reports)\/?/, '');
+    return raw.split('/').filter(Boolean);
+  }, [location.pathname]);
 
-  const [phase, setPhase] = useState("form");
+  const [vId, sId, rId, phaseParam] = pathParts;
+
+  // Derive active selection (sel) and phase directly from URL params
+  const sel = useMemo(() => {
+    if (!vId) return { vertical: null, sub: null, report: null };
+    const vObj = typeof vId === 'object' ? vId : NAV.find(x => x.id === vId);
+    if (!vObj) return { vertical: null, sub: null, report: null };
+    if (!sId) return { vertical: vObj, sub: null, report: null };
+    const sObj = typeof sId === 'object' ? sId : vObj.subs.find(x => x.id === sId);
+    if (!sObj) return { vertical: vObj, sub: null, report: null };
+    if (!rId) return { vertical: vObj, sub: sObj, report: null };
+    const rObj = typeof rId === 'object' ? rId : sObj.reports.find(x => x.id === rId);
+    return { vertical: vObj, sub: sObj, report: rObj || null };
+  }, [vId, sId, rId]);
+
+  const phase = phaseParam || "form";
 
   const [query, setQuery] = useState("");
 
-
-  const [pvValues, setPvValues] = useState({
-    ...STRING_SIZE_DEFAULTS,
+  const [pvValues, setPvValues] = useState(() => {
+    try {
+      const saved = localStorage.getItem('forge_pv_values');
+      return saved ? JSON.parse(saved) : STRING_SIZE_DEFAULTS;
+    } catch {
+      return STRING_SIZE_DEFAULTS;
+    }
   });
 
-  const [bessValues, setBessValues] = useState({
-    ...BESS_DEFAULTS,
+  useEffect(() => {
+    try {
+      localStorage.setItem('forge_pv_values', JSON.stringify(pvValues));
+    } catch (e) {}
+  }, [pvValues]);
+
+  const [bessValues, setBessValues] = useState(() => {
+    try {
+      const saved = localStorage.getItem('forge_bess_values');
+      return saved ? JSON.parse(saved) : BESS_DEFAULTS;
+    } catch {
+      return BESS_DEFAULTS;
+    }
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('forge_bess_values', JSON.stringify(bessValues));
+    } catch (e) {}
+  }, [bessValues]);
 
   const [bessAmpacityValues, setBessAmpacityValues] = useState({
     ...BESS_AMPACITY_DEFAULTS,
@@ -208,41 +246,45 @@ export default function App() {
   }, [theme, t.accent, t.docFont]);
 
   const selectReport = (verticalId, subId, reportId) => {
-    const { vertical, sub, report } = findReport(
-      verticalId,
-      subId,
-      reportId
-    );
-
-    setSel({
-      vertical,
-      sub,
-      report,
-    });
-
-    setCurrentReportId(null); // Clear active report context
-    setSourceReportId(null);
-    setLoadedReportMeta(null);
-    resetDraftSync();
-    setPhase("form");
-  };
-
-  const selectSub = (verticalId, subId) => {
-    const { vertical, sub } = findReport(
-      verticalId,
-      subId,
-      null
-    );
-
-    setSel({
-      vertical,
-      sub,
-      report: null,
-    });
+    const v = typeof verticalId === 'object' ? verticalId?.id : verticalId;
+    const s = typeof subId === 'object' ? subId?.id : subId;
+    const r = typeof reportId === 'object' ? reportId?.id : reportId;
     setCurrentReportId(null);
     setSourceReportId(null);
     setLoadedReportMeta(null);
     resetDraftSync();
+    if (v && s && r) {
+      navigate(`/dashboard/${v}/${s}/${r}/select-client`);
+    }
+  };
+
+  const selectSub = (verticalId, subId) => {
+    const v = typeof verticalId === 'object' ? verticalId?.id : verticalId;
+    const s = typeof subId === 'object' ? subId?.id : subId;
+    setCurrentReportId(null);
+    setSourceReportId(null);
+    setLoadedReportMeta(null);
+    resetDraftSync();
+    if (v && s) {
+      navigate(`/dashboard/${v}/${s}`);
+    } else if (v) {
+      navigate(`/dashboard/${v}`);
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
+  const selectVertical = (verticalId) => {
+    const id = typeof verticalId === 'object' ? verticalId?.id : verticalId;
+    setCurrentReportId(null);
+    setSourceReportId(null);
+    setLoadedReportMeta(null);
+    resetDraftSync();
+    if (id) {
+      navigate(`/dashboard/${id}`);
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   const flattenPvReport = (details) => {
@@ -300,14 +342,6 @@ export default function App() {
       reportId = "hv-dbr";
     }
 
-    const { vertical, sub, report } = findReport(verticalId, subId, reportId);
-
-    setSel({
-      vertical,
-      sub,
-      report,
-    });
-
     const inputs = detail.inputs || {};
     // Extract nested details if returned in single RPC json structure
     const details = inputs.details || inputs;
@@ -327,8 +361,8 @@ export default function App() {
       const flatPv = flattenPvReport(details);
       setPvValues(prev => ({ ...prev, ...metadata_json, ...flatPv }));
     }
-
-    setPhase(targetPhase);
+    resetDraftSync();
+    navigate(`/dashboard/${verticalId}/${subId}/${reportId}/${targetPhase}`);
   };
 
   const handleSelectRecent = (recentMeta, detail) => {
@@ -421,7 +455,9 @@ export default function App() {
     setSourceReportId(currentReportId);
     setCurrentReportId(null);
     setLoadedReportMeta(null);
-    setPhase("form");
+    if (sel.vertical && sel.sub && sel.report) {
+      navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`);
+    }
     setDraftSync({
       dirty: true,
       saving: false,
@@ -451,7 +487,7 @@ export default function App() {
 
       const currentDocNo = values.DOCUMENT_NO || values.grounding_analysis_report_no || "PVI-GEN-001";
       const currentRev = values.REVISION || values.grounding_layout_drawing_no || "A";
-      const currentTitle = values.REPORT_TITLE || sel.report?.name || "Engineering Report";
+      const currentTitle = values.plant_name || values.projectName || values.projectTitle || values.REPORT_TITLE || sel.report?.name || "Engineering Report";
 
       const isVersionChanged = loadedReportMeta && (
         loadedReportMeta.document_no !== currentDocNo ||
@@ -527,7 +563,9 @@ export default function App() {
   };
 
   const handleGenerate = (values) => {
-    setPhase("generating");
+    if (sel.vertical && sel.sub && sel.report) {
+      navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/generating`);
+    }
   };
 
   const handleGoDashboard = () => {
@@ -535,13 +573,7 @@ export default function App() {
     setCurrentReportId(null);
     setSourceReportId(null);
     setLoadedReportMeta(null);
-    setSel({
-      vertical: null,
-      sub: null,
-      report: null,
-    });
-    setPhase("form");
-    navigate("/dashboard", { replace: true });
+    navigate("/dashboard");
   };
 
   if (screen === "signin") {
@@ -564,41 +596,81 @@ export default function App() {
       sel.report.name,
     ];
 
-    if (phase === "generating") {
+    if (phase === "select-client") {
+      crumbs = [
+        sel.vertical.name,
+        sel.sub.name,
+        sel.report.name,
+        "Select Client",
+      ];
+      main = (
+        <SelectClientScreen
+          vertical={sel.vertical}
+          sub={sel.sub}
+          report={sel.report}
+          onSelectRecent={handleSelectRecent}
+          onCloneReport={handleCloneReport}
+          onCancel={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}`)}
+          onContinue={(selectedClient) => {
+            const clientPatch = {
+              clientName: selectedClient.clientName || selectedClient.name || '',
+              clientContact: selectedClient.clientContact || selectedClient.contact || '',
+              clientEmail: selectedClient.clientEmail || selectedClient.email || '',
+              clientAddress: selectedClient.clientAddress || selectedClient.address || '',
+              consultant: selectedClient.consultant || '',
+            };
+
+            if (sel.report.id === 'bess-sizing') {
+              setBessValues((prev) => ({ ...prev, ...clientPatch }));
+            } else if (sel.report.id === 'bess-ampacity') {
+              setBessAmpacityValues((prev) => ({ ...prev, ...clientPatch }));
+            } else if (sel.report.id === 'bess-grounding') {
+              setBessGroundingValues((prev) => ({ ...prev, ...clientPatch }));
+            } else if (sel.report.id === 'hv-dbr') {
+              setHvDbrValues((prev) => ({ ...prev, ...clientPatch }));
+            } else {
+              setPvValues((prev) => ({ ...prev, ...clientPatch }));
+            }
+
+            navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`);
+          }}
+        />
+      );
+    } else if (phase === "generating") {
 
       if (sel.report.id === "bess-sizing") {
         main = (
           <BessGenerating
             values={bessValues}
-            onDone={() => setPhase("preview")}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
       } else if (sel.report.id === "bess-ampacity") {
         main = (
           <BessAmpacityGenerating
             values={bessAmpacityValues}
-            onDone={() => setPhase("preview")}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
       } else if (sel.report.id === "bess-grounding") {
         main = (
           <BessGroundingGenerating
             values={bessGroundingValues}
-            onDone={() => setPhase("preview")}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
       } else if (sel.report.id === "hv-dbr") {
         main = (
           <HvDbrGenerating
             values={hvDbrValues}
-            onDone={() => setPhase("preview")}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
       } else {
         main = (
           <Generating
             values={pvValues}
-            onDone={() => setPhase("preview")}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
       }
@@ -616,14 +688,8 @@ export default function App() {
             bessValues={bessValues}
             //bessFiles={bessFiles}
             bessFiles={files}
-            onBack={() => setPhase("form")}
-            onNew={() =>
-              setSel({
-                vertical: null,
-                sub: null,
-                report: null,
-              })
-            }
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setBessValues(updatedValues);
@@ -638,14 +704,8 @@ export default function App() {
           <BessAmpacityPreview
             values={currentValues}
             files={files}
-            onBack={() => setPhase("form")}
-            onNew={() =>
-              setSel({
-                vertical: null,
-                sub: null,
-                report: null,
-              })
-            }
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setBessAmpacityValues(updatedValues);
@@ -660,14 +720,8 @@ export default function App() {
           <BessGroundingPreview
             values={currentValues}
             files={files}
-            onBack={() => setPhase("form")}
-            onNew={() =>
-              setSel({
-                vertical: null,
-                sub: null,
-                report: null,
-              })
-            }
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setBessGroundingValues(updatedValues);
@@ -681,14 +735,8 @@ export default function App() {
           <HvDbrPreview
             values={currentValues}
             files={files}
-            onBack={() => setPhase("form")}
-            onNew={() =>
-              setSel({
-                vertical: null,
-                sub: null,
-                report: null,
-              })
-            }
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setHvDbrValues(updatedValues);
@@ -703,14 +751,8 @@ export default function App() {
             values={currentValues}
             calc={pvCalc}
             files={currentFiles}
-            onBack={() => setPhase("form")}
-            onNew={() =>
-              setSel({
-                vertical: null,
-                sub: null,
-                report: null,
-              })
-            }
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setPvValues(updatedValues);
@@ -964,11 +1006,22 @@ export default function App() {
         vertical={sel.vertical}
         sub={sel.sub}
         onSelectReport={selectReport}
+        onGoBack={() => selectVertical(sel.vertical)}
+        onGoHome={handleGoDashboard}
       />
     );
 
   } else {
-    main = <Welcome user={currentUser} onSelectRecent={handleSelectRecent} onCloneReport={handleCloneReport} />;
+    main = (
+      <Welcome
+        user={currentUser}
+        onSelectRecent={handleSelectRecent}
+        onCloneReport={handleCloneReport}
+        sel={sel}
+        onSelectVertical={selectVertical}
+        onSelectSub={selectSub}
+      />
+    );
   }
 
   return (
@@ -983,6 +1036,7 @@ export default function App() {
         sel={sel}
         onSelectReport={selectReport}
         onSelectSub={selectSub}
+        onSelectVertical={selectVertical}
         user={currentUser}
         onGoDashboard={handleGoDashboard}
 

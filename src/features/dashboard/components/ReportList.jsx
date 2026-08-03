@@ -2,10 +2,6 @@ import React from 'react';
 import Icon from "../../../shared/components/Icon";
 import { STATUS_META } from "../../../data/navigation";
 
-// export default function ReportList() {
-//   return <section>Report List</section>;
-// }
-
 function EmptySub() {
   return (
     <div className="card" style={{ padding: 22, color: "var(--text-3)", fontSize: 13 }}>
@@ -14,139 +10,122 @@ function EmptySub() {
   );
 }
 
-export default function ReportList(_ref3) {
-  var vertical = _ref3.vertical,
-    sub = _ref3.sub,
-    onSelectReport = _ref3.onSelectReport;
-  return /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      overflowY: 'auto'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      maxWidth: 920,
-      margin: '0 auto',
-      padding: '36px 40px 60px'
-    },
-    className: "fade-up"
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      marginBottom: 6
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 40,
-      height: 40,
-      borderRadius: 10,
-      background: 'var(--surface-2)',
-      border: '1px solid var(--border)',
-      display: 'grid',
-      placeItems: 'center',
-      color: 'var(--accent)'
-    }
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: sub.icon,
-    size: 20
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "label-eyebrow"
-  }, vertical.name), /*#__PURE__*/React.createElement("h1", {
-    style: {
-      fontSize: 24,
-      fontWeight: 600,
-      letterSpacing: '-0.01em',
-      margin: '2px 0 0'
-    }
-  }, sub.name, " Reports"))), /*#__PURE__*/React.createElement("p", {
-    style: {
-      fontSize: 14,
-      color: 'var(--text-2)',
-      margin: '6px 0 26px',
-      maxWidth: 600
-    }
-  }, sub.reports.length, " coded ", sub.reports.length === 1 ? 'template' : 'templates', " available. Select one to load its template and enter inputs."), sub.reports.length === 0 ? /*#__PURE__*/React.createElement(EmptySub, null) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: 14
-    }
-  }, sub.reports.map(function (r) {
-    var meta = STATUS_META[r.status];
-    var disabled = r.status === 'soon';
-    return /*#__PURE__*/React.createElement("button", {
-      key: r.id,
-      disabled: disabled,
-      onClick: function onClick() {
-        return !disabled && onSelectReport(vertical.id, sub.id, r.id);
-      },
-      className: "report-card",
-      style: {
-        textAlign: 'left',
-        padding: 18,
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--r-lg)',
-        background: 'var(--surface)',
-        boxShadow: 'var(--sh-xs)',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.6 : 1,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        transition: 'border-color .14s, box-shadow .14s, transform .08s'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 38,
-        height: 38,
-        borderRadius: 9,
-        background: r.status === 'coded' ? 'var(--accent-soft)' : 'var(--surface-2)',
-        color: r.status === 'coded' ? 'var(--accent-text)' : 'var(--text-3)',
-        display: 'grid',
-        placeItems: 'center'
-      }
-    }, /*#__PURE__*/React.createElement(Icon, {
-      name: "fileText",
-      size: 19
-    })), /*#__PURE__*/React.createElement("span", {
-      className: 'badge ' + meta.cls
-    }, r.status === 'coded' && /*#__PURE__*/React.createElement(Icon, {
-      name: "check",
-      size: 11
-    }), meta.label)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 15,
-        fontWeight: 600,
-        letterSpacing: '-0.01em'
-      }
-    }, r.name), /*#__PURE__*/React.createElement("div", {
-      className: "mono",
-      style: {
-        fontSize: 11.5,
-        color: 'var(--text-3)',
-        marginTop: 4
-      }
-    }, "PVI \xB7 ", vertical.name.slice(0, 4).toUpperCase(), " \xB7 ", r.code)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 'auto',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        fontSize: 12.5,
-        fontWeight: 500,
-        color: disabled ? 'var(--text-4)' : 'var(--accent-text)'
-      }
-    }, disabled ? 'Coming soon' : 'Open template', " ", !disabled && /*#__PURE__*/React.createElement(Icon, {
-      name: "arrowR",
-      size: 14
-    })));
-  }))));
+export default function ReportList({ vertical, sub, onSelectReport, onGoBack, onGoHome }) {
+  return (
+    <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '44px 40px 60px' }} className="fade-up">
+        {/* Navigation Bar with Back buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          {onGoBack && (
+            <button
+              type="button"
+              className="btn btn-soft btn-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onGoBack) onGoBack();
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+            >
+              <Icon name="arrowL" size={14} />
+              <span>Back to {vertical?.name || 'Vertical'}</span>
+            </button>
+          )}
+          {onGoHome && (
+            <button
+              type="button"
+              className="btn btn-soft btn-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onGoHome) onGoHome();
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+            >
+              <span>All Verticals</span>
+            </button>
+          )}
+          <div style={{ fontSize: 13, color: 'var(--text-3)', marginLeft: 'auto' }}>
+            Home / {vertical.name} / <span style={{ color: 'var(--text-1)', fontWeight: 600 }}>{sub.name}</span>
+          </div>
+        </div>
+
+        {/* Title Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <div
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 10,
+              background: 'var(--surface-2)',
+              border: '1px solid var(--border)',
+              display: 'grid',
+              placeItems: 'center',
+              color: 'var(--accent)'
+            }}
+          >
+            <Icon name={sub.icon} size={20} />
+          </div>
+          <div>
+            <div className="label-eyebrow">{vertical.name.toUpperCase()}</div>
+            <h1 style={{ fontSize: 26, fontWeight: 600, letterSpacing: '-0.01em', margin: '2px 0 0' }}>
+              {sub.name} Reports
+            </h1>
+          </div>
+        </div>
+
+        <p style={{ fontSize: 14, color: 'var(--text-2)', margin: '8px 0 28px', maxWidth: 620 }}>
+          {sub.reports.length} coded {sub.reports.length === 1 ? 'template' : 'templates'} available. Select one to load its template and enter inputs.
+        </p>
+
+        {sub.reports.length === 0 ? (
+          <EmptySub />
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+            {sub.reports.map((r) => {
+              const meta = STATUS_META[r.status];
+              const disabled = r.status === 'soon';
+              return (
+                <button
+                  key={r.id}
+                  disabled={disabled}
+                  onClick={() => !disabled && onSelectReport(vertical.id, sub.id, r.id)}
+                  className="report-card"
+                  style={{
+                    textAlign: 'left',
+                    padding: 20,
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--r-lg)',
+                    background: 'var(--surface)',
+                    boxShadow: 'var(--sh-xs)',
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    opacity: disabled ? 0.6 : 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12,
+                    transition: 'all .18s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="mono" style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)' }}>
+                      {r.code}
+                    </span>
+                    <span className={`badge ${meta.cls}`} style={{ fontSize: 10 }}>
+                      {meta.label}
+                    </span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-1)' }}>{r.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
+                      {r.reportTitle || r.name}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

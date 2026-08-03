@@ -17,6 +17,27 @@ export default function ReportRow({ report, onClick, action }) {
   const statusMeta = STATUS_STYLE[report.status] || STATUS_STYLE.draft;
   const clickable = typeof onClick === 'function';
 
+  const values = report.values || {};
+  const projectName =
+    values.plant_name ||
+    values.projectName ||
+    values.projectTitle ||
+    values.project_name ||
+    report.plant_name ||
+    report.projectName ||
+    report.project_name;
+
+  const displayTitle = projectName || report.report_title || 'Unnamed Project';
+  const reportTypeLabel = (report.report_title && report.report_title !== displayTitle)
+    ? report.report_title
+    : (report.report_type ? report.report_type.toUpperCase() : '');
+
+  const subtitleParts = [
+    reportTypeLabel,
+    report.document_no,
+    report.revision ? `Rev ${report.revision}` : null,
+  ].filter(Boolean);
+
   return (
     <div
       className="card"
@@ -33,9 +54,9 @@ export default function ReportRow({ report, onClick, action }) {
         <Icon name="fileText" size={18} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 600 }}>{report.report_title || 'Unnamed Report'}</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>{displayTitle}</div>
         <div className="mono" style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
-          {[report.document_no, report.revision, report.report_type].filter(Boolean).join(' · ')}
+          {subtitleParts.join(' · ')}
         </div>
       </div>
       <span
