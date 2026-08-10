@@ -214,6 +214,10 @@ export async function exportPdfWithToc(
             page-break-inside: auto !important;
             break-inside: auto !important;
           }
+          table tr, .doc-table tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
           th, td, .doc-table th, .doc-table td {
             border: 1px solid #000000 !important;
           }
@@ -236,6 +240,10 @@ export async function exportPdfWithToc(
             table, .doc-table {
               page-break-inside: auto !important;
               break-inside: auto !important;
+            }
+            table tr, .doc-table tr {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
           }
           .cover-page {

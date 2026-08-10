@@ -58,11 +58,11 @@ function renderRevisionHistoryRows(values, reportName, issueDate, revision) {
   if (rows.length === 0) {
     rows.push(`
       <tr class="tr">
-        <td class="td" style="${tdStyle}">${revision ?? "0"}</td>
+        <td class="td" style="${tdStyle}">${revision ?? "A"}</td>
         <td class="td" style="${tdStyle}">${issueDate}</td>
         <td class="td" style="${tdStyle}">${defaultDocNo}</td>
         <td class="td" style="${tdStyle}">${reportName}</td>
-        <td class="td" style="${tdStyle}">Initial Release</td>
+        <td class="td" style="${tdStyle}">Preliminary Design</td>
       </tr>
     `);
   }
@@ -117,8 +117,10 @@ export function buildReportMeta(values = {}, report = {}) {
       values.clientName || values.submittedToCompany || "",
 
     PREPARED_BY:
-      values.preparedBy ||
       "PVinsight Inc",
+
+    PREPARED_BY_ADDRESS:
+      "5717 Legacy Dr Suite 250, Plano, Texas, 75024",
 
     REVISION: revision,
 
@@ -142,15 +144,15 @@ export function buildReportMeta(values = {}, report = {}) {
       values.clientLogo || defaultClientLogo,
 
     submittedTo:
+      values.clientName ||
       values.submittedToCompany ||
       values.clientContact ||
-      values.clientName ||
-      "Signal Energy",
+      "",
 
     submittedToAddress:
-      (values.submittedToAddress ||
-        values.clientAddress ||
-        "2034 Hamilton Place BLVD. Suite 100 Chattanooga, TN 37421").replace(/\r?\n/g, '<br>'),
+      (values.clientAddress ||
+        values.submittedToAddress ||
+        "").replace(/\r?\n/g, '<br>'),
 
     REVISION_HISTORY_ROWS:
       renderRevisionHistoryRows(values, reportTitle, issueDate, revision),

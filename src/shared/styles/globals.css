@@ -764,3 +764,16 @@ table td,
 .report-page table td {
   border: 1px solid #000000 !important;
 }
+
+/* Busbar calculation report intentionally uses borderless working tables. */
+#busbar-sizing-report .busbar-report table.calc-table,
+#busbar-sizing-report .busbar-report table.calc-table thead,
+#busbar-sizing-report .busbar-report table.calc-table tbody,
+#busbar-sizing-report .busbar-report table.calc-table tr,
+#busbar-sizing-report .busbar-report table.calc-table th,
+#busbar-sizing-report .busbar-report table.calc-table td {
+  border: 0 !important;
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}

@@ -1,16 +1,16 @@
 export const CABLE_AMPACITY_TABS = [
 
-  // ─── DOCUMENT INFORMATION ──────────────────────────────────────────────────
+  // ─── CLIENT INFORMATION ────────────────────────────────────────────────────
   {
-    id: 'document',
-    name: 'Document Information',
-    icon: 'file-text',
-    blurb: 'Report title and revision control information shown on the cover sheet.',
+    id: 'client',
+    name: 'Client Information',
+    icon: 'briefcase',
+    blurb: 'Identifies the client and the engagement on the report cover sheet.',
     fields: [
-      { key: 'reportTitle', label: 'Report Title', type: 'text', required: true, placeholder: 'DC & AC Cable Ampacity Report' },
-      { key: 'documentNo', label: 'Document Number', type: 'text', required: true },
-      { key: 'revision', label: 'Revision', type: 'text', required: true, placeholder: 'A' },
-      { key: 'preparedDate', label: 'Prepared Date', type: 'text', required: true },
+      { key: 'clientName', label: 'Client / Company name', type: 'text', required: true, placeholder: 'e.g. Aurora Renewables LLC' },
+      { key: 'clientEmail', label: 'Contact email', type: 'text', required: true, placeholder: 'name@company.com' },
+      { key: 'clientLogo', label: 'Client Logo', type: 'file', required: false, hint: 'Upload company logo image (.png, .jpg, .svg, .webp)' },
+      { key: 'clientAddress', label: 'Client address', type: 'textarea', required: true, placeholder: 'Street, City, State, Country' },
     ]
   },
   {

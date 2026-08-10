@@ -253,6 +253,13 @@ function parseMathFormulaRuns(mathNode, runsArr = [], currentStyle = { font: "Ti
 // ─── TABLE PARSING ──────────────────────────────────────────────────────────
 
 function parseTableElement(node, childrenList) {
+  const isBorderless =
+    node.getAttribute("border") === "0" ||
+    node.classList.contains("calc-table") ||
+    node.classList.contains("busbar-table") ||
+    node.closest("#busbar-sizing-report") !== null ||
+    node.closest(".busbar-report") !== null;
+
   const colWidths = [];
   const colgroup = node.querySelector("colgroup");
   if (colgroup) {
@@ -362,7 +369,12 @@ function parseTableElement(node, childrenList) {
           left: 120,
           right: 120
         },
-        borders: {
+        borders: isBorderless ? {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE }
+        } : {
           top: { style: BorderStyle.SINGLE, size: 4, color: "D0D7E2" },
           bottom: { style: BorderStyle.SINGLE, size: 4, color: "D0D7E2" },
           left: { style: BorderStyle.SINGLE, size: 4, color: "D0D7E2" },

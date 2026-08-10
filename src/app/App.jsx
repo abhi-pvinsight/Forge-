@@ -42,6 +42,11 @@ import { HV_DBR_DEFAULTS } from "../features/electrical/hv/hv-dbr/forms/hvDbrDef
 import HvDbrGenerating from "../features/electrical/hv/hv-dbr/reports/hvDbrGenerating";
 import HvDbrPreview from "../features/electrical/hv/hv-dbr/reports/HvDbrPreview";
 
+import BusbarFormScreen from "../features/electrical/hv/busbar-sizing/components/BusbarFormScreen";
+import { BUSBAR_DEFAULTS } from "../features/electrical/hv/busbar-sizing/forms/busbarDefaults";
+import BusbarGenerating from "../features/electrical/hv/busbar-sizing/reports/busbarGenerating";
+import BusbarPreview from "../features/electrical/hv/busbar-sizing/reports/BusbarPreview";
+
 
 export default function App() {
   const navigate = useNavigate();
@@ -185,6 +190,10 @@ export default function App() {
     ...HV_DBR_DEFAULTS,
   });
 
+  const [busbarValues, setBusbarValues] = useState({
+    ...BUSBAR_DEFAULTS,
+  });
+
   const [files, setFiles] = useState({
     moduleDs: null,
     inverterDs: null,
@@ -206,6 +215,8 @@ export default function App() {
       ? bessGroundingValues
       : sel.report?.id === "hv-dbr"
       ? hvDbrValues
+      : sel.report?.id === "busbar-sizing"
+      ? busbarValues
       : pvValues;
 
   const currentFiles = files;
@@ -340,6 +351,10 @@ export default function App() {
       verticalId = "electrical";
       subId = "hv";
       reportId = "hv-dbr";
+    } else if (recentMeta.report_type === "busbar-sizing" || recentMeta.report_type === "busbar") {
+      verticalId = "electrical";
+      subId = "hv";
+      reportId = "busbar-sizing";
     }
 
     const inputs = detail.inputs || {};
@@ -357,6 +372,8 @@ export default function App() {
       setBessValues(prev => ({ ...prev, ...metadata_json, ...details }));
     } else if (recentMeta.report_type === "hv-dbr") {
       setHvDbrValues(prev => ({ ...prev, ...metadata_json, ...details }));
+    } else if (recentMeta.report_type === "busbar-sizing" || recentMeta.report_type === "busbar") {
+      setBusbarValues(prev => ({ ...prev, ...metadata_json, ...details }));
     } else {
       const flatPv = flattenPvReport(details);
       setPvValues(prev => ({ ...prev, ...metadata_json, ...flatPv }));
@@ -404,6 +421,7 @@ export default function App() {
       "bess-ampacity": bessAmpacityValues,
       "bess-grounding": bessGroundingValues,
       "hv-dbr": hvDbrValues,
+      "busbar-sizing": busbarValues,
       "string-sizing": pvValues
     }[sel.report.id] || pvValues;
 
@@ -426,7 +444,7 @@ export default function App() {
         revision: currentRev,
         issueDate: currentValues.issueDate || todayStr,
         documentName: reportTitle,
-        description: "Initial Release"
+        description: "Preliminary Design"
       });
     }
 
@@ -448,6 +466,8 @@ export default function App() {
       setBessGroundingValues(newValues);
     } else if (sel.report.id === "hv-dbr") {
       setHvDbrValues(newValues);
+    } else if (sel.report.id === "busbar-sizing") {
+      setBusbarValues(newValues);
     } else {
       setPvValues(newValues);
     }
@@ -480,7 +500,8 @@ export default function App() {
         "bess-sizing": "battery",
         "bess-ampacity": "cable",
         "bess-grounding": "grounding",
-        "hv-dbr": "hv-dbr"
+        "hv-dbr": "hv-dbr",
+        "busbar-sizing": "busbar-sizing"
       };
 
       const reportType = typeMap[sel.report?.id] || "pv";
@@ -628,6 +649,8 @@ export default function App() {
               setBessGroundingValues((prev) => ({ ...prev, ...clientPatch }));
             } else if (sel.report.id === 'hv-dbr') {
               setHvDbrValues((prev) => ({ ...prev, ...clientPatch }));
+            } else if (sel.report.id === 'busbar-sizing') {
+              setBusbarValues((prev) => ({ ...prev, ...clientPatch }));
             } else {
               setPvValues((prev) => ({ ...prev, ...clientPatch }));
             }
@@ -663,6 +686,13 @@ export default function App() {
         main = (
           <HvDbrGenerating
             values={hvDbrValues}
+            onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
+          />
+        );
+      } else if (sel.report.id === "busbar-sizing") {
+        main = (
+          <BusbarGenerating
+            values={busbarValues}
             onDone={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/preview`)}
           />
         );
@@ -740,6 +770,20 @@ export default function App() {
             onCloneToRevision={handleCloneToRevision}
             onSave={async (updatedValues) => {
               setHvDbrValues(updatedValues);
+              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+            }}
+          />
+        );
+      } else if (sel.report.id === "busbar-sizing") {
+        main = (
+          <BusbarPreview
+            values={currentValues}
+            files={files}
+            onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
+            onNew={handleGoDashboard}
+            onCloneToRevision={handleCloneToRevision}
+            onSave={async (updatedValues) => {
+              setBusbarValues(updatedValues);
               return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
             }}
           />
@@ -935,6 +979,48 @@ export default function App() {
                 }
               });
               setHvDbrValues(cleared);
+            }}
+          />
+        );
+      } else if (sel.report.id === "busbar-sizing") {
+        main = (
+          <BusbarFormScreen
+            report={sel.report}
+            vertical={sel.vertical}
+            sub={sel.sub}
+            values={busbarValues}
+            setValue={(k, v) => {
+              markDraftDirty();
+              if (typeof k === "object" && k !== null) {
+                setBusbarValues(prev => ({
+                  ...prev,
+                  ...k,
+                }));
+              } else {
+                setBusbarValues(prev => ({
+                  ...prev,
+                  [k]: v,
+                }));
+              }
+            }}
+            files={files}
+            setFile={setFile}
+            onGenerate={() => handleGenerate(busbarValues)}
+            onSaveDraft={handleSaveDraft}
+            onClearAll={() => {
+              markDraftDirty();
+              const cleared = {};
+              Object.keys(BUSBAR_DEFAULTS).forEach(key => {
+                const val = BUSBAR_DEFAULTS[key];
+                if (Array.isArray(val)) {
+                  cleared[key] = [];
+                } else if (typeof val === 'object' && val !== null) {
+                  cleared[key] = {};
+                } else {
+                  cleared[key] = "";
+                }
+              });
+              setBusbarValues(cleared);
             }}
           />
         );

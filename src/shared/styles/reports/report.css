@@ -147,6 +147,12 @@ tr.editable-table-row:focus-within .table-row-actions {
 @media print {
     table, .doc-table {
         border-collapse: collapse !important;
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+    }
+    table tr, .doc-table tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
     th, td, .doc-table th, .doc-table td {
         border: 1px solid #000000 !important;
@@ -159,4 +165,4 @@ tr.editable-table-row:focus-within .table-row-actions {
     [data-pdf-export-exclude="true"] {
         display: none !important;
     }
-}
+}

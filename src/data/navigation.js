@@ -39,6 +39,7 @@ export const NAV = [
         desc: 'Transformers • Switchgear • High voltage',
         reports: [
           { id: 'hv-dbr', name: 'HV Design Basis Report', code: 'HVD', status: 'coded', reportTitle: 'HV Design Basis Report' },
+          { id: 'busbar-sizing', name: 'Aluminium Bus Bar Sizing & Ampacity', code: 'BUS', status: 'coded', reportTitle: 'Aluminium Bus Bar Sizing & Ampacity Report' },
           { id: 'xfmr', name: 'Transformer Sizing Design Basis', code: 'XFR', status: 'soon', reportTitle: 'Transformer Sizing Design Basis Report' },
           { id: 'sld', name: 'SLD Basis Report', code: 'SLD', status: 'soon', reportTitle: 'SLD Basis Report' }
         ]
@@ -51,6 +52,13 @@ export const NAV = [
         reports: [
           { id: 'sag-tension', name: 'Sag & Tension Design Basis', code: 'SAG', status: 'soon', reportTitle: 'Sag & Tension Design Basis Report' }
         ]
+      },
+      {
+        id: 'pss',
+        name: 'PSS',
+        icon: 'cpu',
+        desc: 'Power System Studies • Load Flow • Short Circuit',
+        reports: []
       }
     ]
   },
@@ -72,6 +80,7 @@ export const NAV = [
       },
       { id: 'bess', name: 'BESS', icon: 'battery', desc: 'Civil foundation & pad design', reports: [] },
       { id: 'hv', name: 'HV & Substation', icon: 'tower', desc: 'Substation civil works', reports: [] },
+      { id: 'pss', name: 'PSS', icon: 'cpu', desc: 'PSS civil works & equipment pads', reports: [] },
       { id: 'tline', name: 'TL Lines', icon: 'line', desc: 'Line access & foundations', reports: [] }
     ]
   },
@@ -93,6 +102,7 @@ export const NAV = [
       },
       { id: 'bess', name: 'BESS', icon: 'battery', desc: 'BESS enclosure foundation structure', reports: [] },
       { id: 'hv', name: 'HV & Substation', icon: 'tower', desc: 'Steel structures & gantries', reports: [] },
+      { id: 'pss', name: 'PSS', icon: 'cpu', desc: 'PSS steel & support structures', reports: [] },
       { id: 'tline', name: 'TL Lines', icon: 'line', desc: 'Tower structure & pole design', reports: [] }
     ]
   }

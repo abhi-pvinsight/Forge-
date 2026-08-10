@@ -17,4 +17,4 @@ psycopg2-binary
 supabase
 python-dotenv
 psutil
-nrel-pysam
+nrel-pysam==7.1.1.post1
