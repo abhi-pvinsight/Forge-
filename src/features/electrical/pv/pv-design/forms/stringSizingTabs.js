@@ -31,10 +31,11 @@ export const STRING_SIZE_TABS = [
       placeholder: 'name@company.com'
     },
     {
-      key: "clientLogo",
-      label: "Client Logo",
-      type: "file",
-      required: true
+      key: 'clientLogo',
+      label: 'Client Logo',
+      type: 'file',
+      required: false,
+      hint: 'Upload company logo image (.png, .jpg, .svg, .webp)'
     },
     {
       key: 'clientAddress',
@@ -161,6 +162,37 @@ export const STRING_SIZE_TABS = [
     }]
   },
 
+  {
+    id: 'uploads',
+    name: 'Datasheets & Uploads',
+    icon: 'paperclip',
+    blurb: 'Attach source datasheets. These feed the technical inputs and are referenced in the report appendix.',
+    uploads: [
+      {
+        key: "pvsystReport",
+        label: "PVsyst Loss Diagram Report",
+        accept: ".pdf",
+        required: false
+      }, {
+        key: "moduleExcel",
+        label: "Module Datasheet Excel",
+        required: true,
+        hint: "Upload extracted module datasheet workbook"
+      }, {
+        key: "Results_of_26-year_voltage",
+        label: "Results of 26-year historical SAM simulation voltage chart",
+        hint: "Image file (PNG, JPG) · simulation chart",
+        required: false
+      }, {
+        key: "Results_of_26-year_current",
+        label: "Results of 26-year historical SAM simulation current chart",
+        hint: "Image file (PNG, JPG) · simulation chart",
+        required: false
+      }
+
+    ]
+  },
+
 
   {
     id: 'technical',
@@ -214,6 +246,13 @@ export const STRING_SIZE_TABS = [
           unit: 'm',
           required: true,
           placeholder: '6.0'
+        }, {
+          key: 'gcr',
+          label: 'Ground Coverage Ratio (GCR)',
+          type: 'text',
+          unit: '%',
+          required: true,
+          placeholder: '33.2'
         }
           // }, {
           //   key: 'temp_min',
@@ -234,7 +273,6 @@ export const STRING_SIZE_TABS = [
           // }
         ]
       },
-
       {
         title: 'PV Module',
         fields: [
@@ -253,22 +291,21 @@ export const STRING_SIZE_TABS = [
           }, {
             key: 'module_wp1',
             label: 'Module Wp1',
-            type: 'text',
-            placeholder: 'e.g. 680Wp',
+            type: 'select',
+            options: ['550 Wp', '560 Wp', '570 Wp', '580 Wp', '590 Wp', '600 Wp', '615 Wp', '620 Wp', '680 Wp'],
             required: true
           }, {
             key: 'module_wp2',
             label: 'Module Wp2',
-            type: 'text',
-            placeholder: 'e600Wp',
+            type: 'select',
+            options: ['None', '550 Wp', '560 Wp', '570 Wp', '580 Wp', '590 Wp', '600 Wp', '615 Wp', '620 Wp', '680 Wp'],
             required: true
-          },
-          {
+          }, {
             key: 'module_type',
-            label: 'Module Technolgy',
+            label: 'Module Technology',
             type: 'text',
-            placeholder: 'Bifacial TOPCon Half-cut cel ',
-            required: true,
+            placeholder: 'Bifacial TOPCon Half-cut cell',
+            required: true
           }, {
             key: 'moduleVoc',
             label: 'Voc (STC)',
@@ -428,6 +465,31 @@ export const STRING_SIZE_TABS = [
             unit: 'mm',
             required: true
           }, {
+            key: 'max_lbd_per_pcs',
+            label: 'Max LBDs per PCS',
+            type: 'number',
+            placeholder: '12',
+            required: true
+          }, {
+            key: 'pcs_loop_count',
+            label: 'Max PCS Looped Together',
+            type: 'number',
+            placeholder: '7',
+            required: true
+          }, {
+            key: 'feeder_capacity',
+            label: 'Feeder Capacity',
+            type: 'text',
+            unit: 'MW',
+            placeholder: '12.5',
+            required: true
+          }, {
+            key: 'total_feeders',
+            label: 'Total Feeder Circuits',
+            type: 'number',
+            placeholder: '12',
+            required: true
+          }, {
             key: 'annual_energy',
             label: 'Annual electricity supplied to Grid for 1st year @P50',
             type: 'text',
@@ -466,8 +528,6 @@ export const STRING_SIZE_TABS = [
           }
         ]
       },
-
-
       {
         title: 'Site Conditions',
         fields: [
@@ -558,35 +618,54 @@ export const STRING_SIZE_TABS = [
   },
 
   {
-    id: 'uploads',
-    name: 'Datasheets & Uploads',
-    icon: 'paperclip',
-    blurb: 'Attach source datasheets. These feed the technical inputs and are referenced in the report appendix.',
-    uploads: [
+    id: "albedo",
+    name: "Albedo Inputs",
+    icon: "sun",
+    blurb: "Monthly Ground Albedo values obtained from weather database for site bifacial gain calculations.",
+    groups: [
       {
-        key: "pvsystReport",
-        label: "PVsyst Loss Diagram Report",
-        accept: ".pdf",
-        required: true
-      }, {
-        key: "moduleExcel",
-        label: "Module Datasheet Excel",
-        required: true,
-        hint: "Upload extracted module datasheet workbook"
-      }, {
-        key: "Results_of_26-year_voltage",
-        label: "Results of 26-year historical SAM simulation voltage chart",
-        hint: "Image file (PNG, JPG) · simulation chart",
-        required: false
-      }, {
-        key: "Results_of_26-year_current",
-        label: "Results of 26-year historical SAM simulation current chart",
-        hint: "Image file (PNG, JPG) · simulation chart",
-        required: false
+        title: "Weather & Monthly Albedo Inputs",
+        fields: [
+          { key: "weather_database", label: "Weather Database", type: "text", defaultValue: "SOLCAST(DNV)", placeholder: "SOLCAST(DNV)", required: true },
+          { key: "albedo_jan", label: "January Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_feb", label: "February Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_mar", label: "March Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_apr", label: "April Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_may", label: "May Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_jun", label: "June Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_jul", label: "July Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_aug", label: "August Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_sep", label: "September Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_oct", label: "October Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_nov", label: "November Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_dec", label: "December Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
+          { key: "albedo_avg", label: "Average Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" }
+        ]
       }
-
     ]
   },
+
+  {
+    id: "annexures",
+    name: "Annexure Attachments",
+    icon: "file-text",
+    blurb: "Upload Annexure documents (such as PVsyst Report PDF) to append to the end of the final PDF report.",
+    groups: [
+      {
+        title: "Annexure Attachments",
+        fields: [
+          {
+            key: "pvsyst_pdf_file",
+            label: "Upload PVsyst Report (PDF)",
+            type: "file",
+            accept: ".pdf,application/pdf",
+            required: false
+          }
+        ]
+      }
+    ]
+  },
+
   {
     id: "tracker",
     name: "Tracker System",
@@ -600,27 +679,27 @@ export const STRING_SIZE_TABS = [
         { key: "tracking_range", label: "Tracking Range", type: "text", required: true },]
       },
       {
-        title: 'Tracker 1 info   ',
+        title: 'Tracker 1 info',
         fields: [
-          { key: "tracker_type_1", label: "Tracker Type 1", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_1", label: "Module Qty per Tarcker 1", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_1", label: "Tarcker Quantity 1", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_1", label: "Tracker Type 1", type: "Select", required: true, span: 2, options: ["4 String", "3 String", "2 String", "1 String", "4P", "3P", "2P", "1P"] },
+          { key: "tracker_module_1", label: "Modules per Tracker 1", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_1", label: "Tracker Quantity 1", type: "text", required: true, size: 'half' }
         ]
       },
       {
-        title: 'Tracker 2 info   ',
+        title: 'Tracker 2 info',
         fields: [
-          { key: "tracker_type_2", label: "Tracker Type 2", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_2", label: "Module Qty per Tarcker 2", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_2", label: "Tarcker Quantity 2", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_2", label: "Tracker Type 2", type: "Select", required: true, span: 2, options: ["3 String", "4 String", "2 String", "1 String", "3P", "4P", "2P", "1P"] },
+          { key: "tracker_module_2", label: "Modules per Tracker 2", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_2", label: "Tracker Quantity 2", type: "text", required: true, size: 'half' }
         ]
       },
       {
-        title: 'Tracker 3 info   ',
+        title: 'Tracker 3 info',
         fields: [
-          { key: "tracker_type_3", label: "Tracker Type 3", type: "Select", required: true, span: 2, options: ["1P", "2P", "3P", "4P", "5P"] },
-          { key: "tracker_module_3", label: "Module Qty per Tarcker 3", type: "number", required: true, size: 'half' },
-          { key: "tracker_quantity_3", label: "Tarcker Quantity 3", type: "text", required: true, size: 'half' }
+          { key: "tracker_type_3", label: "Tracker Type 3", type: "Select", required: true, span: 2, options: ["2 String", "4 String", "3 String", "1 String", "2P", "4P", "3P", "1P"] },
+          { key: "tracker_module_3", label: "Modules per Tracker 3", type: "number", required: true, size: 'half' },
+          { key: "tracker_quantity_3", label: "Tracker Quantity 3", type: "text", required: true, size: 'half' }
         ]
       },
 
@@ -953,20 +1032,5 @@ export const STRING_SIZE_TABS = [
     ]
   },
 
-  // {
-  //   id: "performance",
-  //   name: "Performance",
-  //   icon: "bar-chart",
-  //   blurb: "Performance metrics of the PV system based on simulation and modeling.",
-  //   title: "Performance Metrics",
-  //   fields: [
-  //     { key: "annual_energy", label: "Annual Energy", type: "number", unit: "MWh" },
-  //     { key: "specific_yield", label: "Specific Yield", type: "number" },
-  //     { key: "performance_ratio", label: "Performance Ratio", type: "number", unit: "%" },
-  //     { key: "dc_cuf", label: "DC CUF", type: "number", unit: "%" },
-  //     { key: "ac_cuf", label: "AC CUF", type: "number", unit: "%" },
-  //     { key: "degradation", label: "Degradation", type: "number", unit: "%/year" }
-  //   ]
-  // }
 
 ];

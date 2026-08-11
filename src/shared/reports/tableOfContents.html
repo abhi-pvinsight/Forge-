@@ -21,7 +21,8 @@
 
     .report-page.toc-page {
       padding: 3.5rem;
-      height: 100vh;
+      min-height: 100vh;
+      height: auto;
       box-sizing: border-box;
       page-break-after: always;
       font-family: "Segoe UI", SegoeUI, Arial, sans-serif;
@@ -31,9 +32,12 @@
     }
 
     .heading {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 14pt !important;
+      font-weight: normal !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
       margin: 0;
     }
 
@@ -56,7 +60,7 @@
     .list-container > h5.toc-heading,
     .list-container > h6.toc-heading {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       margin: 0;
       padding: 0.14rem 0;
       font-family: "Segoe UI", SegoeUI, Arial, sans-serif;
@@ -64,58 +68,107 @@
       line-height: 1.35;
     }
 
+    .toc-row {
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0.14rem 0 !important;
+      box-sizing: border-box !important;
+    }
+
     .toc-row.toc-level-1 {
       font-weight: bold;
       font-size: 13.5px;
       padding-top: 0.24rem;
+      margin-left: 0 !important;
     }
 
     .toc-row.toc-level-2 {
-      margin-left: 20px;
+      margin-left: 0 !important;
       font-weight: normal;
       font-size: 12.5px;
       padding-top: 0.1rem;
     }
 
+    .toc-row.toc-level-2 .toc-title {
+      padding-left: 20px !important;
+    }
+
     .toc-row.toc-level-3 {
-      margin-left: 40px;
+      margin-left: 0 !important;
       font-weight: normal;
       font-size: 12px;
       padding-top: 0.1rem;
     }
 
-    .toc-heading[data-toc-level="1"] {
-      font-weight: bold;
-      padding-top: 0.24rem;
+    .toc-row.toc-level-3 .toc-title {
+      padding-left: 40px !important;
     }
 
-    .toc-heading[data-toc-level="2"] {
-      margin-left: 20px;
+    .toc-row.toc-level-4 {
+      margin-left: 0 !important;
       font-weight: normal;
+      font-size: 12px;
       padding-top: 0.1rem;
     }
 
-    .toc-heading[data-toc-level="3"] {
-      margin-left: 40px;
-      font-weight: normal;
-      padding-top: 0.1rem;
+    .toc-row.toc-level-4 .toc-title {
+      padding-left: 60px !important;
+    }
+
+    .toc-heading[data-toc-level="1"],
+    [data-toc-level="1"] {
+      font-size: 16pt !important;
+      font-weight: bold !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
+    }
+
+    .toc-heading[data-toc-level="2"],
+    [data-toc-level="2"] {
+      font-size: 14pt !important;
+      font-weight: bold !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
+    }
+
+    .toc-heading[data-toc-level="3"],
+    [data-toc-level="3"] {
+      font-size: 12pt !important;
+      font-weight: bold !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
     }
 
     .toc-title {
+      background-color: #fff;
+      padding-right: 0.25rem;
+      z-index: 1;
       white-space: nowrap;
     }
 
     .toc-dots {
       flex: 1;
-      border-bottom: 1px dotted #000;
-      margin: 0 ;
-      transform: translateY(-3px);
+      border-bottom: 1px dotted #94a3b8;
+      height: 0;
+      align-self: center;
+      margin: 0 0.25rem;
     }
 
     .toc-page-num {
-      white-space: nowrap;
-      min-width: 20px;
+      background-color: #fff;
+      padding-left: 0.5rem;
+      z-index: 1;
       text-align: right;
+      min-width: 1.5rem;
+      white-space: nowrap;
     }
 
     .title {
@@ -136,6 +189,20 @@
       z-index: 1;
       text-align: right;
       min-width: 1.5rem;
+    }
+
+    a.toc-link,
+    a.toc-link:link,
+    a.toc-link:visited,
+    a.toc-link:hover,
+    a.toc-link:active,
+    a.toc-link *,
+    .toc-row a,
+    .toc-row a * {
+      display: contents;
+      text-decoration: none !important;
+      color: inherit !important;
+      cursor: pointer !important;
     }
   </style>
 </head>

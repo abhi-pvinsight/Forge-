@@ -21,7 +21,8 @@
 
     .report-page.lot-page {
       padding: 3.5rem;
-      height: 100vh;
+      min-height: 100vh;
+      height: auto;
       box-sizing: border-box;
       page-break-after: always;
       font-family: "Segoe UI", SegoeUI, Arial, sans-serif;
@@ -38,9 +39,12 @@
     }
 
     .heading {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 14pt !important;
+      font-weight: normal !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
       margin: 0;
     }
 
@@ -58,7 +62,7 @@
 
     .lot-row {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       width: 100%;
       color: #334155;
       font-size: 0.95rem;
@@ -78,7 +82,9 @@
     .dot-leader {
       flex-grow: 1;
       border-bottom: 1px dotted #94a3b8;
-      margin-bottom: 0;
+      height: 0;
+      align-self: center;
+      margin: 0 0.25rem;
     }
 
     .page-number {
@@ -92,7 +98,7 @@
     /* Support classes for dynamically rendered simple lists */
     .toc-row {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       width: 100%;
       color: #334155;
       font-size: 0.95rem;
@@ -101,10 +107,32 @@
       line-height: 1.4;
     }
 
+    .toc-dots {
+      flex: 1;
+      border-bottom: 1px dotted #94a3b8;
+      height: 0;
+      align-self: center;
+      margin: 0 0.25rem;
+    }
+
     .toc-title {
       background-color: #fff;
       padding-right: 0.5rem;
       z-index: 1;
+    }
+
+    a.toc-link,
+    a.toc-link:link,
+    a.toc-link:visited,
+    a.toc-link:hover,
+    a.toc-link:active,
+    a.toc-link *,
+    .toc-row a,
+    .toc-row a * {
+      display: contents;
+      text-decoration: none !important;
+      color: inherit !important;
+      cursor: pointer !important;
     }
   </style>
 </head>
@@ -116,8 +144,12 @@
       {{LIST_OF_TABLES_PLACEHOLDER}}
     </div>
 
-    <div id="lof-content">
+    <div id="lof-content" style="margin-bottom: 3rem;">
       {{LIST_OF_FIGURES_PLACEHOLDER}}
+    </div>
+
+    <div id="loa-content">
+      {{LIST_OF_ANNEXURES_PLACEHOLDER}}
     </div>
   </div>
 

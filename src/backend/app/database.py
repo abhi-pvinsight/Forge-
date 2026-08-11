@@ -4,22 +4,32 @@ from sqlalchemy import create_engine, Column, Integer, String, JSON, ForeignKey,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-# Update this line with your local PostgreSQL credentials:
-# Format: postgresql://username:password@localhost:5432/database_name
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/forge")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:root@localhost:5433/forge")
 
-try:
-    engine = create_engine(DATABASE_URL, pool_size=5, max_overflow=10)
-    # Quick probe to verify if PostgreSQL server is alive:
-    with engine.connect() as conn:
-        pass
-except Exception:
-    print("⚠️  PostgreSQL connection failed. Falling back to local SQLite database (forge.db)...")
-    DATABASE_URL = "sqlite:///forge.db"
-    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL, pool_size=5, max_overflow=10)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+class Organization(Base):
+    __tablename__ = "organizations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+
+class Profile(Base):
+    __tablename__ = "profiles"
+    
+    id = Column(String, primary_key=True, index=True)
+    organization_id = Column(Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=True)
+    role = Column(String, default="member")
+    full_name = Column(String, nullable=True)
+    department = Column(String, nullable=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    
+    organization = relationship("Organization")
+
 
 # Existing schemas:
 class PVModule(Base):

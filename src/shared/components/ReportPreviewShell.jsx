@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Icon from "./Icon";
 import { exportPdfWithToc } from "../utils/exporter/exportPdf";
 import { exportDocx } from "../utils/exporter/exportDocx";
 import CircularProgressLoader from "./CircularProgressLoader";
+import { resyncReportDom, attachTableEditControls, cleanReportEditControls } from "../reports/utils/tocScanner";
 
 const TODAY = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
@@ -81,18 +82,53 @@ export default function ReportPreviewShell({
     });
   };
 
+  useEffect(() => {
+    let timer = null;
+
+    if (isEditMode) {
+      const initControls = () => {
+        const reportEl = document.getElementById(reportElementId);
+        if (reportEl) {
+          attachTableEditControls(reportEl);
+        }
+      };
+
+      timer = setTimeout(initControls, 100);
+
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
+    } else {
+      const reportEl = document.getElementById(reportElementId);
+      if (reportEl) {
+        cleanReportEditControls(reportEl);
+      }
+    }
+  }, [isEditMode, reportElementId]);
+
   const handleSaveToDatabase = async () => {
     setIsSavingToDb(true);
     try {
       const reportEl = document.getElementById(reportElementId);
+      if (isEditMode && reportEl) {
+        resyncReportDom(reportEl);
+      }
       const finalHtml = isEditMode 
         ? (reportEl ? reportEl.innerHTML : tempHtml) 
         : (tempHtml || values.custom_html || null);
+
+      if (finalHtml) {
+        setTempHtml(finalHtml);
+      }
+
       await onSave({
         ...values,
         custom_html: finalHtml
       });
       setIsSavedToDb(true);
+      if (isEditMode) {
+        setIsEditMode(false);
+      }
     } catch (err) {
       console.error("Failed to save report to database:", err);
       alert("Failed to save report: " + err.message);
@@ -202,7 +238,18 @@ export default function ReportPreviewShell({
     setIsSaving(true);
     try {
       const reportEl = document.getElementById(reportElementId);
+
+      // Re-sync TOC, List of Tables, List of Figures, and heading numbering
+      // against what the user has left in the live DOM before snapshotting.
+      if (reportEl) {
+        resyncReportDom(reportEl);
+      }
+
       const finalHtml = reportEl ? reportEl.innerHTML : tempHtml;
+      
+      // Update local state immediately so React renders finalHtml in Preview
+      setTempHtml(finalHtml);
+
       await onSave({
         ...values,
         custom_html: finalHtml

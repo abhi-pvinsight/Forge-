@@ -22,6 +22,7 @@
     .report-page.loa-page {
       padding: 3.5rem;
       min-height: 100vh;
+      height: auto;
       box-sizing: border-box;
       page-break-after: always;
       font-family: "Segoe UI", SegoeUI, Arial, sans-serif;
@@ -31,9 +32,12 @@
     }
 
     .heading {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 14pt !important;
+      font-weight: normal !important;
+      text-align: left !important;
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      color: #2F5597 !important;
       margin: 0;
     }
 
@@ -83,7 +87,7 @@
     .abbreviations-table th,
     .abbreviations-table td {
       padding: 8px 12px;
-      border-bottom: 1px dotted #999;
+      border-bottom: 1px dotted #cbd5e1;
       text-align: left;
     }
 
@@ -91,6 +95,67 @@
       color: #1a3e6f;
       font-weight: bold;
       border-bottom: 2px solid #1a3e6f;
+    }
+
+    .abbreviation-row:hover {
+      background-color: #f8fafc;
+    }
+
+    .loa-del-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.15s, background-color 0.15s;
+    }
+
+    .loa-del-btn:hover {
+      opacity: 1;
+      background-color: #fee2e2;
+    }
+
+    .loa-edit-controls {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .loa-add-btn, .loa-clean-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .loa-add-btn {
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .loa-add-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .loa-clean-btn {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+
+    .loa-clean-btn:hover {
+      background: #bae6fd;
+      border-color: #7dd3fc;
     }
   </style>
 </head>

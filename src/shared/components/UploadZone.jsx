@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Icon from "./Icon";
 
 export default function UploadZone({ spec, file, onSet, onClear }) {
@@ -25,7 +25,7 @@ export default function UploadZone({ spec, file, onSet, onClear }) {
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{file.name}</div>
           <div className="mono" style={{ fontSize: 11, color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Icon name="check" size={12} /> Uploaded · {(file.size ? (file.size/1024/1024).toFixed(1) : (1.2 + Math.random()).toFixed(1))} MB
+            <Icon name="check" size={12} /> Uploaded · {(file.size ? (file.size/1024/1024).toFixed(1) : '0.0')} MB
           </div>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={onClear} style={{ height: 30, padding: '0 10px' }}>
@@ -48,7 +48,7 @@ export default function UploadZone({ spec, file, onSet, onClear }) {
         display: 'flex', alignItems: 'center', gap: 13, transition: 'all .14s ease',
       }}
     >
-      <input ref={inputRef} type="file" style={{ display: 'none' }} onChange={e => pick(e.target.files[0])} />
+      <input ref={inputRef} type="file" accept={spec.accept} style={{ display: 'none' }} onChange={e => pick(e.target.files[0])} />
       <div style={{ width: 40, height: 40, borderRadius: 9, background: 'var(--surface)', border: '1px solid var(--border)', display: 'grid', placeItems: 'center', color: drag ? 'var(--accent)' : 'var(--text-3)', flex: 'none' }}>
         <Icon name="upload" size={19} />
       </div>

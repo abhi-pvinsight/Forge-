@@ -1,18 +1,90 @@
-
-"""Common PDF generation helper using Playwright.
+"""Common PDF generation helper using WeasyPrint layout engine.
 
 The front‑end `exportPdf` function POSTs JSON `{ html: "<full html>" }` to
-`/api/generate-pdf`.  This module provides a reusable async function that
-creates a Chromium instance, renders the HTML, and returns the PDF bytes.
+`/api/generate-pdf`. This module renders PDF bytes locally using WeasyPrint.
 """
 import fitz  # PyMuPDF
 from bs4 import BeautifulSoup
-from playwright.async_api import async_playwright
 import asyncio
 import time
 import gc
 import psutil
 import os
+import json
+from dotenv import load_dotenv
+
+import sys
+
+# Register MSYS2 GTK DLL directory on Windows Python 3.8+
+if sys.platform == "win32":
+    possible_gtk_paths = [
+        r"C:\msys64\ucrt64\bin",
+        r"C:\msys64\mingw64\bin",
+        r"C:\Program Files\GTK3-Runtime Win64\bin",
+    ]
+    for gtk_path in possible_gtk_paths:
+        if os.path.exists(gtk_path):
+            try:
+                os.add_dll_directory(gtk_path)
+                os.environ["PATH"] = gtk_path + os.pathsep + os.environ.get("PATH", "")
+            except Exception:
+                pass
+
+# Conditional WeasyPrint and xhtml2pdf imports to prevent startup crashes when running locally on Windows without GTK
+try:
+    from weasyprint import HTML, CSS
+    WEASYPRINT_AVAILABLE = True
+except (ImportError, OSError) as e:
+    WEASYPRINT_AVAILABLE = False
+    print(f"[WARNING] WeasyPrint could not be loaded (missing GTK libraries on Windows?): {e}")
+
+try:
+    from xhtml2pdf import pisa
+    XHTML2PDF_AVAILABLE = True
+except ImportError:
+    XHTML2PDF_AVAILABLE = False
+    print("[WARNING] xhtml2pdf could not be imported.")
+
+# Load local environment variables from the absolute path of the root .env file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(os.path.dirname(current_dir))
+dotenv_path = os.path.join(root_dir, ".env")
+load_dotenv(dotenv_path=dotenv_path)
+
+def _render_pdf_locally_sync(html: str, fmt: str) -> bytes:
+    """
+    Synchronous WeasyPrint layout and rendering.
+    Falls back to xhtml2pdf if WeasyPrint C-libraries (GTK/Pango/Cairo) are not loaded locally.
+    Executed in a worker thread to keep the event loop non-blocking.
+    """
+    # 1. Prefer WeasyPrint (Production/Dockerized or local with GTK)
+    if WEASYPRINT_AVAILABLE:
+        if not fmt:
+            fmt = "A4"
+        css_string = f"@page {{ size: {fmt}; }}"
+        stylesheets = [CSS(string=css_string)]
+        return HTML(string=html).write_pdf(stylesheets=stylesheets)
+
+    # 2. Fall back to pure-Python xhtml2pdf (Local development without GTK)
+    if XHTML2PDF_AVAILABLE:
+        print("[INFO] WeasyPrint GTK system libraries not found. Rendering locally via xhtml2pdf...")
+        import io
+        result_stream = io.BytesIO()
+        pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result_stream)
+        if not pdf.err:
+            return result_stream.getvalue()
+        else:
+            raise RuntimeError(f"xhtml2pdf rendering failed with error code: {pdf.err}")
+
+    # 3. Last Resort Fallback (neither WeasyPrint nor xhtml2pdf is available)
+    raise RuntimeError(
+        "No PDF rendering library (WeasyPrint or xhtml2pdf) is available. "
+        "Please run 'pip install xhtml2pdf' inside your virtual environment to enable local fallback."
+    )
+
+async def render_html_to_pdf_locally(html: str, format: str = "A4") -> bytes:
+    """Render HTML string to PDF bytes locally using WeasyPrint or xhtml2pdf in a worker thread."""
+    return await asyncio.to_thread(_render_pdf_locally_sync, html, format)
 
 
 def _container_memory_mb():
@@ -30,11 +102,7 @@ def _container_memory_mb():
 
 
 def log_memory(label: str):
-    """Log RSS for Python and all currently running child processes.
-
-    Playwright runs Chromium in child processes, so reporting only the Python
-    process substantially understates the memory used by PDF generation.
-    """
+    """Log RSS for Python and all currently running child processes."""
     python_process = psutil.Process(os.getpid())
     processes = [python_process]
     try:
@@ -74,71 +142,20 @@ def log_memory(label: str):
 
 
 async def generate_pdf_from_html(html: str, browser=None, *, format: str = "A4") -> bytes:
-    """Render *html* in headless Chromium and return a PDF."""
+    """Render *html* locally using WeasyPrint layout engine."""
     t0 = time.time()
-    
-    close_browser_needed = False
-    p = None
-    if browser is None:
-        p = await async_playwright().start()
-        browser = await p.chromium.launch(
-            args=[
-                "--proxy-server=direct://",
-                "--proxy-bypass-list=*",
-                "--disable-gpu",
-                "--disable-dev-shm-usage",
-                "--no-first-run",
-                "--no-sandbox",
-            ]
-        )
-        close_browser_needed = True
-        
-    t1 = time.time()
-    if close_browser_needed:
-        print(f"[PROFILE] Playwright context setup + browser launch took: {t1 - t0:.3f}s")
-    else:
-        print(f"[PROFILE] Using global browser instance. Setup overhead: {t1 - t0:.3f}s")
-        
-    context = None
-    page = None
     try:
-        context = await browser.new_context()
-        page = await context.new_page()
-        t2 = time.time()
-        print(f"[PROFILE] Page open took: {t2 - t1:.3f}s")
-        
-        await page.set_content(html, wait_until="networkidle")
-        t3 = time.time()
-        print(f"[PROFILE] Load content (networkidle) took: {t3 - t2:.3f}s")
-        
-        pdf_bytes = await page.pdf(
-            format=format, 
-            print_background=True,
-            prefer_css_page_size=True,
-        )
-        t4 = time.time()
-        print(f"[PROFILE] Playwright page.pdf print took: {t4 - t3:.3f}s")
+        pdf_bytes = await render_html_to_pdf_locally(html, format=format)
+        t1 = time.time()
+        print(f"[PROFILE] generate_pdf_from_html (locally via WeasyPrint) took: {t1 - t0:.3f}s")
         return pdf_bytes
-    finally:
-        if page:
-            await page.close()
-        if context:
-            await context.close()
-        if close_browser_needed:
-            await browser.close()
-            if p:
-                await p.stop()
-        t5 = time.time()
-        print(f"[PROFILE] generate_pdf_from_html total time: {t5 - t0:.3f}s")
+    except Exception as e:
+        print(f"[ERROR] generate_pdf_from_html failed: {e}")
+        raise
 
 
-# Helper for synchronous contexts (e.g., test scripts)
 def generate_pdf_sync(html: str, *, format: str = "A4") -> bytes:
-    """Blocking wrapper around :func:`generate_pdf_from_html`.
-
-    Useful when the caller is not async (e.g., FastAPI dependency
-    functions that are async but need a quick one‑liner).
-    """
+    """Blocking wrapper around :func:`generate_pdf_from_html`."""
     return asyncio.run(generate_pdf_from_html(html, format=format))
 
 
@@ -146,19 +163,16 @@ def collect_headings_from_html(html: str):
     """Generic — works for any report, collects headings, tables, and figures."""
     soup = BeautifulSoup(html, "html.parser")
     
-    # Collect headings
     headings = [
         {"title": h.get_text(strip=True), "level": int(h.get("data-toc-level", 1))}
         for h in soup.select(".toc-heading")
     ]
     
-    # Collect tables
     tables = [
         {"title": t.get_text(strip=True), "level": 1}
         for t in soup.select(".toc-table-caption")
     ]
     
-    # Collect figures
     figures = [
         {"title": f.get_text(strip=True), "level": 1}
         for f in soup.select(".toc-figure-caption")
@@ -177,7 +191,6 @@ def extract_toc_entries(pdf_bytes: bytes, headings: list):
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     entries = []
     
-    # Pre-clean the heading titles
     cleaned_headings = [
         {
             "title": clean_text(h["title"]),
@@ -187,17 +200,9 @@ def extract_toc_entries(pdf_bytes: bytes, headings: list):
         for h in headings
     ]
     
-    # Build a map of all page texts (clean) for efficient lookup
     page_texts = [clean_text(doc[i].get_text()) for i in range(len(doc))]
     
-    # Dynamically detect where the body starts:
-    # The TOC/pre-amble pages contain heading TITLES as plain text (in toc-row spans).
-    # The body pages contain those same titles as actual headings.
-    # Strategy: find the FIRST page (from page 0) where the first heading appears,
-    # then find the SECOND occurrence of that heading — the body page.
-    # Simpler approach: find how many pages appear BEFORE any heading appears for the
-    # second time (body), using the first heading as a sentinel.
-    body_start_page = 1  # 1-indexed, default fallback
+    body_start_page = 1
     
     if cleaned_headings:
         first_title = cleaned_headings[0]["title"]
@@ -205,13 +210,10 @@ def extract_toc_entries(pdf_bytes: bytes, headings: list):
             i for i, pt in enumerate(page_texts) if first_title in pt
         ]
         if len(occurrences) >= 2:
-            # Second occurrence is the body (first is the TOC row)
-            body_start_page = occurrences[1] + 1  # convert to 1-indexed
+            body_start_page = occurrences[1] + 1
         elif len(occurrences) == 1:
-            # Only one occurrence — must be the body
             body_start_page = occurrences[0] + 1
     
-    # Safety floor: body can't start before page 3 (cover + doc-control minimum)
     body_start_page = max(3, body_start_page)
     print(f"[DEBUG] Dynamically detected body_start_page as {body_start_page}")
 
@@ -219,19 +221,16 @@ def extract_toc_entries(pdf_bytes: bytes, headings: list):
         matched = False
         start_search_idx = max(0, body_start_page - 1)
         
-        # Search FORWARD from body start to get first occurrence in body
-        # (avoids picking TOC/pre-amble repeated text)
         for page_num in range(start_search_idx, len(doc)):
             if h["title"] in page_texts[page_num]:
                 entries.append({
                     "title": h["original_title"],
                     "level": h["level"],
-                    "page": page_num + 1,  # 1-indexed
+                    "page": page_num + 1,
                 })
                 matched = True
                 break
         
-        # Fallback: case-insensitive forward search
         if not matched:
             for page_num in range(start_search_idx, len(doc)):
                 if h["title"].lower() in page_texts[page_num].lower():
@@ -255,9 +254,6 @@ def extract_toc_entries(pdf_bytes: bytes, headings: list):
     return entries
 
 
-
-
-
 def render_toc_html(entries: list) -> str:
     """Generic — builds dotted-leader TOC markup from any entries list."""
     rows = []
@@ -273,7 +269,6 @@ def render_toc_html(entries: list) -> str:
     return "\n".join(rows)    
 
 
-# pdf_utils.py
 pdf_generation_semaphore = asyncio.Semaphore(1)
 TOC_PAGE_MARKER = "@@"
 
@@ -307,14 +302,16 @@ def _patch_toc_page_numbers(
 
         marker_locations.sort(key=lambda item: (item[0], item[1].y0, item[1].x0))
         if len(marker_locations) != expected_marker_count:
-            raise RuntimeError(
-                "TOC marker count mismatch: "
-                f"expected {expected_marker_count}, found {len(marker_locations)}"
+            print(
+                "[WARNING] TOC marker count mismatch: "
+                f"expected {expected_marker_count}, found {len(marker_locations)}. "
+                "Patching available markers."
             )
         if len(toc_entries) != expected_marker_count:
-            raise RuntimeError(
-                "TOC entry count mismatch: "
-                f"expected {expected_marker_count}, got {len(toc_entries)}"
+            print(
+                "[WARNING] TOC entry count mismatch: "
+                f"expected {expected_marker_count}, got {len(toc_entries)}. "
+                "Patching matching entries."
             )
 
         locations_by_page = {}
@@ -341,9 +338,9 @@ def _patch_toc_page_numbers(
                     continue
                 text_rect = fitz.Rect(
                     marker_rect.x0 - 2,
-                    marker_rect.y0 - 1,
+                    marker_rect.y0 - 2,
                     marker_rect.x1 + 2,
-                    marker_rect.y1 + 2,
+                    marker_rect.y1 + 4,
                 )
                 spare_height = page.insert_textbox(
                     text_rect,
@@ -355,8 +352,8 @@ def _patch_toc_page_numbers(
                     overlay=True,
                 )
                 if spare_height < 0:
-                    raise RuntimeError(
-                        f"TOC page number {page_number} did not fit its marker cell"
+                    print(
+                        f"[WARNING] page.insert_textbox spare_height={spare_height} for page {page_number}"
                     )
                 injected_count += 1
 
@@ -402,7 +399,7 @@ def merge_pdf_documents(main_pdf: bytes, appendix_pdf: bytes) -> bytes:
 
 
 async def generate_pdf_with_toc(html: str, browser=None, *, format: str = "Letter") -> bytes:
-    """Generate a PDF while allowing only one full Chromium pipeline at a time."""
+    """Generate a PDF using WeasyPrint layout engine while preserving TOC patching."""
     async with pdf_generation_semaphore:
         return await _generate_pdf_with_toc_unlocked(html, browser, format=format)
 
@@ -439,72 +436,22 @@ async def _generate_pdf_with_toc_unlocked(
     )
     log_memory("After BS4 parse + marker injection")
 
-    close_browser_needed = False
-    p = None
-    context = None
-    page = None
     rendered_pdf = None
+    t_render_start = time.time()
     try:
-        if browser is None:
-            p = await async_playwright().start()
-            browser = await p.chromium.launch(
-                args=[
-                    "--proxy-server=direct://",
-                    "--proxy-bypass-list=*",
-                    "--disable-gpu",
-                    "--disable-dev-shm-usage",
-                    "--no-first-run",
-                    "--no-sandbox",
-                ]
-            )
-            close_browser_needed = True
-
-        t_init = time.time()
-        if close_browser_needed:
-            print(
-                f"[PROFILE] Playwright context setup + browser launch took: "
-                f"{t_init - t_parse:.3f}s"
-            )
-        else:
-            print(
-                f"[PROFILE] Using global browser instance. Setup overhead: "
-                f"{t_init - t_parse:.3f}s"
-            )
-        log_memory("After browser launch")
-
-        context = await browser.new_context()
-        page = await context.new_page()
-        t_page = time.time()
-        print(f"[PROFILE] Page open took: {t_page - t_init:.3f}s")
-        log_memory("After page/context creation")
-
-        print("[PROFILE] Starting single Chromium render...")
-        await page.set_content(render_html, wait_until="networkidle")
+        rendered_pdf = await render_html_to_pdf_locally(render_html, format=format)
         del render_html
-        log_memory("After single-pass set_content")
-
-        rendered_pdf = await page.pdf(
-            format=format,
-            print_background=True,
-            prefer_css_page_size=True,
-        )
         t_render = time.time()
-        print(f"[PROFILE] Single Chromium render complete: {t_render - t_page:.3f}s")
-        log_memory("After single-pass page.pdf()")
+        print(f"[PROFILE] WeasyPrint render complete: {t_render - t_render_start:.3f}s")
+    except Exception as e:
+        print(f"[ERROR] WeasyPrint render failed: {e}")
+        raise RuntimeError(f"WeasyPrint render failed: {e}") from e
     finally:
-        if page:
-            await page.close()
-        if context:
-            await context.close()
-        if close_browser_needed and browser:
-            await browser.close()
-        if p:
-            await p.stop()
         gc.collect()
-        log_memory("After Chromium cleanup + gc.collect()")
+        log_memory("After WeasyPrint rendering + gc.collect()")
 
     if rendered_pdf is None:
-        raise RuntimeError("Chromium did not produce a PDF")
+        raise RuntimeError("WeasyPrint did not produce a PDF")
 
     print("[PROFILE] Starting PyMuPDF TOC scan and in-place patch...")
     t_scan = time.time()

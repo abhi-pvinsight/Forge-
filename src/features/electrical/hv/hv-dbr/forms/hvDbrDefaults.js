@@ -3,17 +3,27 @@ export const HV_DBR_DEFAULTS = {
   reportTitle: 'Design Basis Report (DBR)',
   projectTitle: '100MW AC Solar Power Plant',
   substationTitle: '69/34.5 kV Kitt Solar HV Collector Substation',
-  documentNo: '25021-HR-01',
-  revision: '2',
+  documentNo: 'PVI-HVD-001',
+  revision: 'A',
+  preparedDate: new Date().toLocaleDateString("en-GB"),
   preparedByCompany: 'PVinsight Inc',
-  preparedByAddress: '123 Solar Way, Suite 100, San Francisco, CA 94107',
+  preparedByAddress: '5717 Legacy Dr Suite 250, Plano, Texas, 75024',
   submittedToCompany: 'RES',
   submittedToAddress: '456 Renewable Dr, Denver, CO 80202',
 
   // ─── REVISION HISTORY ───────────────────────────────────────────────────────
-  rev0Number: '0',
-  rev0Date: '2026-01-15',
-  rev0Description: 'Issued for Review',
+  revisions: [
+    {
+      revision: 'A',
+      issueDate: new Date().toLocaleDateString("en-GB").replaceAll("/", "."),
+      documentNumber: 'PVI-HVD-001',
+      documentName: 'Design Basis Report (DBR)',
+      description: 'Preliminary Design'
+    }
+  ],
+  rev0Number: 'A',
+  rev0Date: new Date().toLocaleDateString("en-GB").replaceAll("/", "."),
+  rev0Description: 'Preliminary Design',
   rev1Number: '1',
   rev1Date: '2026-03-22',
   rev1Description: 'Issued for Approval',

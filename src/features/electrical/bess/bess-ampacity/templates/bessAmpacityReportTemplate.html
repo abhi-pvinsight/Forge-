@@ -34,16 +34,27 @@
     text-align: justify;
   }
 
+  table,
   .doc-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse !important;
     font-size: 10.5pt;
     margin-bottom: 14px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
+  table tr,
+  .doc-table tr {
+    page-break-inside: auto;
+    break-inside: avoid-column;
+  }
+
+  table th,
+  table td,
   .doc-table th,
   .doc-table td {
-    border: 1px solid black;
+    border: 1px solid #000000 !important;
     padding: 5px;
     text-align: left;
     vertical-align: top;
@@ -151,7 +162,7 @@
 
     <p class="table-caption"><b class="toc-table-caption">Table 1: Soil Thermal Resistivity Values (Refer
         Appendix-B)</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Moisture Content (%)</th>
@@ -211,10 +222,7 @@
       These values are used as the basis for equipment rating, thermal design, and environmental
       considerations for the project.
     </p>
-    <figure class="fig-wrap">
-      {{ambientTempChart}}
-      <div class="fig-caption">Figure 1: Ambient Temperature Data</div>
-    </figure>
+    {{ambientTempChart}}
 
     <h2 class="toc-heading doc-h2" data-toc-level="2">Soil Temperature</h2>
     <p class="doc-p">
@@ -224,10 +232,7 @@
       for the site was {{soilTempMax}}. A soil temperature of {{soilTempSelected}}°C has been selected for
       the analysis.
     </p>
-    <figure class="fig-wrap">
-      {{soilTempChart}}
-      <div class="fig-caption">Figure 2: Ground Soil Temperature Data</div>
-    </figure>
+    {{soilTempChart}}
 
     <!-- ======================= 2. DC CABLES ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">DC Cables</h1>
@@ -256,7 +261,7 @@
     </ul>
 
     <p class="table-caption"><b class="toc-table-caption">Table 2: DC Cable Ampacity and Derating Summary</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <tbody>
         <tr>
           <td>Selected Cable Size (KCMIL), Type</td>
@@ -370,10 +375,7 @@
         shown below.</li>
     </ol>
 
-    <figure class="fig-wrap">
-      {{loadProfileChart}}
-      <div class="fig-caption">Figure 3: Load profile of BESS plant for one day</div>
-    </figure>
+    {{loadProfileChart}}
     <p class="doc-p"><i>Note: The load profile is considered based on a discharge rate of {{dischargeRateC}} and a
         charging rate limited to {{chargeRateC}}.</i></p>
 
@@ -436,7 +438,7 @@
     <h2 class="toc-heading doc-h2" data-toc-level="2">Auxiliary Panel Board to BESS Enclosure and PCS Skid</h2>
     <p class="doc-p"><b>BESS Enclosure Auxiliary Cables from the Auxiliary Panel Board are directly laid in precast
         trench and in underground conduits where no precast trench is provided</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <tbody>
         <tr>
           <td>Selected Cable Size, Type</td>
@@ -471,7 +473,7 @@
 
     <p class="doc-p"><b>PCS Skid Auxiliary Cables from the Auxiliary Panel Board are directly laid in precast trench and
         in underground conduits where no precast trench is provided</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <tbody>
         <tr>
           <td>Selected Cable Size, Type</td>
@@ -566,7 +568,7 @@
     </p>
 
     <p class="table-caption"><b class="toc-table-caption">Table 6: Auxiliary Cables</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>

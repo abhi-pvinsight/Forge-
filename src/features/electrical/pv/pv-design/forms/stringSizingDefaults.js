@@ -34,8 +34,15 @@ plant_name: 'Sandhills Solar — Phase II',
   dc_ac_ratio_inv: '1.30',
   pv_area: '1000',
   Pitch: '6.0',
+  gcr: '33.2',
   temp_min: '-5',
   temp_max: '32',
+
+  // PCS & Feeder Inputs
+  max_lbd_per_pcs: '12',
+  pcs_loop_count: '7',
+  feeder_capacity: '12.5',
+  total_feeders: '12',
 
   // PV Module
   module_make: 'LONGi',
@@ -87,23 +94,40 @@ plant_name: 'Sandhills Solar — Phase II',
   risk_category: 'CAT-II',
   met_source: 'NASA Earth Data',
   data_format: 'TMY (Typical Meteorological Year)',
+
+  // Albedo Inputs
+  weather_database: 'SOLCAST(DNV)',
+  albedo_jan: '0.20',
+  albedo_feb: '0.20',
+  albedo_mar: '0.20',
+  albedo_apr: '0.20',
+  albedo_may: '0.20',
+  albedo_jun: '0.20',
+  albedo_jul: '0.20',
+  albedo_aug: '0.20',
+  albedo_sep: '0.20',
+  albedo_oct: '0.20',
+  albedo_nov: '0.20',
+  albedo_dec: '0.20',
+  albedo_avg: '0.20',
+
   // Tracker inputs
 
-tracker_make: 'Nextracker',
-  tracker_model: 'NX Horizon',
+  tracker_make: 'GAMECHANGE',
+  tracker_model: 'GENIUS TRACKER',
   tracking_range: '±60°',
 
-  // tracker_type_1: '4P',
-  tracker_module_1: 28,
-  tracker_quantity_1: 1200,
+  tracker_type_1: '4 String',
+  tracker_module_1: 116,
+  tracker_quantity_1: '1812',
 
-  tracker_type_2: '3P',
-  tracker_module_2: 28,
-  tracker_quantity_2: 800,
+  tracker_type_2: '3 String',
+  tracker_module_2: 87,
+  tracker_quantity_2: '324',
 
-  tracker_type_3: '2P',
-  tracker_module_3: 28,
-  tracker_quantity_3: 400,
+  tracker_type_3: '2 String',
+  tracker_module_3: 58,
+  tracker_quantity_3: '229',
 
 // cable Defaults 
 

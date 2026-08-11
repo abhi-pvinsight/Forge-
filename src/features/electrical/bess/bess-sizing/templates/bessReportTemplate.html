@@ -15,35 +15,61 @@
     text-align: left;
   }
 
-  .doc-h1 {
+  .doc-h1,
+  h1 {
     font-size: 16pt;
     margin-top: 22px;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
-  .doc-h2 {
+  .doc-h2,
+  h2 {
     font-size: 13.5pt;
     margin-top: 16px;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
-  .doc-h3 {
+  .doc-h3,
+  h3 {
     font-size: 12pt;
     margin-top: 12px;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .table-caption,
+  .toc-table-caption {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   .doc-p {
     text-align: justify;
   }
 
+  table,
   .doc-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse !important;
     font-size: 10.5pt;
     margin-bottom: 14px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
+  table tr,
+  .doc-table tr {
+    page-break-inside: auto;
+    break-inside: avoid-column;
+  }
+
+  table th,
+  table td,
   .doc-table th,
   .doc-table td {
-    border: 1px solid black;
+    border: 1px solid #000000 !important;
     padding: 5px;
     text-align: left;
     vertical-align: top;
@@ -195,7 +221,7 @@
     <!-- <h2 class="toc-heading doc-h2" data-toc-level="2">Weather Data (ASHRAE)</h2>
     <p class="doc-p">The following table presents key weather parameters obtained from the ASHRAE database.</p>
     <p class="table-caption"><b class="toc-table-caption">ASHRAE Weather Data</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Parameter</th>
@@ -235,7 +261,7 @@
     <!-- ======================= PROJECT DETAILS ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Project Details</h1>
     <p class="table-caption"><b class="toc-table-caption">Table 1: Project Summary</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -327,7 +353,7 @@
           <td>14</td>
           <td>Ambient temperature</td>
           <td>Max: {{maxTemp}}<br>Min: {{minTemp}}<br>Design: {{tempDesign}}</td>
-          <td>°F</td>
+          <td>°C</td>
         </tr>
         <tr>
           <td>15</td>
@@ -473,10 +499,7 @@
       substation.
     </p>
 
-    <figure class="fig-wrap">
-      {{singleLineDiagram}}
-      <div class="fig-caption">Single Line Diagram</div>
-    </figure>
+    {{singleLineDiagram}}
 
     <!-- ======================= 2. MAJOR EQUIPMENT ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Major Equipment and Systems Design Data</h1>
@@ -493,7 +516,7 @@
 
     <p class="table-caption"><b class="toc-table-caption">Table 2: Technical Parameters of Battery Energy Storage
         System</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -612,7 +635,7 @@
       Batteries shall be stored according to manufacturer’s recommendations
     </p>
     <p class="table-caption"><b class="toc-table-caption">Table 3: Technical Parameters of Battery</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -695,7 +718,7 @@
       Range A which is +/-5% of the nominal voltage at POI.
     </p>
     <p class="table-caption"><b class="toc-table-caption">Table 4: Technical Parameters of PCS</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr.</th>
@@ -805,7 +828,7 @@
     </p>
     <p class="table-caption"><b class="toc-table-caption">Table 5: Technical Parameters of Medium Voltage
         Transformer</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -897,7 +920,7 @@
 
     <h3 class="toc-heading doc-h3" data-toc-level="3">Wiring Color Codes</h3>
     <p class="table-caption"><b class="toc-table-caption">Table 6: Wiring Color Code</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Voltage Class</th>
@@ -1011,10 +1034,7 @@
       <li>Refer drawing {{referenceDrawingNo}} for routing details.</li>
     </ul>
 
-    <figure class="fig-wrap">
-      {{loadProfileChart}}
-      <div class="fig-caption">Figure 1: Load profile of BESS plant for one day</div>
-    </figure>
+    {{loadProfileChart}}
 
     <p><b>Cable Sizes:</b></p>
     <ul>
@@ -1030,7 +1050,7 @@
       <li>Soil resistivity based on geotechnical report ({{geotechReportCompany}}).</li>
     </ul>
     <p class="table-caption"><b class="toc-table-caption">Table 7: Auxiliary Cables</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -1157,7 +1177,7 @@
     <p class="doc-p">The Equipment Grounding Conductor (EGC) is sized as per NEC Clause 250.122. Refer to the table
       below for the details of EGC sizes used in the BESS power plant:</p>
     <p class="table-caption"><b class="toc-table-caption">Table 8: Equipment Grounding Conductor (EGC) Sizes</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>Sr. No.</th>
@@ -1263,15 +1283,9 @@
       The layout has been prepared considering existing site constraints within the project boundary.
     </p>
 
-    <figure class="fig-wrap">
-      {{sitePhoto}}
-      <div class="fig-caption">Site Layout / Aerial View</div>
-    </figure>
+    {{sitePhoto}}
 
-    <figure class="fig-wrap">
-      {{siteMap}}
-      <div class="fig-caption">Site Location Map</div>
-    </figure>
+    {{siteMap}}
 
   </div>
 </div>

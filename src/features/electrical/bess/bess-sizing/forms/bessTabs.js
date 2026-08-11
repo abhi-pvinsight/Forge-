@@ -8,14 +8,10 @@ export const BESS_TABS = [
     blurb: 'Identifies the client and the engagement on the report cover sheet.',
     fields: [
       { key: 'clientName', label: 'Client / Company name', type: 'text', required: true, placeholder: 'e.g. Clenera LLC' },
-      { key: 'clientContact', label: 'Primary contact', type: 'text', required: true, placeholder: 'Full name' },
       { key: 'clientEmail', label: 'Contact email', type: 'text', required: true, placeholder: 'name@company.com' },
       { key: 'clientAddress', label: 'Client address', type: 'textarea', required: true, placeholder: 'Street, City, State, Country' },
-      { key: 'consultant', label: 'Consultant / EPC', type: 'text', required: true, placeholder: 'Preparing organization' },
       { key: 'revision', label: 'Revision', type: 'text', required: true, placeholder: 'A' },
       { key: "clientLogo", label: "Client Logo", type: "file", required: true },
-
-
     ]
   },
   {
@@ -412,16 +408,10 @@ export const BESS_TABS = [
     id: 'layout',
     name: 'BESS Layout Design',
     icon: 'layout',
-    blurb: 'Clearance requirements and layout media for the BESS site plan.',
+    blurb: 'Clearance requirements for the BESS site plan.',
     fields: [
       { key: 'bessClearance', label: 'Min Clearance Between Enclosures', type: 'number', required: true, unit: 'ft' },
       { key: 'bessPcsClearance', label: 'Min Clearance Enclosure to PCS', type: 'number', required: true, unit: 'ft' },
-    ],
-    uploads: [
-      { key: 'singleLineDiagram', label: 'Single Line Diagram', hint: 'Image · Electrical single line diagram', required: false },
-      { key: 'loadProfileChart', label: 'Load Profile Chart', hint: 'Image/Chart · Daily BESS load profile', required: false },
-      { key: 'sitePhoto', label: 'Site Layout / Aerial Photo', hint: 'Image · Site layout or aerial view', required: false },
-      { key: 'siteMap', label: 'Site Location Map', hint: 'Image · Site location map', required: false },
     ]
   },
 

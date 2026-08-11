@@ -1,6 +1,16 @@
-# Use the official Microsoft Playwright Python base image
-# This contains Python, Playwright, and all system dependencies for Chromium pre-installed.
-FROM mcr.microsoft.com/playwright/python:v1.44.0-jammy
+# Use official Python base image
+FROM python:3.10-slim
+
+# Install system dependencies for WeasyPrint
+RUN apt-get update && apt-get install -y \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz-subset0 \
+    libffi-dev \
+    libgdk-pixbuf-2.0-0 \
+    libcairo2 \
+    shared-mime-info \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory inside the container
 WORKDIR /app

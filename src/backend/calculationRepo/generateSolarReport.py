@@ -315,8 +315,8 @@ def build_solar_report_pdf(report_data, filename):
     story.append(Paragraph("3. Site Temperature Environmental Bounds", section_style))
     env_data = [
         [wrap("Temperature Parameters (Handbook Reference)", True), wrap("Value", True), wrap("Unit", True)],
-        [wrap("Extreme Low Temperature"), wrap(f"{Tmax:.2f}"), wrap("°C")], 
-        [wrap("Extreme High Temperature"), wrap(f"{Tmin:.2f}"), wrap("°C")]
+        [wrap("Extreme Low Temperature"), wrap(f"{Tmin:.2f}"), wrap("°C")], 
+        [wrap("Extreme High Temperature"), wrap(f"{Tmax:.2f}"), wrap("°C")]
     ]
     t3 = Table(env_data, colWidths=[250, 100, 50])
     t3.setStyle(TableStyle([

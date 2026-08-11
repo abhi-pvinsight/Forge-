@@ -6,16 +6,12 @@
 }
 
 #ashrae_table {
-    width: 100mm;
-    max-width: 100mm;
+    width: 100% !important;
+    max-width: 100% !important;
     table-layout: fixed;
     border-collapse: collapse; /* Combined with grid outlines below */
     font-size: 8px;
     page-break-inside: avoid;
-    
-    /* Green background and explicit outer white border */
-    
-    
 }
 
 /* 2. Cell Sizing & Text Protection (Your Originals + White Borders) */
@@ -44,7 +40,7 @@
     filter: brightness(0) invert(1);
 }
 </style>
-<table id="ashrae_table" style="width:20mm; table-layout:fixed; border-collapse:collapse; font-size:11px;">
+<table id="ashrae_table" style="width:100% !important; max-width:100% !important; table-layout:fixed; border-collapse:collapse; font-size:11px;">
 <colgroup>
 <col span="16" width="42"/>
 </colgroup>

@@ -10,11 +10,8 @@ import listOfAbbreviations from "../../../../../shared/reports/listOfAbbreviatio
 import { fillTemplate } from "../../../../report-engine/templateEngine";
 import tableOfContents from "../../../../../shared/reports/tableOfContents.html?raw";
 import { scanAndNumberReportContent, renderSimpleList, renderSectionIfNotEmpty, renderAbbreviationsTable } from "../../../../../shared/reports/utils/tocScanner";
-//C:\Users\AbhayPratapSingh\work\June\260605\HV DBR\Forge\forge-react\src\backend\Ashrae
 import ashraeTableTemplate from "../../../../../backend/Ashrae/ASHARE.html?raw";
 import { buildReportMeta } from "../../../../../shared/reports/buildReportMeta";
-// console.log(ashraeTableTemplate);
-// import { prepareTableData } from '../calculations/calculateYearlyVoc&Isc';
 
 
 
@@ -68,7 +65,7 @@ function renderAshraeTableHtml(rawHtml, values) {
       const state = values.weather_station_state ? `, ${values.weather_station_state}` : "";
       const country = values.weather_station_country ? `, ${values.weather_station_country}` : ", USA";
       const wmo = values.weather_station_id || "722780";
-      
+
       headerTitle.innerHTML = `<div class="baloon_icon" style="display:inline-block;background-position:0px 0px;position: relative;right: 10;"></div><b>${city}${state}${country} (WMO: ${wmo})</b>`;
     }
 
@@ -99,12 +96,12 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
 
   if (htmlToRender) {
     return (
-      <div 
-        id="PV_DBR-report" 
+      <div
+        id="PV_DBR-report"
         contentEditable={isEditMode}
         suppressContentEditableWarning={true}
         onBlur={onHtmlChange ? (e) => onHtmlChange(e.currentTarget.innerHTML) : undefined}
-        dangerouslySetInnerHTML={{ __html: htmlToRender }} 
+        dangerouslySetInnerHTML={{ __html: htmlToRender }}
       />
     );
   }
@@ -149,10 +146,10 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     tempMin: values?.tempMin,
     tempCellMax: values?.tempCellMax,
   });
-  const vmpMaxTempVal = calc.VmpHot 
-    ? Number(calc.VmpHot) 
+  const vmpMaxTempVal = calc.VmpHot
+    ? Number(calc.VmpHot)
     : (safeSolarCalcValues?.Vmp_Tmax?.[0] || 36.9);
-  const nMin = calculateNMin(values.PCS_Min_PV_Input_Voltage, vmpMaxTempVal);
+  const nMin = calculateNMin(values.PCS_Min_PV_Input_Voltage || 875, vmpMaxTempVal);
   const { irradiationTable, energyTable } = buildPvsystTables(values.pvsystData || {});
   const pvsystLossTemplateValues = buildPvsystLossTemplateValues(values.pvsystData || {});
   const reportMeta = buildReportMeta(values, { name: values.reportName || values?.report?.name || "Design Basis Report" });
@@ -168,8 +165,8 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const peakTableData = values?.peakTableData || {};
 
 
-  const voltImg = values["Results_of_26-year_voltage"] || "";
-  const currImg = values["Results_of_26-year_current"] || "";
+  const voltImg = values["Results_of_26-year_voltage"] || values["Results_of_26-year_Voltage"] || "";
+  const currImg = values["Results_of_26-year_current"] || values["Results_of_26-year_Current"] || "";
 
   const formatImgReplacement = (imgData) => {
     if (!imgData) return 'style="display: none;"';
@@ -180,8 +177,19 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     return `src="${base64}" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; border-radius: 6px; display: block; margin: 15px auto;"`;
   };
 
+  const formatPvFigure = (imgData, captionText) => {
+    if (!imgData) return "";
+    const base64 = imgData.startsWith('src="')
+      ? imgData.match(/src="([^"]+)"/)?.[1] || imgData
+      : imgData;
+    if (!base64 || base64.trim() === "" || base64 === 'style="display: none;"') return "";
+    return `<figure class="fig-wrap"><img src="${base64}" style="max-width: 100%; height: auto; border: 1px solid #cbd5e1; border-radius: 6px; display: block; margin: 15px auto;" /><div class="fig-caption toc-figure-caption">${captionText}</div></figure>`;
+  };
+
   const voltReplacement = formatImgReplacement(voltImg);
   const currReplacement = formatImgReplacement(currImg);
+  const voltBlock = formatPvFigure(voltImg, "Results of 26-years Historical SAM Simulation Voltage");
+  const currBlock = formatPvFigure(currImg, "Results of 26-years Historical SAM Simulation Current");
 
   const sealContent = values.SEAL_IMAGE
     ? `<img src="${values.SEAL_IMAGE}" alt="Professional Engineer Seal" class="seal-img" />`
@@ -199,8 +207,8 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const allTimeMaxVocVal = values.allTimeMaxVoc
     ? values.allTimeMaxVoc
     : (summary.length > 0
-        ? summary.reduce((max, row) => (row.maxVoltage > max ? row.maxVoltage : max), -Infinity)
-        : 1441.33);
+      ? summary.reduce((max, row) => (row.maxVoltage > max ? row.maxVoltage : max), -Infinity)
+      : 1441.33);
 
   const degradationYear30After = degradationData ? degradationData.year30_after : 1031.42;
 
@@ -210,6 +218,29 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const pvAreaVal = Number(values.pv_area || 0);
   const dcCapVal = Number(values.dc_capacity || 0);
   const pvAreaPerMwDcStr = dcCapVal > 0 ? (pvAreaVal / dcCapVal).toFixed(2) : "—";
+
+  const albedoMonths = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  const monthlyAlbedoList = albedoMonths
+    .map((m) => values[`albedo_${m}`])
+    .filter((v) => v !== undefined && v !== null && v !== "" && !isNaN(Number(v)))
+    .map(Number);
+
+  let calcAlbedoHigh = "0.30";
+  let calcAlbedoLow = "0.15";
+  let calcAlbedoAvg = "0.20";
+
+  if (monthlyAlbedoList.length > 0) {
+    const maxVal = Math.max(...monthlyAlbedoList);
+    const minVal = Math.min(...monthlyAlbedoList);
+    const sumVal = monthlyAlbedoList.reduce((acc, curr) => acc + curr, 0);
+    const avgVal = sumVal / monthlyAlbedoList.length;
+
+    calcAlbedoHigh = maxVal.toFixed(2);
+    calcAlbedoLow = minVal.toFixed(2);
+    calcAlbedoAvg = avgVal.toFixed(2);
+  } else if (values.albedo_avg != null && values.albedo_avg !== "" && !isNaN(Number(values.albedo_avg))) {
+    calcAlbedoAvg = Number(values.albedo_avg).toFixed(2);
+  }
 
   const templateValues = {
     ...values,
@@ -224,6 +255,15 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     ...pvsystLossTemplateValues,
     submittedTo: values.clientContact || "Signal Energy",
     submittedToAddress: values.clientAddress || "2034 Hamilton Place BLVD. Suite 100 Chattanooga, TN 37421",
+    albedo_avg: values.albedo_avg ?? calcAlbedoAvg,
+    albedo_high: values.albedo_high ?? calcAlbedoHigh,
+    albedo_low: values.albedo_low ?? calcAlbedoLow,
+    perc_high: values.perc_high ?? "0.75",
+    perc_avg: values.perc_avg ?? "0.70",
+    perc_low: values.perc_low ?? "0.65",
+    hjt_high: values.hjt_high ?? "0.95",
+    hjt_avg: values.hjt_avg ?? "0.90",
+    hjt_low: values.hjt_low ?? "0.85",
     weather_station_city: values.weather_station_city,
     weather_station_state: values.weather_station_state,
     weather_station_country: values.weather_station_country,
@@ -235,7 +275,7 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     REPORT_NAME: (
       (() => {
         const node = getReportNodeById(values?.report?.id || values?.reportId);
-        return node?.reportTitle || values.reportName || values?.report?.name || "Design Basis Report";
+        return node?.reportTitle || values.reportName || values?.report?.name || "Design Basis Report – PV Electrical";
       })()
     ),
     YEARLY_VOC_TABLE: buildVocTable(values.yearlyVocSummary || []),
@@ -249,6 +289,10 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     "Results_of_26-year_Voltage": voltReplacement,
     "Results_of_26-year_current": currReplacement,
     "Results_of_26-year_Current": currReplacement,
+    "Results_of_26-year_voltage_BLOCK": voltBlock,
+    "Results_of_26-year_Voltage_BLOCK": voltBlock,
+    "Results_of_26-year_current_BLOCK": currBlock,
+    "Results_of_26-year_Current_BLOCK": currBlock,
     SEAL_CONTENT: sealContent,
   };
 
@@ -286,16 +330,39 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   const hasSolarAppendix = Boolean(
     values.hasSolarAppendix || values.solarAppendixValues || appendixPages.length
   );
+  const hasPvsystPdf = Boolean(values.pvsyst_pdf_file || values.pvsyst_pdf);
+
+  // Build List of Annexures (LOA) for Front Matter
+  const annexuresList = [];
+  if (hasSolarAppendix) {
+    annexuresList.push({ title: "Annexure 1: Solar String Sizing Calculations & Specs" });
+  }
+  if (hasPvsystPdf) {
+    annexuresList.push({ title: "Annexure 2: PVsyst Report" });
+  }
+
   let appendixTemplate = "";
 
   if (hasSolarAppendix) {
-    appendixTemplate = `
+    appendixTemplate += `
       <div class="report-page appendix-page" style="page-break-before: always; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;">
-        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Appendix</h1>
-        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations & Specs</p>
+        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Annexure 1</h1>
+        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">Solar String Sizing Calculations &amp; Specs</p>
       </div>
       <div class="page appendix-native-preview" data-pdf-export-exclude="true" style="page-break-before: always; min-height: 180px; padding: 40px !important; display: flex; justify-content: center; align-items: center; text-align: center; color: #64748b;">
-        Native appendix pages will be merged into the downloaded PDF.
+        Native Annexure 1 pages will be merged into the downloaded PDF.
+      </div>
+    `;
+  }
+
+  if (hasPvsystPdf) {
+    appendixTemplate += `
+      <div class="report-page appendix-page" style="page-break-before: always; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box;">
+        <h1 style="font-size: 36pt; color: #163c7a; font-weight: 700; margin-top: 250px;">Annexure 2</h1>
+        <p style="font-size: 14pt; color: #64748b; margin-top: 15px;">PVsyst Report</p>
+      </div>
+      <div class="page appendix-native-preview" data-pdf-export-exclude="true" style="page-break-before: always; min-height: 180px; padding: 40px !important; display: flex; justify-content: center; align-items: center; text-align: center; color: #64748b;">
+        Uploaded PVsyst Report PDF will be appended as Annexure 2 in the downloaded PDF.
       </div>
     `;
   }
@@ -312,6 +379,7 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     TOC_PLACEHOLDER: renderSimpleList(headings),
     LIST_OF_TABLES_PLACEHOLDER: renderSectionIfNotEmpty("List of Tables", tables, { key: "title" }),
     LIST_OF_FIGURES_PLACEHOLDER: renderSectionIfNotEmpty("List of Figures", figures, { key: "title" }),
+    LIST_OF_ANNEXURES_PLACEHOLDER: renderSectionIfNotEmpty("List of Annexures", annexuresList, { key: "title" }),
     LIST_OF_ABBREVIATIONS_PLACEHOLDER: renderAbbreviationsTable(abbreviations),
   };
 
@@ -332,12 +400,12 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
 
   return (
 
-    <div 
-      id="PV_DBR-report" 
+    <div
+      id="PV_DBR-report"
       contentEditable={isEditMode}
       suppressContentEditableWarning={true}
       onBlur={onHtmlChange ? (e) => onHtmlChange(e.currentTarget.innerHTML) : undefined}
-      dangerouslySetInnerHTML={{ __html: reportHtml }} 
+      dangerouslySetInnerHTML={{ __html: reportHtml }}
     />
 
   );

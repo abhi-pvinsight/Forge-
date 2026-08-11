@@ -34,16 +34,27 @@
     text-align: justify;
   }
 
+  table,
   .doc-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse !important;
     font-size: 10.5pt;
     margin-bottom: 14px;
+    page-break-inside: auto;
+    break-inside: auto;
   }
 
+  table tr,
+  .doc-table tr {
+    page-break-inside: auto;
+    break-inside: avoid-column;
+  }
+
+  table th,
+  table td,
   .doc-table th,
   .doc-table td {
-    border: 1px solid black;
+    border: 1px solid #000000 !important;
     padding: 5px;
     text-align: left;
     vertical-align: top;
@@ -191,7 +202,7 @@
     </ol>
 
     <p class="table-caption"><b class="toc-table-caption">Table 1: MPT Impedance and X/R Ratios</b></p>
-    <table class="doc-table">
+    <table class="doc-table" border="1">
       <thead>
         <tr>
           <th>{{mptRatingMva}}</th>
@@ -268,26 +279,11 @@
       geotechnical report listing these measurements are in Appendix E.
     </p>
 
-    <figure class="fig-wrap">
-      {{figInverterSource}}
-      <div class="fig-caption">Figure 1: Inverter Equivalent Source with 6 PCS in a Circuit</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figMvTransformer}}
-      <div class="fig-caption">Figure 2: MV Transformer (MVT)</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figMainPowerTransformer}}
-      <div class="fig-caption">Figure 3: Main Power Transformer (MPT)</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figGenTieOhtl}}
-      <div class="fig-caption">Figure 4: 138kV Gen-Tie Overhead Transmission Line</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figPoiSource}}
-      <div class="fig-caption">Figure 5: Point of Interconnection (POI) Equivalent Source</div>
-    </figure>
+    {{figInverterSource}}
+    {{figMvTransformer}}
+    {{figMainPowerTransformer}}
+    {{figGenTieOhtl}}
+    {{figPoiSource}}
 
     <!-- ======================= 3. GROUNDING SYSTEM ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Grounding System</h1>
@@ -311,10 +307,7 @@
       current as inputs.
     </p>
 
-    <figure class="fig-wrap">
-      {{figGroundingLayout}}
-      <div class="fig-caption">Figure 6: Grounding Layout</div>
-    </figure>
+    {{figGroundingLayout}}
 
     <!-- ======================= 4. ANALYSIS ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Analysis</h1>
@@ -323,14 +316,8 @@
       Using the WinIGS® software, the electrical system network model and grounding model of the project
       are created, as illustrated in Figure 7 below.
     </p>
-    <figure class="fig-wrap">
-      {{figNetworkModel}}
-      <div class="fig-caption">Figure 7: Electrical System Network Model</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figMvtSkidModel}}
-      <div class="fig-caption">Figure 8: Typical MVT Skid Network Model</div>
-    </figure>
+    {{figNetworkModel}}
+    {{figMvtSkidModel}}
     <p class="doc-p">
       It should be noted that the project substation grounding system is designed by PVinsight, and the
       scope of the study does not include modeling or analyzing the project substation.
@@ -343,10 +330,7 @@
       ground mat, ground rods, as well as the project fence, with one ground reference node located at
       {{groundReferenceNodeLocation}}. The geometric model is shown in Figure 9 below.
     </p>
-    <figure class="fig-wrap">
-      {{figGeometricGroundModel}}
-      <div class="fig-caption">Figure 9: Geometric Ground Model</div>
-    </figure>
+    {{figGeometricGroundModel}}
 
     <h2 class="toc-heading doc-h2" data-toc-level="2">Soil Model</h2>
     <p class="doc-p">
@@ -356,14 +340,8 @@
       arrive at an equivalent 2-layer soil resistivity model. The soil dynamic model fit report is
       illustrated below in Figure 10. The resulting 2-layer soil model is shown in Figure 11.
     </p>
-    <figure class="fig-wrap">
-      {{figSoilModelFit}}
-      <div class="fig-caption">Figure 10: Soil Model and Soil Parameters</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figSoilModelParams}}
-      <div class="fig-caption">Figure 11: Soil Model and Soil Parameters</div>
-    </figure>
+    {{figSoilModelFit}}
+    {{figSoilModelParams}}
 
     <!-- ======================= 5. RESULTS AND CONCLUSION ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Results and Conclusion</h1>
@@ -379,30 +357,12 @@
     </p>
     <p class="doc-p">{{conclusionText}}</p>
 
-    <figure class="fig-wrap">
-      {{figGpr}}
-      <div class="fig-caption">Figure 12: Ground Potential Rise (GPR)</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figSafetyCriteria}}
-      <div class="fig-caption">Figure 13: Safety Criteria</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figTouchVoltage2D}}
-      <div class="fig-caption">Figure 14: Touch Voltage Contours – 2D Plot</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figTouchVoltage3D}}
-      <div class="fig-caption">Figure 15: Touch Voltage Contours – 3D Plot</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figStepVoltage2D}}
-      <div class="fig-caption">Figure 16: Step Voltage Contours – 2D Plot</div>
-    </figure>
-    <figure class="fig-wrap">
-      {{figStepVoltage3D}}
-      <div class="fig-caption">Figure 17: Step Voltage Contours – 3D Plot</div>
-    </figure>
+    {{figGpr}}
+    {{figSafetyCriteria}}
+    {{figTouchVoltage2D}}
+    {{figTouchVoltage3D}}
+    {{figStepVoltage2D}}
+    {{figStepVoltage3D}}
 
     <!-- ======================= APPENDICES ======================= -->
     <h1 class="toc-heading doc-h1" data-toc-level="1">Appendices</h1>

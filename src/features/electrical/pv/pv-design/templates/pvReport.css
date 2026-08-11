@@ -12,15 +12,23 @@ html {
     scroll-behavior: smooth;
 }
 
+body, *, p, td, th, div, span, h1, h2, h3, h4, h5, h6 {
+    font-family: "Segoe UI", sans-serif !important;
+}
+
+table {
+    border-collapse: collapse !important;
+}
+
+th, td, table th, table td {
+    border: 1px solid #000000 !important;
+}
+
 body {
     margin: 0;
     padding: 0;
-
-    font-family: "Segoe UI", Arial, sans-serif;
-
     background: #edf2f7;
     color: #1f2937;
-
     line-height: 1.6;
 }
 
@@ -46,12 +54,22 @@ body {
     overflow-y: auto;
 }
 
-.preview-panel,.cover-page, .report-page.lot-page, .report-page.toc-page, .report-page.doc-control-page {
+.preview-panel {
     width: 210mm;
     min-height: 297mm;
     margin: 0 auto;
     padding: 0;
     overflow: hidden;
+    background: #ffffff;
+}
+
+.cover-page, .report-page.lot-page, .report-page.toc-page, .report-page.lof-page, .report-page.loa-page, .report-page.doc-control-page {
+    width: 210mm;
+    min-height: 297mm;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    overflow: visible;
     background: #ffffff;
 }
 
@@ -198,7 +216,7 @@ li {
 table {
     width: 100%;
 
-    border-collapse: collapse;
+    border-collapse: collapse !important;
 
     margin-top: 12px;
     margin-bottom: 20px;
@@ -225,7 +243,7 @@ th {
 
     text-align: center;
 
-    border: 1px solid #163c7a;
+    border: 1px solid #000000 !important;
 
     padding: 8px;
     background: #163c7a;
@@ -239,7 +257,7 @@ table tr:first-child {
 
 
 td {
-    border: 1px solid #d0d7e2;
+    border: 1px solid #000000 !important;
 
     padding: 6px;
 
@@ -266,35 +284,27 @@ tbody tr:hover {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 8pt;
-  word-wrap: break-word;
+  font-size: 7.5pt;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-top: 12px;
+  margin-bottom: 20px;
 }
 
 .compact-table th,
 .compact-table td {
-  padding: 2px 4px;
+  padding: 3px 2px;
   text-align: center;
   vertical-align: middle;
-  line-height: 1.1;
+  line-height: 1.15;
+  border: 1px solid #d0d7e2;
 }
 
 .compact-table th {
   font-size: 7.5pt;
   font-weight: 600;
-}
-
-.compact-table td:first-child {
-  width: 10%;
-}
-
-.compact-table td:nth-child(2),
-.compact-table td:nth-child(3),
-.compact-table td:nth-child(4) {
-  width: 8%;
-}
-
-.compact-table td:last-child {
-  width: 5%;
+  background-color: #163c7a;
+  color: #ffffff;
 }
 
 
@@ -456,8 +466,13 @@ button:active {
 }
 
 @page { size: A4; margin: 10mm; }
-#ashrae_table { width: 100mm; max-width: 100mm; table-layout: fixed;
-	border-collapse: collapse; font-size: 11px; page-break-inside: avoid;
+#ashrae_table {
+	width: 100% !important;
+	max-width: 100% !important;
+	table-layout: fixed !important;
+	border-collapse: collapse !important;
+	font-size: 11px !important;
+	page-break-inside: avoid !important;
     background-color: lightgray;
 }
 

@@ -2,9 +2,9 @@ export function buildVocTable(summary = [], allTimeMax) {
   const computedAllTimeMax = typeof allTimeMax === 'number'
     ? allTimeMax
     : summary.reduce(
-        (max, row) => (row.maxVoltage > max ? row.maxVoltage : max),
-        -Infinity
-      );
+      (max, row) => (row.maxVoltage > max ? row.maxVoltage : max),
+      -Infinity
+    );
 
   return `
     <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
@@ -17,22 +17,22 @@ export function buildVocTable(summary = [], allTimeMax) {
       </thead>
       <tbody>
       ${summary
-        .map(row => {
-          const isAllTimeMax = row.maxVoltage === computedAllTimeMax;
-          const cellStyle = isAllTimeMax
-            ? `background-color: #dcebf8; color: #0f3057; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;`
-            : '';
-          const badge = isAllTimeMax ? ' <span style="font-size: 11px; color: #0f4f8f;">(All-Time Max)</span>' : '';
+      .map(row => {
+        const isAllTimeMax = row.maxVoltage === computedAllTimeMax;
+        const cellStyle = isAllTimeMax
+          ? `background-color: #dcebf8; color: #0f3057; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;`
+          : '';
+        const badge = isAllTimeMax ? ' <span style="font-size: 11px; color: #0f4f8f;">(All-Time Max)</span>' : '';
 
-          return `
+        return `
             <tr>
               <td style="${cellStyle} text-align: center;">${row.year}</td>
               <td style="${cellStyle} text-align: center;">${row.maxVoltage}${badge}</td>
               <td style="${cellStyle} text-align: center;">${row.minVoltage}</td>
             </tr>
           `;
-        })
-        .join("")}
+      })
+      .join("")}
       </tbody>
     </table>
   `;
@@ -44,7 +44,7 @@ export function buildIscTable(summary = []) {
   }
 
   const peakAvg = summary.length
-    ? summary.reduce( (max, row) => (row.avg > max ? row.avg : max), -Infinity ) : null;
+    ? summary.reduce((max, row) => (row.avg > max ? row.avg : max), -Infinity) : null;
 
   return summary
     .map((row) => {
@@ -91,7 +91,7 @@ export function buildPvsystTables(pvsystData) {
     ["Beam Effective on Rear Side", "%", pvsystData.irradiation?.beamEffectiveRearSide],
     ["Shading Loss on Rear Side", "%", pvsystData.irradiation?.shadingLossRearSide],
     ["Global Irradiance on Rear Side", "%", pvsystData.irradiation?.globalIrradianceRearSide]
-  ] .filter(([, , value]) => value !== null && value !== undefined);;
+  ].filter(([, , value]) => value !== null && value !== undefined);;
 
   const energyRows = [
     ["Array Nominal Energy (STC)", "MWh", pvsystData.energy?.arrayNominalEnergyAtSTC],
@@ -120,48 +120,52 @@ export function buildPvsystTables(pvsystData) {
 
   const buildTable = (title, rows) => {
     let html = `
-      <h3>${title}</h3>
-
-      <table class="compact-table" border="1">
-        <tr>
-          <th style="width:60%">Parameter</th>
-          <th style="width:15%">Unit</th>
-          <th style="width:25%">Value</th>
-        </tr>
+      <table border="1" style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">
+        <thead>
+          <tr style="background-color: #002060; color: white;">
+            <th style="border: 1px solid #000; padding: 8px; width: 50%; text-align: left; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">Parameter</th>
+            <th style="border: 1px solid #000; padding: 8px; width: 15%; text-align: center; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">Unit</th>
+            <th style="border: 1px solid #000; padding: 8px; width: 35%; text-align: center; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">Value</th>
+          </tr>
+        </thead>
+        <tbody>
     `;
 
     rows.forEach(([parameter, unit, value]) => {
       html += `
         <tr>
-          <td>${parameter}</td>
-          <td>${unit}</td>
-          <td>${value ?? "-"}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: left; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">${parameter}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: center; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">${unit}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: center; font-family: 'Segoe UI',  sans-serif; font-size: 12pt;">${value ?? "-"}</td>
         </tr>
       `;
     });
 
     html += `
+        </tbody>
       </table>
     `;
 
     return html;
   };
 
-  return { irradiationTable: buildTable( "PVsyst Irradiation Analysis", irradiationRows ),
-
-    energyTable: buildTable( "PVsyst Energy Analysis", energyRows ) };}
+  return {
+    irradiationTable: buildTable("PVsyst Irradiation Analysis", irradiationRows),
+    energyTable: buildTable("PVsyst Energy Analysis", energyRows)
+  };
+}
 
 export function calculateNMin(pcsMinPvInputVoltage, vmpMaxTemp) {
   const minVoltage = typeof pcsMinPvInputVoltage === 'string'
     ? parseFloat(pcsMinPvInputVoltage.replace(/[^\d.]/g, ''))
-    : Number(pcsMinPvInputVoltage);
+    : Number(pcsMinPvInputVoltage || 875);
   const vmp = Number(vmpMaxTemp);
 
   if (isNaN(minVoltage) || isNaN(vmp) || vmp === 0) {
     return { exact: "—", rounded: "—" };
   }
   const raw = minVoltage / vmp;
-  return { exact: raw.toFixed(2), rounded: Math.round(raw) };
+  return { exact: raw.toFixed(2), rounded: Math.ceil(raw) };
 }
 
 // building an Degradation Table 
@@ -193,42 +197,42 @@ export function buildMinVoltageDegradationTable(
 }
 
 export function buildSolarVocTemplateValues({
-    solarCalcValues,
+  solarCalcValues,
+  tempMin,
+  tempCellMax
+}) {
+  const out = {
     tempMin,
     tempCellMax
-}) {
-    const out = {
-        tempMin,
-        tempCellMax
-    };
+  };
 
-    const formatToTwoDecimals = (val) => {
-        if (val === undefined || val === null || val === "") return "";
-        const num = Number(val);
-        return isNaN(num) ? val : num.toFixed(2);
-    };
+  const formatToTwoDecimals = (val) => {
+    if (val === undefined || val === null || val === "") return "";
+    const num = Number(val);
+    return isNaN(num) ? val : num.toFixed(2);
+  };
 
-    for (let i = 0; i < 6; i++) {
-        out[`ashrae_voc_${i+1}`] =
-            formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
+  for (let i = 0; i < 6; i++) {
+    out[`ashrae_voc_${i + 1}`] =
+      formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
 
-        out[`ashrae_string_${i+1}`] =
-            formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
+    out[`ashrae_string_${i + 1}`] =
+      formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
 
-        out[`pvsyst_voc_${i+1}`] =
-            formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
+    out[`pvsyst_voc_${i + 1}`] =
+      formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
 
-        out[`pvsyst_string_${i+1}`] =
-            formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
-    }
+    out[`pvsyst_string_${i + 1}`] =
+      formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
+  }
 
-    out.ashrae_modules_series =
-        solarCalcValues?.selected_modules?.[0] ?? "";
+  out.ashrae_modules_series =
+    solarCalcValues?.selected_modules?.[0] ?? "";
 
-    out.pvsyst_modules_series =
-        solarCalcValues?.selected_modules?.[0] ?? "";
+  out.pvsyst_modules_series =
+    solarCalcValues?.selected_modules?.[0] ?? "";
 
-    return out;
+  return out;
 }
 
 export function buildPvsystLossTemplateValues(pvsystData) {

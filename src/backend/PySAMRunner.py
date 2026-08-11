@@ -6,6 +6,7 @@ import traceback
 from datetime import datetime, timedelta
 import time
 import requests
+import shutil
 
 import PySAM.Pvsamv1 as pvsam
 
@@ -355,9 +356,22 @@ def apply_module_user_entered(model, module_inputs):
 
     isc = float(module_inputs["isc"])
     voc = float(module_inputs["voc"])
+    vmp = float(module_inputs["vmp"])
+    imp = float(module_inputs["imp"])
+
+    # Physical bounds checks for CEC 6-parameter model solver
+    if vmp >= voc or vmp <= 0:
+        vmp = round(voc * 0.83, 2)
+    if imp >= isc or imp <= 0:
+        imp = round(isc * 0.95, 2)
+
     aisc_pct = float(module_inputs["aisc_pct"])
     bvoc_pct = float(module_inputs["bvoc_pct"])
+    # Ensure bvoc_pct is strictly negative for CEC solver convergence
+    bvoc_pct = -abs(bvoc_pct) if bvoc_pct != 0 else -0.25
     gpmp_pct = float(module_inputs["gpmp_pct"])
+    if gpmp_pct > 0:
+        gpmp_pct = -abs(gpmp_pct)
 
     aisc_abs = (aisc_pct / 100.0) * isc
     bvoc_abs = (bvoc_pct / 100.0) * voc
@@ -374,9 +388,9 @@ def apply_module_user_entered(model, module_inputs):
 
     base = {
         "isc": isc,
-        "imp": float(module_inputs["imp"]),
+        "imp": imp,
         "voc": voc,
-        "vmp": float(module_inputs["vmp"]),
+        "vmp": vmp,
         "aisc": aisc_abs,
         "bvoc": bvoc_abs,
         "gpmp": gpmp_pct,
@@ -664,6 +678,46 @@ def ensure_weather_files_downloaded(config: dict) -> str:
 
     return weather_folder
 
+def ensure_weather_files_downloaded_stream(config: dict):
+    weather_folder = config["WeatherFolder"]
+    os.makedirs(weather_folder, exist_ok=True)
+
+    api_key = os.getenv("NSRDB_API_KEY")
+    email = os.getenv("NSRDB_EMAIL")
+    lat = config.get("Latitude")
+    lon = config.get("Longitude")
+
+    if not api_key or not email or lat is None or lon is None:
+        yield {"type": "progress", "pct": 100, "message": "Using local cached weather files"}
+        return
+
+    lat = float(lat)
+    lon = float(lon)
+
+    latest_year = _find_latest_available_nsrdb_year(api_key, email, lat, lon)
+    years_needed = list(range(latest_year - 24, latest_year + 1))
+    
+    total = len(years_needed)
+    
+    for idx, year in enumerate(years_needed):
+        pct = (idx / total) * 50
+        yield {"type": "progress", "pct": pct, "message": f"Checking weather data for {year}..."}
+        
+        existing = _nsrdb_file_exists_in_folder(weather_folder, lat, lon, year)
+        if existing:
+            continue
+            
+        filename = f"nsrdb_{lat:.2f}_{lon:.2f}_{year}.csv"
+        out_path = os.path.join(weather_folder, filename)
+        
+        yield {"type": "progress", "pct": pct, "message": f"Downloading weather data for {year} (NSRDB)..."}
+        _download_nsrdb_year(weather_folder, api_key, email, lat, lon, year)
+        
+        time.sleep(1)
+
+    yield {"type": "progress", "pct": 50, "message": "All weather data ready. Starting PySAM simulation..."}
+    return
+
 
 def process_all_weather_files(config):
     weather_folder = ensure_weather_files_downloaded(config)
@@ -816,7 +870,8 @@ def process_all_weather_files(config):
 
     weather_files = list_weather_files(weather_folder)
 
-    summary = []
+    voc_summary = []
+    isc_summary = []
 
     voc_by_year = {}
     isc_by_year = {}
@@ -842,20 +897,315 @@ def process_all_weather_files(config):
         ghi_by_year[year] = ghi_vals
         dhi_by_year[year] = dhi_vals
 
-        summary.append(
-            {
-                "year": year,
-                "max_voc": round(max(voc_vals), 2),
-                "max_isc": round(max(isc_vals), 2)
-            }
-        )
+        # Calculate VOC summary
+        valid_vocs = [v for v in voc_vals if v > 0]
+        max_voltage = round(max(valid_vocs), 2) if valid_vocs else 0.0
+        min_voltage = round(min(valid_vocs), 2) if valid_vocs else 0.0
+        voc_summary.append({
+            "year": str(year),
+            "maxVoltage": max_voltage,
+            "minVoltage": min_voltage
+        })
+
+        # Calculate ISC summary (highest 3hr avg around noon)
+        max_daily_avg = -float('inf')
+        best_h1, best_h2, best_h3 = 0, 0, 0
+        days = len(isc_vals) // 24
+        for day in range(days):
+            base = day * 24
+            if base + 13 < len(isc_vals):
+                v1 = isc_vals[base + 11]
+                v2 = isc_vals[base + 12]
+                v3 = isc_vals[base + 13]
+                daily_avg = (v1 + v2 + v3) / 3.0
+                if daily_avg > max_daily_avg:
+                    max_daily_avg = daily_avg
+                    best_h1, best_h2, best_h3 = v1, v2, v3
+        
+        isc_summary.append({
+            "year": str(year),
+            "h1": round(best_h1, 2),
+            "h2": round(best_h2, 2),
+            "h3": round(best_h3, 2),
+            "avg": round(max_daily_avg, 2)
+        })
 
     return {
-        "summary": summary,
+        "voc_summary": voc_summary,
+        "isc_summary": isc_summary,
         "voc_by_year": voc_by_year,
         "isc_by_year": isc_by_year,
         "ghi_by_year": ghi_by_year,
         "dhi_by_year": dhi_by_year,
+    }
+
+def process_all_weather_files_stream(config):
+    weather_stream = ensure_weather_files_downloaded_stream(config)
+    for event in weather_stream:
+        yield event
+        
+    weather_folder = config["WeatherFolder"]
+    baseline_json = config.get("BaselineJson", "")
+
+    # Module Inputs
+    module_inputs = {
+        "celltech": 0 if config["CellType"] == "monoSi" else 1,
+        "vmp": config["Vmp"],
+        "imp": config["Imp"],
+        "voc": config["Voc"],
+        "isc": config["Isc"],
+        "bvoc_pct": config["BvocPct"],
+        "aisc_pct": config["AiscPct"],
+        "gpmp_pct": config["GpmpPct"],
+        "nser": config["Nser"],
+        "tnoct": config["Tnoct"],
+        "length_m": config["Length"],
+        "width_m": config["Width"],
+        "area": config["Area"],
+        "is_bifacial": config["IsBifacial"],
+        "bifaciality": config["Bifaciality"],
+        "transmission_factor": config["TransmissionFactor"],
+        "ground_clearance": config["GroundClearance"],
+        "mass": config["Mass"],
+        "module_model": 2,
+    }
+
+    # Standoff Mapping
+    standoff_map = {
+        "Building integrated": 0,
+        "Greater than 3.5in": 1,
+        "2.5-3.5in": 2,
+        "1.5-2.5in": 3,
+        "0.5-1.5in": 4,
+        "Less than 0.5in": 5,
+        "Ground or rack mounted": 6,
+    }
+
+    module_inputs["standoff_code"] = standoff_map.get(
+        config["Standoff"], 6
+    )
+
+    # Mounting Mapping
+    mounting_map = {
+        "One story building height or lower": 0,
+        "Two story building height or higher": 1,
+    }
+
+    module_inputs["mounting_code"] = mounting_map.get(
+        config["Mounting"], 1
+    )
+
+    # System Design
+    track_map = {
+        "Fixed": 0,
+        "1 Axis": 1,
+        "2 Axis": 2,
+        "Azimuth Axis": 3,
+        "Seasonal Tilt": 4,
+    }
+
+    sys_inputs = {
+        "modules_per_string": config["ModulesPerString"],
+        "nstrings": config["NStrings"],
+        "track_mode": track_map.get(
+            config["TrackingMode"], 1
+        ),
+        "backtracking": config["Backtracking"],
+        "tilt_eq_lat": config["TiltEqualsLatitude"],
+        "tilt": config["Tilt"],
+        "azimuth": config["Azimuth"],
+        "gcr": config["Gcr"],
+        "rotlim": config["RotationLimit"],
+    }
+
+    # Shading
+    shade_inputs = {
+        "self_shading_mode":
+            0 if config["SelfShading"] == "None" else 1,
+
+        "rack_shading":
+            config["RackShading"],
+
+        "module_orientation":
+            0 if config["ModuleOrientation"] == "Portrait" else 1,
+
+        "modules_along_side":
+            config["ModulesAlongSide"],
+
+        "modules_along_bottom":
+            config["ModulesAlongBottom"],
+    }
+
+    # Advanced
+    sky_model_map = {
+        "Isotropic": 0,
+        "HDKR": 1,
+        "Perez": 2,
+    }
+
+    irrad_mode_map = {
+        "DNI and DHI": 0,
+        "DNI and GHI": 1,
+        "GHI and DHI": 2,
+        "POA from reference cell": 3,
+        "POA from pyranometer": 4,
+    }
+
+    monthly_albedo = []
+
+    if config["MonthlyAlbedo"]:
+        monthly_albedo = [
+            float(x.strip())
+            for x in config["MonthlyAlbedo"].split(",")
+        ]
+
+    adv_inputs = {
+        "sky_model":
+            sky_model_map.get(
+                config["SkyModel"], 2
+            ),
+
+        "irrad_mode":
+            irrad_mode_map.get(
+                config["IrradianceMode"], 0
+            ),
+
+        "use_wf_albedo":
+            config["UseWeatherAlbedo"],
+
+        "use_spatial_albedos":
+            config["UseSpatialAlbedo"],
+
+        "monthly_uniform_albedo":
+            monthly_albedo,
+    }
+        
+    inverter_inputs = {
+        "nominal_ac_voltage": config["NominalAcVoltage"],
+        "maximum_dc_voltage": config["MaximumDcVoltage"],
+        "maximum_dc_current": config["MaximumDcCurrent"],
+        "minimum_mppt_voltage": config["MinimumMpptVoltage"],
+        "nominal_dc_voltage": config["NominalDcVoltage"],
+        "maximum_mppt_voltage": config["MaximumMpptVoltage"],
+        "mppt_inputs": config["MpptInputs"]
+    }
+
+    weather_files = list_weather_files(weather_folder)
+
+    voc_summary = []
+    isc_summary = []
+
+    voc_by_year = {}
+    isc_by_year = {}
+    ghi_by_year = {}
+    dhi_by_year = {}
+
+    total_files = len(weather_files)
+    
+    for idx, wf in enumerate(weather_files):
+        year = extract_year_from_filename(wf)
+        
+        pct = 50 + ((idx / max(1, total_files)) * 50)
+        yield {"type": "progress", "pct": pct, "message": f"Running PySAM simulation for year {year}..."}
+
+        voc_vals, isc_vals, ghi_vals, dhi_vals = run_one_weather_file(
+            wf,
+            module_inputs,
+            sys_inputs,
+            shade_inputs,
+            adv_inputs,
+            baseline_json=baseline_json,
+            config=config
+        )
+
+        voc_by_year[year] = voc_vals
+        isc_by_year[year] = isc_vals
+        ghi_by_year[year] = ghi_vals
+        dhi_by_year[year] = dhi_vals
+
+        # Calculate VOC summary
+        valid_vocs = [v for v in voc_vals if v > 0]
+        max_voltage = round(max(valid_vocs), 2) if valid_vocs else 0.0
+        min_voltage = round(min(valid_vocs), 2) if valid_vocs else 0.0
+        voc_summary.append({
+            "year": str(year),
+            "maxVoltage": max_voltage,
+            "minVoltage": min_voltage
+        })
+
+        # Calculate ISC summary (highest 3hr avg around noon)
+        max_daily_avg = -float('inf')
+        best_h1, best_h2, best_h3 = 0, 0, 0
+        best_day = 0
+        days = len(isc_vals) // 24
+        for day in range(days):
+            base = day * 24
+            if base + 13 < len(isc_vals):
+                v1 = isc_vals[base + 11]
+                v2 = isc_vals[base + 12]
+                v3 = isc_vals[base + 13]
+                daily_avg = (v1 + v2 + v3) / 3.0
+                if daily_avg > max_daily_avg:
+                    max_daily_avg = daily_avg
+                    best_h1, best_h2, best_h3 = v1, v2, v3
+                    best_day = day
+        
+        try:
+            best_date = datetime(int(year), 1, 1) + timedelta(days=best_day)
+        except Exception:
+            best_date = datetime.now()
+            
+        def format_dt(dt, hr):
+            return f"{dt.day:02d}/{dt.month:02d}/{dt.year} {hr:02d}:00"
+            
+        b_idx = best_day * 24
+        g1 = ghi_vals[b_idx + 11] if b_idx + 11 < len(ghi_vals) else 0
+        g2 = ghi_vals[b_idx + 12] if b_idx + 12 < len(ghi_vals) else 0
+        g3 = ghi_vals[b_idx + 13] if b_idx + 13 < len(ghi_vals) else 0
+        
+        d1 = dhi_vals[b_idx + 11] if b_idx + 11 < len(dhi_vals) else 0
+        d2 = dhi_vals[b_idx + 12] if b_idx + 12 < len(dhi_vals) else 0
+        d3 = dhi_vals[b_idx + 13] if b_idx + 13 < len(dhi_vals) else 0
+
+        entry = {
+            "year": str(year),
+            "h1": round(best_h1, 2),
+            "h2": round(best_h2, 2),
+            "h3": round(best_h3, 2),
+            "avg": round(max_daily_avg, 2),
+            "t1_datetime": format_dt(best_date, 11),
+            "t2_datetime": format_dt(best_date, 12),
+            "t3_datetime": format_dt(best_date, 13),
+            "t1_ghi": round(g1, 2),
+            "t2_ghi": round(g2, 2),
+            "t3_ghi": round(g3, 2),
+            "t1_dhi": round(d1, 2),
+            "t2_dhi": round(d2, 2),
+            "t3_dhi": round(d3, 2),
+            "t1_isc": round(best_h1, 2),
+            "t2_isc": round(best_h2, 2),
+            "t3_isc": round(best_h3, 2)
+        }
+        print(f"[PySAMRunner] Year {year}: Peak Day={best_day}, t1_dt={entry['t1_datetime']}, g1={entry['t1_ghi']}, d1={entry['t1_dhi']}, h1={entry['h1']}")
+        isc_summary.append(entry)
+
+    # Cleanup local weather folder to save space on ephemeral filesystems (like Render)
+    if os.path.exists(weather_folder):
+        try:
+            shutil.rmtree(weather_folder, ignore_errors=True)
+        except Exception:
+            pass
+
+    yield {
+        "type": "result",
+        "data": {
+            "voc_summary": voc_summary,
+            "isc_summary": isc_summary,
+            "voc_by_year": voc_by_year,
+            "isc_by_year": isc_by_year,
+            "ghi_by_year": ghi_by_year,
+            "dhi_by_year": dhi_by_year,
+        }
     }
 
 def main():

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Logo from "../../../shared/components/Logo";
 import Icon from "../../../shared/components/Icon";
@@ -26,6 +26,7 @@ export default function Sidebar({
   sel, 
   onSelectReport, 
   onSelectSub, 
+  onSelectVertical,
   user, 
   onSignOut, 
   onGoDashboard,
@@ -40,6 +41,13 @@ export default function Sidebar({
 
   const toggleV = (id) => setOpenV(s => ({ ...s, [id]: !s[id] }));
   const toggleS = (key) => setOpenS(s => ({ ...s, [key]: !s[key] }));
+
+  // Auto-expand vertical accordion if sel.vertical changes
+  useEffect(() => {
+    if (sel?.vertical?.id) {
+      setOpenV(s => ({ ...s, [sel.vertical.id]: true }));
+    }
+  }, [sel?.vertical?.id]);
 
   const q = (query || '').trim().toLowerCase();
 
@@ -118,8 +126,8 @@ export default function Sidebar({
       {/* tree */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: collapsed ? '8px 4px' : '4px 8px 12px' }}>
         {NAV.map(v => {
-          // If collapsed, we force-close menus visually and only show the main vertical icons
           const vOpen = collapsed ? false : (openV[v.id] || q);
+          const isVActive = sel?.vertical?.id === v.id && !sel?.sub;
           const subsMatch = v.subs.map(s => ({
             ...s,
             reports: q ? s.reports.filter(r => r.name.toLowerCase().includes(q)) : s.reports,
@@ -130,9 +138,14 @@ export default function Sidebar({
           return (
             <div key={v.id} style={{ marginBottom: collapsed ? 8 : 2 }}>
               <button 
-                onClick={() => !collapsed && toggleV(v.id)} 
-                className="tree-row" 
-                style={treeRow(0, false, collapsed)}
+                onClick={() => {
+                  if (!collapsed) {
+                    toggleV(v.id);
+                    onSelectVertical && onSelectVertical(v.id);
+                  }
+                }} 
+                className={'tree-row' + (isVActive ? ' tree-row-active' : '')} 
+                style={treeRow(0, isVActive, collapsed)}
                 title={collapsed ? v.name : undefined}
               >
                 {!collapsed && (
@@ -161,7 +174,7 @@ export default function Sidebar({
                   <div key={s.id}>
                     <button 
                       onClick={() => { if (hasReports) { toggleS(key); onSelectSub(v.id, s.id); } }} 
-                      className={'tree-row' + (hasReports ? '' : ' tree-row-static') + (sel.sub && sel.sub.id === s.id && sel.vertical.id === v.id && !sel.report ? ' tree-row-active' : '')} 
+                      className={'tree-row' + (hasReports ? '' : ' tree-row-static') + (sel.sub && sel.sub.id === s.id && sel.vertical && sel.vertical.id === v.id && !sel.report ? ' tree-row-active' : '')} 
                       style={{ ...treeRow(1, false, collapsed), opacity: hasReports ? 1 : 0.5, cursor: hasReports ? 'pointer' : 'default' }}
                     >
                       <Icon name={hasReports ? (sOpen ? 'chevronD' : 'chevronR') : 'dot'} size={13} style={{ color: 'var(--text-4)' }} />
@@ -171,7 +184,7 @@ export default function Sidebar({
                     </button>
                     
                     {sOpen && hasReports && s.reports.map(r => {
-                      const active = sel.report && sel.report.id === r.id && sel.vertical.id === v.id && sel.sub.id === s.id;
+                      const active = sel.report && sel.report.id === r.id && sel.vertical && sel.vertical.id === v.id && sel.sub && sel.sub.id === s.id;
                       const meta = STATUS_META[r.status];
                       const disabled = r.status === 'soon';
                       return (

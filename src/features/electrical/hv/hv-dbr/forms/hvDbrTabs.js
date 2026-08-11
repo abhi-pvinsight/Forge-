@@ -1,20 +1,16 @@
 export const SUBSTATION_DBR_TABS = [
 
-  // ─── DOCUMENT INFORMATION ──────────────────────────────────────────────────
+  // ─── CLIENT INFORMATION ────────────────────────────────────────────────────
   {
-    id: 'document',
-    name: 'Document Information',
-    icon: 'file-text',
-    blurb: 'Report title, revision history, and prepared-by / submitted-to information for the cover sheet.',
+    id: 'client',
+    name: 'Client Information',
+    icon: 'briefcase',
+    blurb: 'Identifies the client and the engagement on the report cover sheet.',
     fields: [
-      { key: 'reportTitle', label: 'Report Title', type: 'text', required: true, placeholder: 'Design Basis Report (DBR)' },
-      { key: 'projectTitle', label: 'Project Title', type: 'text', required: true, placeholder: '100MW AC Solar Power Plant' },
-      { key: 'substationTitle', label: 'Substation Title', type: 'text', required: true, placeholder: '69/34.5 kV Kitt Solar HV Collector Substation' },
-      { key: 'documentNo', label: 'Document Number', type: 'text', required: true, placeholder: '25021-HR-01' },
-      { key: 'revision', label: 'Current Revision', type: 'text', required: true, placeholder: '2' },
-      { key: 'submittedToCompany', label: 'Submitted To – Company', type: 'text', required: true, placeholder: 'RES' },
-      { key: 'submittedToAddress', label: 'Submitted To – Address', type: 'text', required: true },
-      { key: "clientLogo", label: "Client Logo", type: "file", required: true },
+      { key: 'clientName', label: 'Client / Company name', type: 'text', required: true, placeholder: 'e.g. Aurora Renewables LLC' },
+      { key: 'clientEmail', label: 'Contact email', type: 'text', required: true, placeholder: 'name@company.com' },
+      { key: 'clientLogo', label: 'Client Logo', type: 'file', required: false, hint: 'Upload company logo image (.png, .jpg, .svg, .webp)' },
+      { key: 'clientAddress', label: 'Client address', type: 'textarea', required: true, placeholder: 'Street, City, State, Country' },
     ]
   },
 
@@ -421,7 +417,6 @@ export const SUBSTATION_DBR_TABS = [
     icon: 'paperclip',
     blurb: 'Attach the single line diagram, trip matrix, and equipment datasheets referenced in this report.',
     uploads: [
-      { key: 'coverPhoto', label: 'Cover Page Photo', hint: 'Image · Substation cover photo', required: false },
       { key: 'sldDrawing', label: 'Single Line Diagram', hint: 'PDF/DWG · Substation SLD', required: false },
       { key: 'relayListTripMatrix', label: 'Relay List & Trip Matrix', hint: 'PDF/XLS · e.g. HD-03.5 Relay List & Trip Matrix', required: false },
       { key: 'transformerDatasheet', label: 'Main Power Transformer Datasheet', hint: 'PDF · MPT manufacturer datasheet', required: false },

@@ -67,6 +67,35 @@ async function inlineImages(htmlString) {
   return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
 }
 
+function prepareReportTablesForPdf(doc) {
+  // Row controls position the final cell so the floating edit actions can be
+  // anchored in the preview. Those editor-only layout changes must not reach
+  // the PDF renderer.
+  doc.querySelectorAll("tr.editable-table-row").forEach((row) => {
+    row.classList.remove("editable-table-row");
+    const lastCell = row.querySelector("td:last-child, th:last-child");
+    if (lastCell?.style.position === "relative") {
+      lastCell.style.removeProperty("position");
+    }
+  });
+
+  doc.querySelectorAll("table").forEach((table) => {
+    const isBorderlessLayoutTable =
+      table.getAttribute("border") === "0" ||
+      table.classList.contains("cover-table") ||
+      table.classList.contains("doc-header-table");
+
+    if (isBorderlessLayoutTable) return;
+
+    table.style.setProperty("border-collapse", "collapse", "important");
+    table.style.setProperty("border-spacing", "0", "important");
+
+    table.querySelectorAll("th, td").forEach((cell) => {
+      cell.style.setProperty("border", "1px solid #000000", "important");
+    });
+  });
+}
+
 
 function buildSolarAppendixValues(values = {}) {
   const storedValues = values.solarAppendixValues || {};
@@ -110,8 +139,11 @@ export async function exportPdfWithToc(
 
   const docTitle = fileName.replace(".pdf", "");
   const sizeValue = pageSize.toLowerCase() === "a4" ? "A4" : "Letter";
-  // Subtract 20mm total margin (10mm top, 10mm bottom) from total page height
-  const innerHeight = sizeValue === "A4" ? "277mm" : "259.4mm";
+  // Keep the existing effective horizontal spacing (10mm page margin +
+  // 10mm container padding), but apply it entirely at page level so the same
+  // spacing repeats at the top and bottom of every fragmented PDF page.
+  const pageMargin = "20mm";
+  const innerHeight = sizeValue === "A4" ? "257mm" : "239.4mm";
 
   // Parse HTML and extract styles to avoid preceding text nodes or wrappers in body
   const parser = new DOMParser();
@@ -132,6 +164,8 @@ export async function exportPdfWithToc(
     .querySelectorAll(".appendix-page ~ .page")
     .forEach((node) => node.remove());
 
+  prepareReportTablesForPdf(tempDoc);
+
   const bodyContent = tempDoc.body.innerHTML.trim();
 
   const htmlContent = `
@@ -149,7 +183,7 @@ export async function exportPdfWithToc(
             size: ${sizeValue};
             width: auto;
             height: auto;
-            margin: 10mm;
+            margin: ${pageMargin};
           }
 
           @page cover {
@@ -159,24 +193,38 @@ export async function exportPdfWithToc(
             margin: 0;
           }
 
+          *,
           html,
-          body {
-            width: 100%;
-            font-family: "Segoe UI", sans-serif;
-            margin: 0;
-            padding: 0;
-            background: white;
+          body,
+          p, td, th, div, span, h1, h2, h3, h4, h5, h6, table {
+            font-family: "Segoe UI", sans-serif !important;
           }
-          table {
-            width: 100%;
-            border-collapse: collapse;
+
+          h1, h2, h3, h4, h5, h6,
+          .doc-h1, .doc-h2, .doc-h3,
+          .toc-heading,
+          .table-caption, .toc-table-caption {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
           }
-          img {
-            max-width: 100%;
+
+          table, .doc-table {
+            width: 100%;
+            border-collapse: collapse !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+          }
+          table tr, .doc-table tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          th, td, .doc-table th, .doc-table td {
+            border: 1px solid #000000 !important;
           }
           .page-break {
             page-break-before: always;
           }
+
           @media print {
             th {
               color: white !important;
@@ -189,8 +237,13 @@ export async function exportPdfWithToc(
             tfoot {
               display: table-footer-group;
             }
-            table {
-              page-break-inside: auto;
+            table, .doc-table {
+              page-break-inside: auto !important;
+              break-inside: auto !important;
+            }
+            table tr, .doc-table tr {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
           }
           .cover-page {
@@ -213,7 +266,7 @@ export async function exportPdfWithToc(
             max-width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 15mm 15mm !important;
+            padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
@@ -223,10 +276,213 @@ export async function exportPdfWithToc(
           .report-page.doc-control-page {
             height: ${innerHeight} !important;
             min-height: ${innerHeight} !important;
-            display: block !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            box-sizing: border-box !important;
+            padding: 0 !important;
           }
+          .doc-control-top {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .doc-control-middle {
+            width: 100% !important;
+            text-align: center !important;
+            margin: auto 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+          }
+          .doc-control-middle .heading {
+            font-size: 20pt !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+            text-align: center !important;
+          }
+          .doc-control-bottom,
           .report-page.doc-control-page .bottom-layout-group {
-            margin-top: 20mm !important; /* Push down without overflowing the page */
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            justify-content: flex-end !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            margin-top: auto !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding: 0 !important;
+          }
+          [id*="-report"] .doc-control-page .revision-section,
+          .report-page.doc-control-page .revision-section,
+          .doc-control-page .revision-section {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            margin: 5mm 0 !important;
+            padding: 0 !important;
+            align-self: stretch !important;
+            position: static !important;
+            left: auto !important;
+            right: auto !important;
+            transform: none !important;
+          }
+          .doc-control-page table.table,
+          .revision-section table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .doc-control-page table.table th,
+          .revision-section table th {
+            box-sizing: border-box !important;
+            padding: 10px !important;
+            font-size: 8.5pt !important;
+            font-weight: 600 !important;
+            background-color: #163c7a !important;
+            color: #ffffff !important;
+            text-align: center !important;
+            word-break: break-word !important;
+            border: 1px solid #163c7a !important;
+          }
+          .doc-control-page table.table td,
+          .revision-section table td {
+            box-sizing: border-box !important;
+            padding: 10px !important;
+            font-size: 8.5pt !important;
+            color: #475569 !important;
+            line-height: 1.3 !important;
+            text-align: center !important;
+            word-break: break-word !important;
+            border: 1px solid #cbd5e1 !important;
+          }
+
+          .compact-table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            font-size: 7.5pt !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            margin-top: 10px !important;
+            margin-bottom: 15px !important;
+          }
+          .compact-table th,
+          .compact-table td {
+            padding: 3px 2px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            line-height: 1.15 !important;
+            border: 1px solid #d0d7e2 !important;
+            font-size: 7.5pt !important;
+          }
+          .compact-table th {
+            font-weight: 600 !important;
+            background-color: #163c7a !important;
+            color: #ffffff !important;
+          }
+          .compact-table col:nth-child(1) { width: 18% !important; }
+          .compact-table col:nth-child(2) { width: 6% !important; }
+          .compact-table col:nth-child(3) { width: 6% !important; }
+          .compact-table col:nth-child(4) { width: 14% !important; }
+          .compact-table col:nth-child(5),
+          .compact-table col:nth-child(6),
+          .compact-table col:nth-child(7),
+          .compact-table col:nth-child(8),
+          .compact-table col:nth-child(9),
+          .compact-table col:nth-child(10) { width: 8% !important; }
+          .compact-table col:nth-child(11) { width: 5% !important; }
+
+          .toc-row {
+            display: flex !important;
+            align-items: flex-end !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+          }
+          .toc-row.toc-level-1 {
+            font-weight: bold !important;
+            font-size: 13.5px !important;
+            margin-left: 0 !important;
+          }
+          .toc-row.toc-level-2 {
+            font-weight: normal !important;
+            font-size: 12.5px !important;
+            margin-left: 0 !important;
+          }
+          .toc-row.toc-level-2 .toc-title {
+            padding-left: 20px !important;
+          }
+          .toc-row.toc-level-3 {
+            font-weight: normal !important;
+            font-size: 12px !important;
+            margin-left: 0 !important;
+          }
+          .toc-row.toc-level-3 .toc-title {
+            padding-left: 40px !important;
+          }
+          .toc-row.toc-level-4 {
+            font-weight: normal !important;
+            font-size: 12px !important;
+            margin-left: 0 !important;
+          }
+          .toc-row.toc-level-4 .toc-title {
+            padding-left: 60px !important;
+          }
+          .toc-title {
+            background-color: #ffffff !important;
+            padding-right: 4px !important;
+            z-index: 1 !important;
+            white-space: nowrap !important;
+          }
+          a.toc-link,
+          a.toc-link:link,
+          a.toc-link:visited,
+          a.toc-link:hover,
+          a.toc-link:active,
+          a.toc-link *,
+          .toc-row a,
+          .toc-row a * {
+            color: inherit !important;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+          }
+          .toc-dots {
+            flex: 1 !important;
+            border-bottom: 1px dotted #94a3b8 !important;
+            margin: 0 0 3px 0 !important;
+          }
+          .toc-page-num {
+            background-color: #ffffff !important;
+            padding-left: 6px !important;
+            z-index: 1 !important;
+            text-align: right !important;
+            min-width: 20px !important;
+            white-space: nowrap !important;
+          }
+
+          #ashrae_table,
+          table#ashrae_table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            box-sizing: border-box !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
           }
 
           .page {
@@ -234,7 +490,7 @@ export async function exportPdfWithToc(
             max-width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 15mm 15mm !important;
+            padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
@@ -264,6 +520,11 @@ export async function exportPdfWithToc(
       requestPayload.solar_appendix_values = buildSolarAppendixValues(
         options.solarAppendixValues || {}
       );
+    }
+
+    const pvsystPdfData = options.values?.pvsyst_pdf_file || options.solarAppendixValues?.pvsyst_pdf_file;
+    if (pvsystPdfData) {
+      requestPayload.pvsyst_pdf_base64 = pvsystPdfData;
     }
 
     const payloadSizeMB = (new Blob([JSON.stringify(requestPayload)]).size / (1024 * 1024)).toFixed(2);
