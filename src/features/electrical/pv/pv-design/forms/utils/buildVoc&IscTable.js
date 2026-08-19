@@ -199,11 +199,12 @@ export function buildMinVoltageDegradationTable(
 export function buildSolarVocTemplateValues({
   solarCalcValues,
   tempMin,
-  tempCellMax
+  tempCellMax,
+  values = {}
 }) {
   const out = {
-    tempMin,
-    tempCellMax
+    tempMin: tempMin ?? values?.tempMin ?? values?.temp_min ?? solarCalcValues?.Tmin ?? -5.0,
+    tempCellMax: tempCellMax ?? values?.tempCellMax ?? values?.temp_max ?? 75.0
   };
 
   const formatToTwoDecimals = (val) => {
@@ -212,25 +213,79 @@ export function buildSolarVocTemplateValues({
     return isNaN(num) ? val : num.toFixed(2);
   };
 
+  const formatToInteger = (val) => {
+    if (val === undefined || val === null || val === "") return "";
+    const num = Number(val);
+    return isNaN(num) ? val : String(Math.round(num));
+  };
+
+  const tcVocNum = Number(
+    values?.temp_coeff_voc ??
+    values?.tempCoeffVoc ??
+    solarCalcValues?.TcVoc ??
+    -0.27
+  );
+
+  const tMinNum = Number(out.tempMin);
+
+  // Base modules in series N from form input 'modules_series'
+  const ashraeStringSize = Number(
+    values?.modules_series ??
+    values?.string_size ??
+    solarCalcValues?.selected_modules?.[0] ??
+    28
+  );
+
+  // PV Syst calculation for N + 1 modules in series
+  const pvsystStringSize = ashraeStringSize + 1;
+
   for (let i = 0; i < 6; i++) {
-    out[`ashrae_voc_${i + 1}`] =
-      formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
+    // 1. Extract exact STC Voc directly from uploaded Excel datasheet (voc_1 .. voc_6)
+    const rawVocStc = values?.[`voc_${i + 1}`] ?? solarCalcValues?.Voc_front?.[i];
+    const vocStc = Number(rawVocStc);
 
-    out[`ashrae_string_${i + 1}`] =
-      formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
+    let maxVocCold;
+    if (!isNaN(vocStc) && vocStc > 0 && !isNaN(tcVocNum) && !isNaN(tMinNum)) {
+      // Formula: Voc_cold = Voc_stc * (1 + (temp_coeff / 100) * (T_min - 25))
+      maxVocCold = vocStc * (1 + (tcVocNum / 100) * (tMinNum - 25));
+    } else {
+      maxVocCold = solarCalcValues?.Voc_Tmin?.[i];
+    }
 
-    out[`pvsyst_voc_${i + 1}`] =
-      formatToTwoDecimals(solarCalcValues?.Voc_Tmin?.[i]);
+    const maxVocColdFormatted = formatToTwoDecimals(maxVocCold);
+    const vocColdVal = Number(maxVocCold);
 
-    out[`pvsyst_string_${i + 1}`] =
-      formatToTwoDecimals(solarCalcValues?.max_voc_selected?.[i]);
+    // 2a. ASHRAE Mean Max String Voc = N * maxVocCold
+    let ashraeMaxStringVoc;
+    if (!isNaN(vocColdVal) && !isNaN(ashraeStringSize) && ashraeStringSize > 0) {
+      ashraeMaxStringVoc = ashraeStringSize * vocColdVal;
+    } else {
+      ashraeMaxStringVoc = solarCalcValues?.max_voc_selected?.[i];
+    }
+
+    // 2b. PV Syst Max String Voc = (N + 1) * maxVocCold
+    let pvsystMaxStringVoc;
+    if (!isNaN(vocColdVal) && !isNaN(pvsystStringSize) && pvsystStringSize > 0) {
+      pvsystMaxStringVoc = pvsystStringSize * vocColdVal;
+    } else {
+      pvsystMaxStringVoc = (ashraeStringSize + 1) * vocColdVal;
+    }
+
+    // Populate template fields for Table 6
+    out[`stc_voc_${i + 1}`] = formatToTwoDecimals(vocStc);
+
+    out[`ashrae_voc_${i + 1}`] = maxVocColdFormatted;
+    out[`ashrae_series_${i + 1}`] = ashraeStringSize;
+    out[`ashrae_string_${i + 1}`] = formatToInteger(ashraeMaxStringVoc);
+
+    out[`pvsyst_voc_${i + 1}`] = maxVocColdFormatted;
+    out[`pvsyst_series_${i + 1}`] = pvsystStringSize;
+    out[`pvsyst_string_${i + 1}`] = formatToInteger(pvsystMaxStringVoc);
   }
 
-  out.ashrae_modules_series =
-    solarCalcValues?.selected_modules?.[0] ?? "";
-
-  out.pvsyst_modules_series =
-    solarCalcValues?.selected_modules?.[0] ?? "";
+  out.ashrae_modules_series = ashraeStringSize;
+  out.pvsyst_modules_series = pvsystStringSize;
+  out.string_size = ashraeStringSize;
 
   return out;
 }

@@ -1,23 +1,23 @@
 import Icon from "../../../shared/components/Icon";
+import { getDesignStageInfo } from "../../../data/projects";
 
 const STATUS_STYLE = {
-  completed: { label: 'Completed', color: 'var(--green-text)', bg: 'var(--green-soft)' },
-  generating: { label: 'Generating', color: 'var(--amber-text)', bg: 'var(--amber-soft)' },
-  draft: { label: 'Draft', color: 'var(--text-3)', bg: 'var(--surface-2)' },
+  completed: { label: 'Completed', color: '#15803d', bg: '#dcfce7' },
+  approved: { label: 'Approved', color: '#15803d', bg: '#dcfce7' },
+  in_review: { label: 'Under Review', color: '#0284c7', bg: '#e0f2fe' },
+  under_review: { label: 'Under Review', color: '#0284c7', bg: '#e0f2fe' },
+  changes_requested: { label: 'Changes Requested', color: '#e11d48', bg: '#ffe4e6' },
+  generating: { label: 'Generating', color: '#d97706', bg: '#fef3c7' },
+  draft: { label: 'Draft', color: '#64748b', bg: '#f1f5f9' },
 };
 
-function formatDate(value) {
-  if (!value) return '';
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-export default function ReportRow({ report, onClick, action }) {
+export default function ReportRow({ report, onClick, action, onOpenVersionHistory, onOpenComments }) {
   const statusMeta = STATUS_STYLE[report.status] || STATUS_STYLE.draft;
   const clickable = typeof onClick === 'function';
-
   const values = report.values || {};
+  const versionNum = report.version_number || 1;
+  const stageInfo = getDesignStageInfo(values.designStage || values.stage || report.design_stage || '10');
+
   const projectName =
     values.plant_name ||
     values.projectName ||
@@ -25,56 +25,121 @@ export default function ReportRow({ report, onClick, action }) {
     values.project_name ||
     report.plant_name ||
     report.projectName ||
-    report.project_name;
-
-  const displayTitle = projectName || report.report_title || 'Unnamed Project';
-  const reportTypeLabel = (report.report_title && report.report_title !== displayTitle)
-    ? report.report_title
-    : (report.report_type ? report.report_type.toUpperCase() : '');
-
-  const subtitleParts = [
-    reportTypeLabel,
-    report.document_no,
-    report.revision ? `Rev ${report.revision}` : null,
-  ].filter(Boolean);
+    report.project_name ||
+    report.report_title ||
+    'Engineering Project';
 
   return (
     <div
       className="card"
       onClick={clickable ? onClick : undefined}
       style={{
-        padding: '14px 16px',
+        padding: '14px 20px',
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        justifyContent: 'space-between',
+        gap: 16,
         cursor: clickable ? 'pointer' : 'default',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: 14,
+        transition: 'all 0.18s ease',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
       }}
     >
-      <div style={{ width: 38, height: 38, borderRadius: 9, background: 'var(--accent-soft)', color: 'var(--accent-text)', display: 'grid', placeItems: 'center', flex: 'none' }}>
-        <Icon name="fileText" size={18} />
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>{displayTitle}</div>
-        <div className="mono" style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
-          {subtitleParts.join(' · ')}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: 1 }}>
+        {/* Document Icon Box */}
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          background: 'rgba(16, 185, 129, 0.12)',
+          color: '#10b981',
+          display: 'grid',
+          placeItems: 'center',
+          flex: 'none'
+        }}>
+          <Icon name="fileText" size={20} />
+        </div>
+
+        {/* Project Name */}
+        <div style={{
+          fontSize: 15,
+          fontWeight: 700,
+          color: 'var(--text-1)',
+          minWidth: 120,
+          maxWidth: 240,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          flexShrink: 0,
+        }}>
+          {projectName}
+        </div>
+
+        {/* Status & Stage Pills */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {/* Version Copy Pill */}
+          <button
+            type="button"
+            title="Click to view full Version History & previous copies"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onOpenVersionHistory) onOpenVersionHistory(report);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: '#0284c7',
+              background: '#e0f2fe',
+              border: 'none',
+              padding: '6px 14px',
+              borderRadius: 99,
+              cursor: 'pointer'
+            }}
+          >
+            <span style={{ fontSize: 13, color: '#0284c7' }}>•</span>
+            <span>v{versionNum} (Current Copy)</span>
+          </button>
+
+          {/* Milestone Design Stage Badge */}
+          <span
+            style={{
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: '#9333ea',
+              background: '#f3e8ff',
+              padding: '6px 14px',
+              borderRadius: 8,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {stageInfo.short}
+          </span>
+
+          {/* Status Badge */}
+          <span
+            style={{
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: statusMeta.color,
+              background: statusMeta.bg,
+              padding: '6px 14px',
+              borderRadius: 99,
+              lineHeight: 1,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {statusMeta.label}
+          </span>
         </div>
       </div>
-      <span
-        className="mono"
-        style={{
-          fontSize: 10.5,
-          fontWeight: 600,
-          color: statusMeta.color,
-          background: statusMeta.bg,
-          padding: '3px 8px',
-          borderRadius: 999,
-          lineHeight: 1,
-        }}
-      >
-        {statusMeta.label}
-      </span>
-      <span className="mono" style={{ fontSize: 11.5, color: 'var(--text-4)' }}>{formatDate(report.created_at)}</span>
+
       {action ? action : (clickable && <Icon name="chevronR" size={16} style={{ color: 'var(--text-4)' }} />)}
     </div>
   );
 }
+

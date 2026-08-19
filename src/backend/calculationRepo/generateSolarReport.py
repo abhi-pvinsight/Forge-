@@ -115,12 +115,12 @@ def build_solar_report_data(data):
     
     # Environment/Temperature Coeff constants from your Excel (Rows 9, 10, 11)
     bgf = 0.80 
-    TcVoc = _parse_float(data_clean.get('temp_coeff_voc'), -0.25)
-    TcPmp = _parse_float(data_clean.get('temp_coeff_pm'), -0.30)
-    TcIsc = _parse_float(data_clean.get('temp_coeff_isc'), 0.046)
+    TcVoc = _parse_float(data_clean.get('temp_coeff_voc') or data_clean.get('tempCoeffVoc'), -0.25)
+    TcPmp = _parse_float(data_clean.get('temp_coeff_pm') or data_clean.get('tempCoeffPm'), -0.30)
+    TcIsc = _parse_float(data_clean.get('temp_coeff_isc') or data_clean.get('tempCoeffIsc'), 0.046)
 
-    Tmin = _parse_float(data_clean.get('tempmin'), -5.0)
-    Tmax = _parse_float(data_clean.get('tempmax'), 32.0)
+    Tmin = _parse_float(data_clean.get('tempMin') or data_clean.get('temp_min') or data_clean.get('tempmin'), -5.0)
+    Tmax = _parse_float(data_clean.get('tempMax') or data_clean.get('temp_max') or data_clean.get('tempmax'), 32.0)
     Tstc = 25.0 
     Vmax_system = 1500.0 
     Trise = 25.0
@@ -146,7 +146,8 @@ def build_solar_report_data(data):
     Isc_Tmax = [isc * (1 + (pct_Isc / 100)) for isc in Isc_bgf_doc]
     
     total_modules_series = [Vmax_system / voc_t if voc_t != 0 else 0.0 for voc_t in Voc_Tmin]
-    selected_modules = [28] * len(base_models)
+    selected_modules_count = _parse_float(data_clean.get('modules_series') or data_clean.get('string_size') or data_clean.get('ashrae_modules_series'), 28)
+    selected_modules = [int(selected_modules_count)] * len(base_models)
     max_voc_selected = [m * voc_t for m, voc_t in zip(selected_modules, Voc_Tmin)]
 
     # Format JSON safe calc rows

@@ -282,7 +282,6 @@ export default function BessReportDoc({ values = {}, files = {}, showStamp = fal
   }, [values, files, safeFiles.batteryDs]);
 
   return (
-
     <div 
       id="bess-report" 
       contentEditable={isEditMode}
@@ -290,6 +289,5 @@ export default function BessReportDoc({ values = {}, files = {}, showStamp = fal
       onBlur={onHtmlChange ? (e) => onHtmlChange(e.currentTarget.innerHTML) : undefined}
       dangerouslySetInnerHTML={{ __html: reportHtml }} 
     />
-
   );
 }

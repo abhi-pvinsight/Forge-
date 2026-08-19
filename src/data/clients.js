@@ -1,52 +1,20 @@
-// Default Client Profiles matching user design
+// Default Client Profile
 export const DEFAULT_CLIENTS = [
   {
-    id: 'client-1',
-    name: 'GreenPower Solar',
-    clientName: 'GreenPower Solar',
-    contact: 'Sarah Jenkins',
-    clientContact: 'Sarah Jenkins',
-    email: 'sarah.j@greenpowersolar.com',
-    clientEmail: 'sarah.j@greenpowersolar.com',
-    address: '100 Solar Way, Suite 400, Austin, TX, USA',
-    clientAddress: '100 Solar Way, Suite 400, Austin, TX, USA',
-    consultant: 'Apex Engineering LLC',
-    desc: 'Leading utility-scale solar developer focused on sustainable infrastructure across North America.',
-    icon: 'sun',
-    iconColor: 'rgb(234, 179, 8)',
-    iconBg: 'rgba(234, 179, 8, 0.1)',
-  },
-  {
-    id: 'client-2',
-    name: 'Apex Engineering',
-    clientName: 'Apex Engineering',
-    contact: 'David Miller',
-    clientContact: 'David Miller',
-    email: 'dmiller@apexengineering.com',
-    clientEmail: 'dmiller@apexengineering.com',
-    address: '450 Innovation Parkway, Denver, CO, USA',
-    clientAddress: '450 Innovation Parkway, Denver, CO, USA',
-    consultant: 'Apex Engineering LLC',
-    desc: 'Specialized MEP consulting firm providing high-precision electrical designs for commercial projects.',
-    icon: 'settings',
+    id: 'client-demo',
+    name: 'Demo',
+    clientName: 'Demo',
+    contact: 'Demo Contact',
+    clientContact: 'Demo Contact',
+    email: 'contact@demo.com',
+    clientEmail: 'contact@demo.com',
+    address: '100 Demo Parkway, Suite 100, Austin, TX, USA',
+    clientAddress: '100 Demo Parkway, Suite 100, Austin, TX, USA',
+    consultant: 'PV-Insight Engineering LLC',
+    desc: 'Demo client profile for testing and previewing project report workflows.',
+    icon: 'briefcase',
     iconColor: 'rgb(59, 130, 246)',
     iconBg: 'rgba(59, 130, 246, 0.1)',
-  },
-  {
-    id: 'client-3',
-    name: 'Global Renewables',
-    clientName: 'Global Renewables',
-    contact: 'Elena Rostova',
-    clientContact: 'Elena Rostova',
-    email: 'e.rostova@globalrenewables.com',
-    clientEmail: 'e.rostova@globalrenewables.com',
-    address: '75 Energy Plaza, Toronto, ON, Canada',
-    clientAddress: '75 Energy Plaza, Toronto, ON, Canada',
-    consultant: 'Forge EPC Solutions',
-    desc: 'Multinational energy provider transitioning to a 100% renewable portfolio by 2035.',
-    icon: 'briefcase',
-    iconColor: 'rgb(168, 85, 247)',
-    iconBg: 'rgba(168, 85, 247, 0.1)',
   }
 ];
 
@@ -56,7 +24,15 @@ export function getStoredClients() {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        // Filter out legacy mock clients
+        const filtered = parsed.filter(c => 
+          !['client-1', 'client-2', 'client-3'].includes(c.id) &&
+          !['greenpower solar', 'apex engineering', 'global renewables'].includes((c.name || '').toLowerCase().trim())
+        );
+        if (filtered.length > 0) {
+          return filtered;
+        }
+        localStorage.removeItem('forge_client_profiles');
       }
     }
   } catch (e) {

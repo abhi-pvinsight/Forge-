@@ -35,12 +35,13 @@ export function signInApi(email, password) {
   });
 }
 
-export function signUpApi({ fullName, email, department, password }) {
+export function signUpApi({ fullName, email, department, vertical, password }) {
   const payload = {
     full_name: fullName,
     email,
     password,
     department,
+    vertical,
   };
 
   return authFetch("/api/auth/sign-up", {

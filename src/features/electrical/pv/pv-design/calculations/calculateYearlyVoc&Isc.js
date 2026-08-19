@@ -70,15 +70,49 @@ export function calculateYearlyVoc(rows) {
 }
 
 
- export function calculateNMin(
-  pcsMinPvInputVoltage,
-  vmpMaxTemp
-) {
-  const raw = pcsMinPvInputVoltage / vmpMaxTemp;
+export function calculateVocCold(vocStc, tempCoefficient, tCold) {
+  const vStc = typeof vocStc === 'string' ? parseFloat(vocStc.replace(/[^\d.-]/g, '')) : Number(vocStc);
+  const tc = typeof tempCoefficient === 'string' ? parseFloat(tempCoefficient.replace(/[^\d.-]/g, '')) : Number(tempCoefficient);
+  const tC = typeof tCold === 'string' ? parseFloat(tCold.replace(/[^\d.-]/g, '')) : Number(tCold);
 
+  if (isNaN(vStc) || isNaN(tc) || isNaN(tC)) {
+    return NaN;
+  }
+
+  return vStc * (1 + (tc / 100) * (tC - 25));
+}
+
+export function calculateNMax(pcsMaxPvInputVoltage, vocCold) {
+  const maxV = typeof pcsMaxPvInputVoltage === 'string'
+    ? parseFloat(pcsMaxPvInputVoltage.replace(/[^\d.]/g, ''))
+    : Number(pcsMaxPvInputVoltage);
+  const vCold = Number(vocCold);
+
+  if (isNaN(maxV) || isNaN(vCold) || vCold <= 0) {
+    return { exact: "—", rounded: "—" };
+  }
+
+  const raw = maxV / vCold;
   return {
     exact: raw.toFixed(2),
-    rounded: Math.round(raw),
+    rounded: Math.floor(raw),
+  };
+}
+
+export function calculateNMin(pcsMinPvInputVoltage, vmpMaxTemp) {
+  const minVoltage = typeof pcsMinPvInputVoltage === 'string'
+    ? parseFloat(pcsMinPvInputVoltage.replace(/[^\d.]/g, ''))
+    : Number(pcsMinPvInputVoltage || 875);
+  const vmp = Number(vmpMaxTemp);
+
+  if (isNaN(minVoltage) || isNaN(vmp) || vmp === 0) {
+    return { exact: "—", rounded: "—" };
+  }
+
+  const raw = minVoltage / vmp;
+  return {
+    exact: raw.toFixed(2),
+    rounded: Math.ceil(raw),
   };
 }
 
@@ -126,9 +160,9 @@ export function calculateYearlyIsc(rows) {
       for (let day = 0; day < Math.floor(values.length / 24); day++) {
         const base = day * 24;
         
-        const v1 = values[base + 11] ?? 0; // Hour 11 (10:00 - 11:00)
-        const v2 = values[base + 12] ?? 0; // Hour 12 (11:00 - 12:00)
-        const v3 = values[base + 13] ?? 0; // Hour 13 (12:00 - 13:00)
+        const v1 = values[base + 9] ?? 0;  // Hour 9 (09:00)
+        const v2 = values[base + 10] ?? 0; // Hour 10 (10:00)
+        const v3 = values[base + 11] ?? 0; // Hour 11 (11:00)
         
         const dailyAvg = (v1 + v2 + v3) / 3;
 
@@ -136,9 +170,9 @@ export function calculateYearlyIsc(rows) {
         if (dailyAvg > yearlyBestDay.avg) {
           yearlyBestDay = {
             avg: dailyAvg,
-            h1Val: v1, h1Idx: base + 10,
-            h2Val: v2, h2Idx: base + 11,
-            h3Val: v3, h3Idx: base + 12,
+            h1Val: v1, h1Idx: base + 9,
+            h2Val: v2, h2Idx: base + 10,
+            h3Val: v3, h3Idx: base + 11,
           };
         }
       }

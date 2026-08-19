@@ -12,6 +12,7 @@ export default function SignUp({
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [department, setDepartment] = useState("");
+  const [vertical, setVertical] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
@@ -21,7 +22,7 @@ export default function SignUp({
     setLocalError("");
 
     if (!fullName.trim() || !email.trim() || !department.trim() || !password || !confirmPassword) {
-      setLocalError("Please complete all fields.");
+      setLocalError("Please complete all required fields.");
       return;
     }
 
@@ -39,6 +40,7 @@ export default function SignUp({
       fullName: fullName.trim(),
       email: email.trim(),
       department: department.trim(),
+      vertical: vertical.trim(),
       password,
     });
   };
@@ -143,6 +145,21 @@ export default function SignUp({
               value={department}
               onChange={setDepartment}
               options={["Electrical", "Civil", "Structural"]}
+            />
+            <SelectField
+              label="Vertical"
+              id="signup-vertical"
+              value={vertical}
+              onChange={setVertical}
+              options={
+                department === "Electrical"
+                  ? ["PV", "BESS", "HV & Substation", "TL Lines", "PSS"]
+                  : department === "Civil"
+                  ? ["PV", "BESS", "HV & Substation", "PSS", "TL Lines"]
+                  : department === "Structural"
+                  ? ["PV", "BESS", "HV & Substation", "PSS", "TL Lines"]
+                  : ["PV", "BESS", "HV & Substation", "TL Lines", "PSS"]
+              }
             />
             <Field label="Password" id="signup-password" type="password" value={password} onChange={setPassword} placeholder="Create a password" autoComplete="new-password" />
             <Field label="Confirm password" id="signup-confirm" type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat your password" autoComplete="new-password" />

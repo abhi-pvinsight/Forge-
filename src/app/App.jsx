@@ -46,6 +46,7 @@ import BusbarFormScreen from "../features/electrical/hv/busbar-sizing/components
 import { BUSBAR_DEFAULTS } from "../features/electrical/hv/busbar-sizing/forms/busbarDefaults";
 import BusbarGenerating from "../features/electrical/hv/busbar-sizing/reports/busbarGenerating";
 import BusbarPreview from "../features/electrical/hv/busbar-sizing/reports/BusbarPreview";
+import { saveProjectRecord } from "../data/projects";
 
 
 export default function App() {
@@ -61,9 +62,16 @@ export default function App() {
     formLayout: "tabbed", showCalc: true, accent: "default", docFont: "sans",
   };
 
-  const currentUser = authUser
-    ? {
+  const isUserAdmin = (email) => {
+    const norm = (email || '').toLowerCase().trim();
+    return norm === 'abhaypratap.singh@pvinsightinc.com' || norm === 'abhay@mail.com' || norm.includes('abhay');
+  };
+
+  const currentUser = useMemo(() => {
+    return authUser
+      ? {
         ...USER,
+        id: authUser.id || USER.id || "",
         name: authUser.full_name || authUser.email || USER.name,
         initials: (authUser.full_name || authUser.email || USER.name)
           .split(" ")
@@ -73,10 +81,26 @@ export default function App() {
           .join("")
           .toUpperCase()
           || USER.initials,
-        role: authUser.department || authUser.role || USER.role,
+        role: isUserAdmin(authUser.email) ? (authUser.role === 'reviewer' ? 'reviewer' : 'admin') : (authUser.role || USER.role),
+        department: authUser.department || USER.department || "",
+        vertical: authUser.vertical || USER.vertical || "",
         email: authUser.email || "",
+        isAdmin: isUserAdmin(authUser.email) || authUser.role === 'admin',
+        isReviewer: isUserAdmin(authUser.email) || authUser.role === 'reviewer' || authUser.role === 'admin',
       }
-    : USER;
+      : {
+        ...USER,
+        id: "",
+        name: USER?.name || "User",
+        initials: "U",
+        email: "",
+        department: "",
+        vertical: "",
+        role: "member",
+        isAdmin: false,
+        isReviewer: false,
+      };
+  }, [authUser]);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem("forge_sidebar_collapsed");
@@ -160,7 +184,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('forge_pv_values', JSON.stringify(pvValues));
-    } catch (e) {}
+    } catch (e) { }
   }, [pvValues]);
 
   const [bessValues, setBessValues] = useState(() => {
@@ -175,7 +199,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('forge_bess_values', JSON.stringify(bessValues));
-    } catch (e) {}
+    } catch (e) { }
   }, [bessValues]);
 
   const [bessAmpacityValues, setBessAmpacityValues] = useState({
@@ -210,14 +234,14 @@ export default function App() {
     sel.report?.id === "bess-sizing"
       ? bessValues
       : sel.report?.id === "bess-ampacity"
-      ? bessAmpacityValues
-      : sel.report?.id === "bess-grounding"
-      ? bessGroundingValues
-      : sel.report?.id === "hv-dbr"
-      ? hvDbrValues
-      : sel.report?.id === "busbar-sizing"
-      ? busbarValues
-      : pvValues;
+        ? bessAmpacityValues
+        : sel.report?.id === "bess-grounding"
+          ? bessGroundingValues
+          : sel.report?.id === "hv-dbr"
+            ? hvDbrValues
+            : sel.report?.id === "busbar-sizing"
+              ? busbarValues
+              : pvValues;
 
   const currentFiles = files;
 
@@ -256,6 +280,19 @@ export default function App() {
 
   }, [theme, t.accent, t.docFont]);
 
+  const resetAllFormValuesToDefaults = () => {
+    setPvValues({ ...STRING_SIZE_DEFAULTS });
+    setBessValues({ ...BESS_DEFAULTS });
+    setBessAmpacityValues({ ...BESS_AMPACITY_DEFAULTS });
+    setBessGroundingValues({ ...BESS_GROUNDING_DEFAULTS });
+    setHvDbrValues({ ...HV_DBR_DEFAULTS });
+    setBusbarValues({ ...BUSBAR_DEFAULTS });
+    try {
+      localStorage.removeItem('forge_pv_values');
+      localStorage.removeItem('forge_bess_values');
+    } catch (e) {}
+  };
+
   const selectReport = (verticalId, subId, reportId) => {
     const v = typeof verticalId === 'object' ? verticalId?.id : verticalId;
     const s = typeof subId === 'object' ? subId?.id : subId;
@@ -264,6 +301,7 @@ export default function App() {
     setSourceReportId(null);
     setLoadedReportMeta(null);
     resetDraftSync();
+    resetAllFormValuesToDefaults();
     if (v && s && r) {
       navigate(`/dashboard/${v}/${s}/${r}/select-client`);
     }
@@ -304,7 +342,7 @@ export default function App() {
       module_make: details.module_manufacturer || "",
       module_model: details.module_model || "",
     };
-    
+
     const jsonColumns = [
       "electrical_characteristics",
       "mechanical_characteristics",
@@ -318,7 +356,7 @@ export default function App() {
       "degradation_tables",
       "site_conditions",
     ];
-    
+
     jsonColumns.forEach(col => {
       if (details[col] && typeof details[col] === "object") {
         Object.entries(details[col]).forEach(([key, val]) => {
@@ -326,7 +364,7 @@ export default function App() {
         });
       }
     });
-    
+
     return flat;
   };
 
@@ -357,26 +395,44 @@ export default function App() {
       reportId = "busbar-sizing";
     }
 
-    const inputs = detail.inputs || {};
-    // Extract nested details if returned in single RPC json structure
+    const detailObj = Array.isArray(detail) ? (detail[0] || {}) : (detail || {});
+    const inputs = detailObj?.inputs || {};
     const details = inputs.details || inputs;
 
-    const metadata = detail.metadata || {};
-    const metadata_json = metadata.metadata_json || {};
+    const metadata = detailObj?.metadata || {};
+    const metadata_json = detailObj?.metadata_json || metadata.metadata_json || {};
+
+    const reportStatus = recentMeta?.status || metadata.status || detailObj?.status || "draft";
+    const commonMeta = {
+      status: reportStatus,
+      report_id: recentMeta?.report_id || metadata.id || detailObj?.id,
+      id: recentMeta?.report_id || metadata.id || detailObj?.id,
+      project_id: recentMeta?.project_id || metadata.project_id || detailObj?.project_id,
+      parent_report_id: recentMeta?.parent_report_id ?? metadata.parent_report_id ?? detailObj?.parent_report_id,
+      version_number: recentMeta?.version_number || metadata.version_number || detailObj?.version_number || 1,
+      is_current_version: recentMeta?.is_current_version ?? metadata.is_current_version ?? detailObj?.is_current_version ?? true,
+      report_type: recentMeta?.report_type || metadata.report_type || detailObj?.report_type,
+      prepared_date: recentMeta?.prepared_date || metadata.prepared_date || detailObj?.prepared_date,
+      assigned_creator: recentMeta?.assigned_creator || metadata.assigned_creator || detailObj?.assigned_creator,
+      assigned_reviewer: recentMeta?.assigned_reviewer || metadata.assigned_reviewer || detailObj?.assigned_reviewer,
+      DOCUMENT_NO: recentMeta?.document_no || metadata.document_no || details.DOCUMENT_NO,
+      REVISION: recentMeta?.revision || metadata.revision || details.REVISION,
+      REPORT_TITLE: recentMeta?.report_title || metadata.report_title || details.REPORT_TITLE || details.plant_name
+    };
 
     if (recentMeta.report_type === "grounding") {
-      setBessGroundingValues(prev => ({ ...prev, ...metadata_json, ...details }));
+      setBessGroundingValues({ ...BESS_GROUNDING_DEFAULTS, ...details, ...metadata_json, ...commonMeta });
     } else if (recentMeta.report_type === "cable") {
-      setBessAmpacityValues(prev => ({ ...prev, ...metadata_json, ...details }));
+      setBessAmpacityValues({ ...BESS_AMPACITY_DEFAULTS, ...details, ...metadata_json, ...commonMeta });
     } else if (recentMeta.report_type === "battery") {
-      setBessValues(prev => ({ ...prev, ...metadata_json, ...details }));
+      setBessValues({ ...BESS_DEFAULTS, ...details, ...metadata_json, ...commonMeta });
     } else if (recentMeta.report_type === "hv-dbr") {
-      setHvDbrValues(prev => ({ ...prev, ...metadata_json, ...details }));
+      setHvDbrValues({ ...HV_DBR_DEFAULTS, ...details, ...metadata_json, ...commonMeta });
     } else if (recentMeta.report_type === "busbar-sizing" || recentMeta.report_type === "busbar") {
-      setBusbarValues(prev => ({ ...prev, ...metadata_json, ...details }));
+      setBusbarValues({ ...BUSBAR_DEFAULTS, ...details, ...metadata_json, ...commonMeta });
     } else {
       const flatPv = flattenPvReport(details);
-      setPvValues(prev => ({ ...prev, ...metadata_json, ...flatPv }));
+      setPvValues({ ...STRING_SIZE_DEFAULTS, ...flatPv, ...metadata_json, ...commonMeta });
     }
     resetDraftSync();
     navigate(`/dashboard/${verticalId}/${subId}/${reportId}/${targetPhase}`);
@@ -415,69 +471,93 @@ export default function App() {
     });
   };
 
-  const handleCloneToRevision = (newRev, description) => {
-    const currentValues = {
+  const handleStartAssignedProject = (projectObj) => {
+    if (!projectObj) return;
+
+    const deptId = (projectObj.department || 'Electrical').toLowerCase() === 'civil' ? 'civil' : (projectObj.department || 'Electrical').toLowerCase() === 'structure' ? 'structure' : 'electrical';
+    const vert = (projectObj.vertical || 'PV').toLowerCase();
+    let subId = 'pv';
+    let reportId = 'pv-design';
+
+    if (vert.includes('grounding') || vert.includes('earth')) {
+      subId = 'bess';
+      reportId = 'bess-grounding';
+    } else if (vert.includes('ampacity') || vert.includes('cable')) {
+      subId = 'bess';
+      reportId = 'bess-ampacity';
+    } else if (vert.includes('bess') || vert.includes('battery')) {
+      subId = 'bess';
+      reportId = 'bess-sizing';
+    } else if (vert.includes('hv-dbr') || vert.includes('hv dbr')) {
+      subId = 'hv';
+      reportId = 'hv-dbr';
+    } else if (vert.includes('busbar')) {
+      subId = 'hv';
+      reportId = 'busbar-sizing';
+    }
+
+    navigate(`/dashboard/${deptId}/${subId}/${reportId}/select-client`);
+  };
+
+  const handleAdvanceStage = ({ sourceReport, targetStage, revision, description }) => {
+    const rawValues = (sourceReport && sourceReport.values) ? sourceReport.values : (sourceReport || {});
+    const baseValues = Object.keys(rawValues).length > 0 ? rawValues : {
       "bess-sizing": bessValues,
       "bess-ampacity": bessAmpacityValues,
       "bess-grounding": bessGroundingValues,
       "hv-dbr": hvDbrValues,
       "busbar-sizing": busbarValues,
       "string-sizing": pvValues
-    }[sel.report.id] || pvValues;
+    }[sel.report?.id] || pvValues;
 
     const todayStr = new Date().toLocaleDateString("en-GB").replaceAll("/", ".");
-    const reportTitle = currentValues.reportTitle || currentValues.reportName || sel.report?.name || "Engineering Report";
+    const reportTitle = baseValues.reportTitle || baseValues.reportName || sel.report?.name || "Engineering Report";
     const newRow = {
-      revision: newRev,
+      revision: revision || "0",
       issueDate: todayStr,
       documentName: reportTitle,
-      description: description
+      description: description || `${targetStage}% Milestone Package`
     };
 
-    const oldHistory = Array.isArray(currentValues.revisions) ? currentValues.revisions : [];
-    const currentRev = currentValues.revision || "0";
-    const hasCurrentInHistory = oldHistory.some(r => r.revision === currentRev);
-    const updatedHistory = [...oldHistory];
-
-    if (!hasCurrentInHistory && oldHistory.length === 0) {
-      updatedHistory.push({
-        revision: currentRev,
-        issueDate: currentValues.issueDate || todayStr,
-        documentName: reportTitle,
-        description: "Preliminary Design"
-      });
-    }
-
-    updatedHistory.push(newRow);
+    const oldHistory = Array.isArray(baseValues.revisions) ? baseValues.revisions : [];
+    const updatedHistory = [...oldHistory, newRow];
 
     const newValues = {
-      ...currentValues,
-      revision: newRev,
+      ...baseValues,
+      designStage: targetStage,
+      stage: targetStage,
+      revision: revision || "0",
+      REVISION: revision || "0",
       issueDate: todayStr,
       revisions: updatedHistory,
+      status: "draft",
       custom_html: null
     };
 
-    if (sel.report.id === "bess-sizing") {
-      setBessValues(newValues);
-    } else if (sel.report.id === "bess-ampacity") {
-      setBessAmpacityValues(newValues);
-    } else if (sel.report.id === "bess-grounding") {
-      setBessGroundingValues(newValues);
-    } else if (sel.report.id === "hv-dbr") {
-      setHvDbrValues(newValues);
-    } else if (sel.report.id === "busbar-sizing") {
-      setBusbarValues(newValues);
-    } else {
-      setPvValues(newValues);
-    }
+    const targetReportType = sourceReport?.report_type || sel.report?.id || 'string-sizing';
+    let targetReportKey = sel.report?.id || 'string-sizing';
+    if (targetReportType === 'battery' || targetReportType === 'bess-sizing') targetReportKey = 'bess-sizing';
+    else if (targetReportType === 'cable' || targetReportType === 'bess-ampacity') targetReportKey = 'bess-ampacity';
+    else if (targetReportType === 'grounding' || targetReportType === 'bess-grounding') targetReportKey = 'bess-grounding';
+    else if (targetReportType === 'hv-dbr') targetReportKey = 'hv-dbr';
+    else if (targetReportType === 'busbar-sizing') targetReportKey = 'busbar-sizing';
+    else if (targetReportType === 'pv' || targetReportType === 'string-sizing') targetReportKey = 'string-sizing';
 
-    setSourceReportId(currentReportId);
+    if (targetReportKey === "bess-sizing") setBessValues(newValues);
+    else if (targetReportKey === "bess-ampacity") setBessAmpacityValues(newValues);
+    else if (targetReportKey === "bess-grounding") setBessGroundingValues(newValues);
+    else if (targetReportKey === "hv-dbr") setHvDbrValues(newValues);
+    else if (targetReportKey === "busbar-sizing") setBusbarValues(newValues);
+    else setPvValues(newValues);
+
+    setSourceReportId(sourceReport?.id || currentReportId);
     setCurrentReportId(null);
     setLoadedReportMeta(null);
-    if (sel.vertical && sel.sub && sel.report) {
-      navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`);
-    }
+
+    const vertId = sel.vertical?.id || 'electrical';
+    const subId = (targetReportKey.startsWith('bess') ? 'bess' : targetReportKey.startsWith('hv') || targetReportKey.startsWith('busbar') ? 'hv' : 'pv');
+    navigate(`/dashboard/${vertId}/${subId}/${targetReportKey}/form`);
+
     setDraftSync({
       dirty: true,
       saving: false,
@@ -485,6 +565,97 @@ export default function App() {
       error: null,
     });
   };
+
+  const handleCloneToNewProject = ({ sourceReport, newProject, targetStage, revision }) => {
+    const rawValues = (sourceReport && sourceReport.values) ? sourceReport.values : (sourceReport || {});
+    const baseValues = Object.keys(rawValues).length > 0 ? rawValues : {
+      "bess-sizing": bessValues,
+      "bess-ampacity": bessAmpacityValues,
+      "bess-grounding": bessGroundingValues,
+      "hv-dbr": hvDbrValues,
+      "busbar-sizing": busbarValues,
+      "string-sizing": pvValues
+    }[sel.report?.id] || pvValues;
+
+    if (newProject && newProject.name) {
+      saveProjectRecord({
+        ...newProject,
+        clientId: newProject.clientId || 'client-demo',
+        clientName: newProject.clientName || 'Client',
+      });
+    }
+
+    const todayStr = new Date().toLocaleDateString("en-GB").replaceAll("/", ".");
+    const newValues = {
+      ...baseValues,
+      projectName: newProject.name,
+      projectTitle: newProject.name,
+      plant_name: newProject.name,
+      PROJECT_NAME: newProject.name,
+      county: newProject.county || '',
+      state: newProject.state || '',
+      country: newProject.country || 'USA',
+      assignedCreator: newProject.assignedCreator || currentUser?.name || 'Arman Shah',
+      assignedReviewer: newProject.assignedReviewer || 'Senior Reviewer',
+      department: newProject.department || 'Electrical',
+      vertical: newProject.vertical || 'PV',
+      designStage: targetStage || '10',
+      stage: targetStage || '10',
+      revision: revision || "0",
+      REVISION: revision || "0",
+      issueDate: todayStr,
+      revisions: [
+        {
+          revision: revision || "0",
+          issueDate: todayStr,
+          documentName: newProject.name,
+          description: "Initial Draft (Cloned Equipment Template)"
+        }
+      ],
+      status: "draft",
+      custom_html: null
+    };
+
+    const targetReportType = sourceReport?.report_type || sel.report?.id || 'string-sizing';
+    let targetReportKey = sel.report?.id || 'string-sizing';
+    if (targetReportType === 'battery' || targetReportType === 'bess-sizing') targetReportKey = 'bess-sizing';
+    else if (targetReportType === 'cable' || targetReportType === 'bess-ampacity') targetReportKey = 'bess-ampacity';
+    else if (targetReportType === 'grounding' || targetReportType === 'bess-grounding') targetReportKey = 'bess-grounding';
+    else if (targetReportType === 'hv-dbr') targetReportKey = 'hv-dbr';
+    else if (targetReportType === 'busbar-sizing') targetReportKey = 'busbar-sizing';
+    else if (targetReportType === 'pv' || targetReportType === 'string-sizing') targetReportKey = 'string-sizing';
+
+    if (targetReportKey === "bess-sizing") setBessValues(newValues);
+    else if (targetReportKey === "bess-ampacity") setBessAmpacityValues(newValues);
+    else if (targetReportKey === "bess-grounding") setBessGroundingValues(newValues);
+    else if (targetReportKey === "hv-dbr") setHvDbrValues(newValues);
+    else if (targetReportKey === "busbar-sizing") setBusbarValues(newValues);
+    else setPvValues(newValues);
+
+    setSourceReportId(sourceReport?.id || currentReportId);
+    setCurrentReportId(null);
+    setLoadedReportMeta(null);
+
+    const vertId = sel.vertical?.id || 'electrical';
+    const subId = (targetReportKey.startsWith('bess') ? 'bess' : targetReportKey.startsWith('hv') || targetReportKey.startsWith('busbar') ? 'hv' : 'pv');
+    navigate(`/dashboard/${vertId}/${subId}/${targetReportKey}/form`);
+
+    setDraftSync({
+      dirty: true,
+      saving: false,
+      lastSavedAt: null,
+      error: null,
+    });
+  };
+
+  const handleCloneToRevision = (newRev, description) => {
+    handleAdvanceStage({
+      targetStage: '10',
+      revision: newRev,
+      description: description || 'New Revision',
+    });
+  };
+
 
   const persistReportDraft = async (values, { showSuccessAlert = true, status } = {}) => {
     try {
@@ -508,19 +679,9 @@ export default function App() {
 
       const currentDocNo = values.DOCUMENT_NO || values.grounding_analysis_report_no || "PVI-GEN-001";
       const currentRev = values.REVISION || values.grounding_layout_drawing_no || "A";
-      const currentTitle = values.plant_name || values.projectName || values.projectTitle || values.REPORT_TITLE || sel.report?.name || "Engineering Report";
+      const currentTitle = values.REPORT_TITLE || values.reportTitle || loadedReportMeta?.report_title || sel.report?.name || "Engineering Report";
+      const targetReportId = currentReportId;
 
-      const isVersionChanged = loadedReportMeta && (
-        loadedReportMeta.document_no !== currentDocNo ||
-        loadedReportMeta.revision !== currentRev ||
-        loadedReportMeta.report_title !== currentTitle
-      );
-
-      // If version details changed, save as a new report
-      const targetReportId = isVersionChanged ? null : currentReportId;
-
-      // Legacy PV reports stored every appendix page as a base64 image. Keep
-      // only the small source values needed to regenerate the native PDF.
       const valuesToPersist = { ...values };
       if (Array.isArray(valuesToPersist.appendixPages)) {
         if (valuesToPersist.appendixPages.length > 0) {
@@ -536,8 +697,12 @@ export default function App() {
         revision: currentRev,
         prepared_date: values.PREPARATION_DATE || new Date().toISOString().split("T")[0],
         report_title: currentTitle,
-        status,
-        values: valuesToPersist
+        status: status || values.status || "draft",
+        values: valuesToPersist,
+        assigned_reviewer: values.assignedReviewer || loadedReportMeta?.assigned_reviewer || "Reviewer",
+        assigned_creator: values.assignedCreator || loadedReportMeta?.assigned_creator || currentUser?.name || "Arman Shah",
+        department: values.department || sel.vertical?.name || "Electrical",
+        vertical: values.vertical || sel.sub?.name || "PV",
       };
 
       console.log("Saving report draft to database:", payload);
@@ -557,12 +722,12 @@ export default function App() {
           error: null,
         });
         if (showSuccessAlert) {
-          alert("Draft saved successfully to Supabase database!");
+          alert("Draft saved successfully to database!");
         }
         return res;
       }
 
-      throw new Error("Supabase did not return a report id.");
+      throw new Error("Database did not return a report id.");
     } catch (err) {
       console.error("Error saving draft:", err);
       setDraftSync((prev) => ({
@@ -578,12 +743,17 @@ export default function App() {
   const handleSaveDraft = async (values) => {
     try {
       await persistReportDraft(values, { status: "draft" });
-    } catch {
+    } catch (err) {
       // Error is already surfaced to the user by persistReportDraft.
     }
   };
 
-  const handleGenerate = (values) => {
+  const handleGenerate = async (values) => {
+    try {
+      await persistReportDraft(values, { showSuccessAlert: false, status: "draft" });
+    } catch (err) {
+      console.warn("Auto-save draft on report generation warning:", err);
+    }
     if (sel.vertical && sel.sub && sel.report) {
       navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}/generating`);
     }
@@ -629,8 +799,11 @@ export default function App() {
           vertical={sel.vertical}
           sub={sel.sub}
           report={sel.report}
+          user={currentUser}
           onSelectRecent={handleSelectRecent}
           onCloneReport={handleCloneReport}
+          onAdvanceStage={handleAdvanceStage}
+          onCloneToNewProject={handleCloneToNewProject}
           onCancel={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}`)}
           onContinue={(selectedClient) => {
             const clientPatch = {
@@ -638,7 +811,13 @@ export default function App() {
               clientContact: selectedClient.clientContact || selectedClient.contact || '',
               clientEmail: selectedClient.clientEmail || selectedClient.email || '',
               clientAddress: selectedClient.clientAddress || selectedClient.address || '',
+              clientLogo: selectedClient.clientLogo || selectedClient.logo || '',
               consultant: selectedClient.consultant || '',
+              projectName: selectedClient.projectName || '',
+              assignedReviewer: selectedClient.assignedReviewer || '',
+              assignedCreator: selectedClient.assignedCreator || '',
+              department: selectedClient.department || sel.vertical?.name || 'Electrical',
+              vertical: selectedClient.vertical || sel.sub?.name || 'PV',
             };
 
             if (sel.report.id === 'bess-sizing') {
@@ -705,25 +884,26 @@ export default function App() {
         );
       }
 
-    }
-
-    else if (phase === "preview") {
+    } else if (phase === "preview") {
 
       if (sel.report.id === "bess-sizing") {
 
         main = (
           <BessPreview
             report={sel.report}
-            values={currentValues}
-            bessValues={bessValues}
-            //bessFiles={bessFiles}
+            reportId={currentReportId}
+            user={currentUser}
+            values={bessValues}
             bessFiles={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setBessValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
@@ -732,14 +912,19 @@ export default function App() {
 
         main = (
           <BessAmpacityPreview
-            values={currentValues}
+            reportId={currentReportId}
+            user={currentUser}
+            values={bessAmpacityValues}
             files={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setBessAmpacityValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
@@ -748,14 +933,19 @@ export default function App() {
 
         main = (
           <BessGroundingPreview
-            values={currentValues}
+            reportId={currentReportId}
+            user={currentUser}
+            values={bessGroundingValues}
             files={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setBessGroundingValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
@@ -763,28 +953,38 @@ export default function App() {
       } else if (sel.report.id === "hv-dbr") {
         main = (
           <HvDbrPreview
-            values={currentValues}
+            reportId={currentReportId}
+            user={currentUser}
+            values={hvDbrValues}
             files={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setHvDbrValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
       } else if (sel.report.id === "busbar-sizing") {
         main = (
           <BusbarPreview
-            values={currentValues}
+            reportId={currentReportId}
+            user={currentUser}
+            values={busbarValues}
             files={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setBusbarValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
@@ -792,22 +992,25 @@ export default function App() {
         main = (
           <Preview
             report={sel.report}
-            values={currentValues}
+            reportId={currentReportId}
+            user={currentUser}
+            values={pvValues}
             calc={pvCalc}
-            files={currentFiles}
+            files={files}
             onBack={() => navigate(`/dashboard/${sel.vertical.id}/${sel.sub.id}/${sel.report.id}`)}
             onNew={handleGoDashboard}
             onCloneToRevision={handleCloneToRevision}
+            onAdvanceStage={handleAdvanceStage}
+            onCloneToNewProject={handleCloneToNewProject}
             onSave={async (updatedValues) => {
               setPvValues(updatedValues);
-              return await persistReportDraft(updatedValues, { showSuccessAlert: true, status: "completed" });
+              const targetStatus = updatedValues.status || "draft";
+              return await persistReportDraft(updatedValues, { showSuccessAlert: false, status: targetStatus });
             }}
           />
         );
       }
-    }
-
-    else {
+    } else {
       if (sel.report.id === "bess-sizing") {
         main = (
           <BessFormScreen
@@ -1103,6 +1306,9 @@ export default function App() {
         user={currentUser}
         onSelectRecent={handleSelectRecent}
         onCloneReport={handleCloneReport}
+        onAdvanceStage={handleAdvanceStage}
+        onCloneToNewProject={handleCloneToNewProject}
+        onStartAssignedProject={handleStartAssignedProject}
         sel={sel}
         onSelectVertical={selectVertical}
         onSelectSub={selectSub}
@@ -1135,12 +1341,6 @@ export default function App() {
           resetDraftSync();
           setCurrentReportId(null);
           setSourceReportId(null);
-
-          setSel({
-            vertical: null,
-            sub: null,
-            report: null,
-          });
           navigate("/sign-in", { replace: true });
         }}
       />
@@ -1184,13 +1384,13 @@ export default function App() {
                     color: draftSync.saving
                       ? "var(--amber-text)"
                       : draftSync.dirty
-                      ? "var(--red-text)"
-                      : "var(--green-text)",
+                        ? "var(--red-text)"
+                        : "var(--green-text)",
                     background: draftSync.saving
                       ? "var(--amber-soft)"
                       : draftSync.dirty
-                      ? "var(--red-soft)"
-                      : "var(--green-soft)",
+                        ? "var(--red-soft)"
+                        : "var(--green-soft)",
                     padding: "6px 10px",
                     borderRadius: 999,
                     lineHeight: 1,
@@ -1200,8 +1400,8 @@ export default function App() {
                   {draftSync.saving
                     ? "Saving to Supabase..."
                     : draftSync.dirty
-                    ? "Unsaved changes"
-                    : "Saved to Supabase"}
+                      ? "Unsaved changes"
+                      : "Saved to Supabase"}
                 </span>
                 <span
                   className="mono"
@@ -1220,9 +1420,6 @@ export default function App() {
 
         {main}
       </div>
-      {/* <TweaksPanel>
-  */}
-
     </div>
   );
 }

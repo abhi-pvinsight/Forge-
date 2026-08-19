@@ -1,4 +1,5 @@
 import os
+import uuid as _uuid
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 import jwt
@@ -33,7 +34,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -46,7 +47,7 @@ def get_db():
     finally:
         db.close()
 
-def get_default_organization_id(db: Session) -> int:
+def get_default_organization_id(db: Session) -> _uuid.UUID:
     default_name = os.getenv("DEFAULT_ORGANIZATION_NAME", "PV-Insight")
     org = db.query(Organization).filter(Organization.name == default_name).first()
     if org:
@@ -64,16 +65,22 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
     if token == "dev-bypass-token" and os.getenv("ALLOW_DEV_BYPASS_AUTH", "").lower() in {"1", "true", "yes"}:
         db = SessionLocal()
         try:
-            test_user_id = os.getenv("TEST_USER_ID", "test-user-id")
+            test_user_str = os.getenv("TEST_USER_ID", "test-user-id")
+            try:
+                test_user_id = _uuid.UUID(test_user_str)
+            except ValueError:
+                test_user_id = _uuid.uuid5(_uuid.NAMESPACE_DNS, test_user_str)
+                
             profile = db.query(Profile).filter(Profile.id == test_user_id).first()
             if profile:
                 return {
-                    "id": profile.id,
+                    "id": str(profile.id),
                     "email": profile.email,
-                    "organization_id": profile.organization_id,
+                    "organization_id": str(profile.organization_id) if profile.organization_id else None,
                     "role": profile.role,
                     "full_name": profile.full_name,
                     "department": profile.department,
+                    "vertical": profile.vertical,
                 }
             # Create if bypass doesn't exist
             org_id = get_default_organization_id(db)
@@ -84,17 +91,19 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
                 organization_id=org_id,
                 role="member",
                 full_name="Developer Bypass",
-                department=None
+                department=None,
+                vertical=None,
             )
             db.add(profile)
             db.commit()
             return {
-                "id": profile.id,
+                "id": str(profile.id),
                 "email": profile.email,
-                "organization_id": profile.organization_id,
+                "organization_id": str(profile.organization_id) if profile.organization_id else None,
                 "role": profile.role,
                 "full_name": profile.full_name,
                 "department": profile.department,
+                "vertical": profile.vertical,
             }
         finally:
             db.close()
@@ -109,17 +118,23 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
         
     db = SessionLocal()
     try:
-        user = db.query(Profile).filter(Profile.id == user_id).first()
+        try:
+            user_uuid = _uuid.UUID(user_id)
+        except ValueError:
+            user_uuid = _uuid.uuid5(_uuid.NAMESPACE_DNS, user_id)
+            
+        user = db.query(Profile).filter(Profile.id == user_uuid).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
         
         return {
-            "id": user.id,
+            "id": str(user.id),
             "email": user.email,
-            "organization_id": user.organization_id,
+            "organization_id": str(user.organization_id) if user.organization_id else None,
             "role": user.role,
             "full_name": user.full_name,
             "department": user.department,
+            "vertical": user.vertical,
         }
     finally:
         db.close()

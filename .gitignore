@@ -29,6 +29,7 @@ dist-ssr
 # Python environments and generated caches
 __pycache__/
 *.py[cod]
+src/backend/venv/
 src/backend/venv312/
 pdf-venv/
 

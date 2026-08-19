@@ -18,15 +18,16 @@ export const STRING_SIZE_TABS = [
       required: true,
       placeholder: 'e.g. Aurora Renewables LLC'
     }, {
-      key: 'clientContact',
-      label: 'Primary contact',
+      key: 'consultant',
+      label: 'Consultant / EPC',
       type: 'text',
-      required: true,
-      placeholder: 'Full name'
+      placeholder: 'Preparing organization',
+      required: true
     }, {
       key: 'clientEmail',
       label: 'Contact email',
       type: 'text',
+
       required: true,
       placeholder: 'name@company.com'
     },
@@ -43,12 +44,6 @@ export const STRING_SIZE_TABS = [
       type: 'textarea',
       required: true,
       placeholder: 'Street, City, State, Country'
-    }, {
-      key: 'consultant',
-      label: 'Consultant / EPC',
-      type: 'text',
-      placeholder: 'Preparing organization',
-      required: true
     }]
   },
   {
@@ -249,10 +244,27 @@ export const STRING_SIZE_TABS = [
         }, {
           key: 'gcr',
           label: 'Ground Coverage Ratio (GCR)',
-          type: 'text',
+          type: 'number',
           unit: '%',
           required: true,
           placeholder: '33.2'
+        }, {
+          key: 'tilt',
+          label: 'Tilt Angle',
+          type: 'number',
+          unit: '°',
+          required: true,
+          placeholder: '20',
+          defaultValue: '20'
+        }, {
+          key: 'azimuth',
+          label: 'Azimuth Angle',
+          type: 'number',
+          unit: '°',
+          required: true,
+          placeholder: '180',
+          defaultValue: '180',
+          hint: '180° = South, 90° = East, 270° = West'
         }
           // }, {
           //   key: 'temp_min',
@@ -372,7 +384,23 @@ export const STRING_SIZE_TABS = [
             key: 'modules_series',
             label: 'Number of Modules in Series',
             type: 'number',
-            placeholder: '2',
+            placeholder: '28',
+            required: true,
+          },
+          {
+            key: 'nstrings',
+            label: 'Number of Strings in Parallel',
+            type: 'number',
+            placeholder: '100',
+            required: true,
+            hint: 'Total parallel strings in subarray'
+          },
+          {
+            key: 'module_orientation',
+            label: 'Module Orientation',
+            type: 'select',
+            options: ['Portrait', 'Landscape'],
+            defaultValue: 'Portrait',
             required: true,
           },
           {
@@ -382,6 +410,38 @@ export const STRING_SIZE_TABS = [
             unit: '%',
             placeholder: '0.5',
             required: true,
+          },
+          {
+            key: 'is_bifacial',
+            label: 'Is Bifacial Module',
+            type: 'select',
+            options: ['No (Monofacial)', 'Yes (Bifacial)'],
+            required: true,
+          },
+          {
+            key: 'bifaciality',
+            label: 'Bifaciality Factor',
+            type: 'number',
+            placeholder: '0.70',
+            required: true,
+            hint: 'Bifaciality ratio (e.g. 0.70 for 70%)'
+          },
+          {
+            key: 'transmission_factor',
+            label: 'Rear Transmission Factor',
+            type: 'number',
+            placeholder: '0.0',
+            required: true,
+            hint: 'Transmission factor through module structure (0 to 1)'
+          },
+          {
+            key: 'ground_clearance',
+            label: 'Ground Clearance Height',
+            type: 'number',
+            unit: 'm',
+            placeholder: '1.0',
+            required: true,
+            hint: 'Height of lowest module edge above ground'
           }
         ]
       },
@@ -627,6 +687,8 @@ export const STRING_SIZE_TABS = [
         title: "Weather & Monthly Albedo Inputs",
         fields: [
           { key: "weather_database", label: "Weather Database", type: "text", defaultValue: "SOLCAST(DNV)", placeholder: "SOLCAST(DNV)", required: true },
+          { key: "sky_model", label: "Sky Model", type: "select", options: ["Isotropic", "HDKR", "Perez"], defaultValue: "Isotropic", required: true },
+          { key: "irrad_mode", label: "Irradiance Mode", type: "select", options: ["DNI and DHI", "DNI and GHI", "GHI and DHI", "POA from reference cell", "POA from pyranometer"], defaultValue: "DNI and DHI", required: true },
           { key: "albedo_jan", label: "January Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
           { key: "albedo_feb", label: "February Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
           { key: "albedo_mar", label: "March Albedo", type: "number", step: "0.01", defaultValue: "0.20", placeholder: "0.20", required: true, size: "half" },
@@ -1032,5 +1094,13 @@ export const STRING_SIZE_TABS = [
     ]
   },
 
+  {
+    id: "simulations",
+    name: "SAM Simulation",
+    icon: "cpu",
+    blurb: "Run 26-year historical PySAM simulation or upload manual simulation CSV files.",
+    isSimulationTab: true,
+    fields: []
+  }
 
 ];

@@ -114,7 +114,7 @@ export function buildReportMeta(values = {}, report = {}) {
     REPORT_TITLE: reportTitle,
 
     CLIENT_NAME:
-      values.clientName || values.submittedToCompany || "",
+      values.clientName || "",
 
     PREPARED_BY:
       "PVinsight Inc",
@@ -141,13 +141,10 @@ export function buildReportMeta(values = {}, report = {}) {
       values.pvLogo || pvLogo,
 
     CLIENT_LOGO:
-      values.clientLogo || defaultClientLogo,
+      values.clientLogo || values.logo || defaultClientLogo,
 
     submittedTo:
-      values.clientName ||
-      values.submittedToCompany ||
-      values.clientContact ||
-      "",
+      values.clientName || "",
 
     submittedToAddress:
       (values.clientAddress ||

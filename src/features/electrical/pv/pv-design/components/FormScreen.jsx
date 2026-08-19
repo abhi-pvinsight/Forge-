@@ -143,9 +143,489 @@ function SectionTitle({ tab }) {
   );
 }
 
+function SamSimulationTabBody({ values, setValue }) {
+  const [simMode, setSimMode] = useState("pysam");
+  const [isRunning, setIsRunning] = useState(false);
+  const [progressText, setProgressText] = useState("");
+  const [progressPct, setProgressPct] = useState(0);
+  const [previewResult, setPreviewResult] = useState(null);
+  const [isAccepted, setIsAccepted] = useState(!!values.yearlyVocSummary);
+  const [showTable, setShowTable] = useState(false);
+
+  const handleRunPySAM = async () => {
+    try {
+      setIsRunning(true);
+      setProgressText("Initializing weather download...");
+      setProgressPct(0);
+      setPreviewResult(null);
+
+      const response = await fetch(`${API_BASE_URL}/api/run-pysam-stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+        body: JSON.stringify({ values: values })
+      });
+
+      if (!response.body) throw new Error("ReadableStream not supported in this browser.");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let resData = null;
+      let doneReading = false;
+      let buffer = "";
+
+      while (!doneReading) {
+        const { value, done } = await reader.read();
+        if (done) {
+          doneReading = true;
+          break;
+        }
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const dataStr = line.substring(6).trim();
+            if (dataStr) {
+              try {
+                const event = JSON.parse(dataStr);
+                if (event.type === "progress") {
+                  setProgressText(event.message);
+                  if (event.pct !== undefined) setProgressPct(event.pct);
+                } else if (event.type === "result") {
+                  resData = { success: true, data: event.data };
+                } else if (event.type === "error") {
+                  throw new Error(event.message);
+                }
+              } catch (e) {
+                // ignore
+              }
+            }
+          }
+        }
+      }
+
+      setIsRunning(false);
+
+      if (!resData || !resData.success) {
+        alert("PySAM simulation failed or returned no data.");
+        return;
+      }
+
+      const resultsData = resData.data;
+      const vocSummaryData = resultsData.voc_summary || [];
+      const iscSummaryData = resultsData.isc_summary || [];
+
+      const allTimeMaxVoc = vocSummaryData.length > 0 ? Math.max(...vocSummaryData.map(s => s.maxVoltage)) : 0;
+      const max_voc_obj = vocSummaryData.find(s => s.maxVoltage === allTimeMaxVoc);
+      const max_voc_year = max_voc_obj ? max_voc_obj.year : "";
+
+      const max_3hr_isc = iscSummaryData.length > 0 ? Math.max(...iscSummaryData.map(s => s.avg)) : 0;
+      const max_isc_obj = iscSummaryData.find(s => s.avg === max_3hr_isc);
+      const max_isc_year = max_isc_obj ? max_isc_obj.year : "";
+
+      const initialVoltage = Number(values.moduleVmp || 43.4) * Number(values.modules_series || values.string_size || 28);
+      const degradationTable = buildMinVoltageDegradationTable(initialVoltage, Number(values.moduleDegradation || 0.5), 30);
+
+      const max_isc_year_obj = iscSummaryData.find(s => s.avg === max_3hr_isc);
+      const peakData = max_isc_year_obj ? {
+        t1_datetime: max_isc_year_obj.t1_datetime,
+        t2_datetime: max_isc_year_obj.t2_datetime,
+        t3_datetime: max_isc_year_obj.t3_datetime,
+        t1_ghi: max_isc_year_obj.t1_ghi,
+        t2_ghi: max_isc_year_obj.t2_ghi,
+        t3_ghi: max_isc_year_obj.t3_ghi,
+        t1_dhi: max_isc_year_obj.t1_dhi,
+        t2_dhi: max_isc_year_obj.t2_dhi,
+        t3_dhi: max_isc_year_obj.t3_dhi,
+        t1_isc: max_isc_year_obj.t1_isc,
+        t2_isc: max_isc_year_obj.t2_isc,
+        t3_isc: max_isc_year_obj.t3_isc
+      } : {};
+
+      const rated_isc = Number(values.moduleIsc) || Number(values.isc_1) || 0;
+      let gain_percentage = "0.00%";
+      if (rated_isc > 0) {
+        gain_percentage = (((max_3hr_isc - rated_isc) / rated_isc) * 100).toFixed(2) + "%";
+      }
+
+      setPreviewResult({
+        vocSummaryData,
+        iscSummaryData,
+        allTimeMaxVoc,
+        max_voc_year,
+        max_3hr_isc,
+        max_isc_year,
+        degradationTable,
+        peakData,
+        rated_isc: rated_isc.toFixed(2),
+        gain_percentage
+      });
+      setIsAccepted(false);
+    } catch (err) {
+      setIsRunning(false);
+      alert("Failed to execute PySAM simulation: " + err.message);
+    }
+  };
+
+  const handleVocCsvUpload = (file) => {
+    if (!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const parsed = calculateYearlyVoc(results.data);
+        if (parsed.success) {
+          const vocSummaryData = parsed.data || [];
+          const allTimeMaxVoc = parsed.allTimeMax || 0;
+          const max_voc_obj = vocSummaryData.find(s => s.maxVoltage === allTimeMaxVoc);
+          const max_voc_year = max_voc_obj ? max_voc_obj.year : "";
+
+          const initialVoltage = Number(values.moduleVmp || 43.4) * Number(values.modules_series || values.string_size || 28);
+          const degradationTable = buildMinVoltageDegradationTable(initialVoltage, Number(values.moduleDegradation || 0.5), 30);
+
+          setPreviewResult(prev => ({
+            ...(prev || {}),
+            vocSummaryData,
+            allTimeMaxVoc,
+            max_voc_year,
+            degradationTable
+          }));
+          setIsAccepted(false);
+        } else {
+          alert("Failed to parse Voc CSV: " + parsed.error);
+        }
+      }
+    });
+  };
+
+  const handleIscCsvUpload = (file) => {
+    if (!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const parsed = calculateYearlyIsc(results.data);
+        if (parsed.success) {
+          const iscSummaryData = parsed.data || [];
+          const max_3hr_isc = parsed.max_3hr_isc !== undefined && parsed.max_3hr_isc !== null ? parsed.max_3hr_isc : (parsed.allTimeMaxIsc || 0);
+          const max_isc_year = parsed.max_isc_year || (iscSummaryData.find(s => s.avg === max_3hr_isc)?.year || "");
+
+          const prepRes = prepareTableData([], []);
+          const max_isc_year_obj = iscSummaryData.find(s => s.year === max_isc_year || s.avg === max_3hr_isc);
+          
+          const peakData = prepRes.success && prepRes.tableTemplateData ? prepRes.tableTemplateData : (max_isc_year_obj ? {
+            t1_datetime: max_isc_year_obj.t1_datetime || "",
+            t2_datetime: max_isc_year_obj.t2_datetime || "",
+            t3_datetime: max_isc_year_obj.t3_datetime || "",
+            t1_ghi: max_isc_year_obj.t1_ghi || "",
+            t2_ghi: max_isc_year_obj.t2_ghi || "",
+            t3_ghi: max_isc_year_obj.t3_ghi || "",
+            t1_dhi: max_isc_year_obj.t1_dhi || "",
+            t2_dhi: max_isc_year_obj.t2_dhi || "",
+            t3_dhi: max_isc_year_obj.t3_dhi || "",
+            t1_isc: max_isc_year_obj.t1_isc || "",
+            t2_isc: max_isc_year_obj.t2_isc || "",
+            t3_isc: max_isc_year_obj.t3_isc || ""
+          } : {});
+
+          const rated_isc = Number(values.moduleIsc) || Number(values.isc_1) || 0;
+          let gain_percentage = "0.00%";
+          if (rated_isc > 0) {
+            gain_percentage = (((max_3hr_isc - rated_isc) / rated_isc) * 100).toFixed(2) + "%";
+          }
+
+          setPreviewResult(prev => ({
+            ...(prev || {}),
+            iscSummaryData,
+            max_3hr_isc,
+            max_isc_year,
+            peakData,
+            rated_isc: rated_isc.toFixed(2),
+            gain_percentage
+          }));
+          setIsAccepted(false);
+        } else {
+          alert("Failed to parse Isc CSV: " + parsed.error);
+        }
+      }
+    });
+  };
+
+  const handleAcceptResults = () => {
+    if (!previewResult) return;
+
+    if (previewResult.vocSummaryData) setValue("yearlyVocSummary", previewResult.vocSummaryData);
+    if (previewResult.allTimeMaxVoc) setValue("allTimeMaxVoc", previewResult.allTimeMaxVoc);
+    if (previewResult.max_voc_year) setValue("max_voc_year", previewResult.max_voc_year);
+    if (previewResult.iscSummaryData) setValue("yearlyIscSummary", previewResult.iscSummaryData);
+    if (previewResult.max_3hr_isc) setValue("max_3hr_isc", previewResult.max_3hr_isc);
+    if (previewResult.max_isc_year) setValue("max_isc_year", previewResult.max_isc_year);
+    if (previewResult.degradationTable) setValue("minVoltageDegradationTable", previewResult.degradationTable);
+    if (previewResult.rated_isc) setValue("rated_isc", previewResult.rated_isc);
+    if (previewResult.gain_percentage) setValue("gain_percentage", previewResult.gain_percentage);
+
+    if (previewResult.peakData) {
+      setValue("peakTableData", previewResult.peakData);
+      Object.entries(previewResult.peakData).forEach(([k, v]) => {
+        setValue(k, String(v));
+      });
+    }
+
+    setIsAccepted(true);
+  };
+
+  const maxInverterDc = Number(values.PCS_Max_DC_Input_Voltage) || 1500;
+  
+  const currentVocMax = (previewResult && previewResult.allTimeMaxVoc)
+    ? previewResult.allTimeMaxVoc
+    : (values.allTimeMaxVoc || (values.yearlyVocSummary && values.yearlyVocSummary.length > 0 ? Math.max(...values.yearlyVocSummary.map(s => Number(s.maxVoltage || 0))) : 0));
+    
+  const currentVocYear = (previewResult && previewResult.max_voc_year)
+    ? previewResult.max_voc_year
+    : (values.max_voc_year || (values.yearlyVocSummary && values.yearlyVocSummary.length > 0 ? values.yearlyVocSummary.find(s => Number(s.maxVoltage || 0) === currentVocMax)?.year : ""));
+
+  const currentIscMax = (previewResult && previewResult.max_3hr_isc)
+    ? previewResult.max_3hr_isc
+    : (values.max_3hr_isc || (values.yearlyIscSummary && values.yearlyIscSummary.length > 0 ? Math.max(...values.yearlyIscSummary.map(s => Number(s.avg || s.isc || 0))) : 0));
+
+  const currentIscYear = (previewResult && previewResult.max_isc_year)
+    ? previewResult.max_isc_year
+    : (values.max_isc_year || (values.yearlyIscSummary && values.yearlyIscSummary.length > 0 ? values.yearlyIscSummary.find(s => Number(s.avg || s.isc || 0) === currentIscMax)?.year : ""));
+
+  const hasIscResult = Number(currentIscMax) > 0 || !!currentIscYear;
+  const passesVocCheck = currentVocMax ? currentVocMax <= maxInverterDc : null;
+
+  return (
+    <div style={{ display: 'grid', gap: 20 }}>
+      {/* Mode Selector */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div 
+          onClick={() => setSimMode("pysam")}
+          style={{
+            padding: 16, border: '2px solid',
+            borderColor: simMode === "pysam" ? "#0ea5e9" : "#e5e7eb",
+            borderRadius: 8, cursor: 'pointer', background: simMode === "pysam" ? "rgba(14, 165, 233, 0.05)" : "transparent"
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600, fontSize: 15, marginBottom: 4 }}>
+            <span style={{ color: simMode === "pysam" ? "#0ea5e9" : "#64748b" }}>🟢 Option A: PySAM Automated Simulation</span>
+          </div>
+          <p style={{ fontSize: 12.5, color: '#64748b', margin: 0 }}>
+            Run live 26-year historical NREL PySAM physics engine using site NSRDB weather data.
+          </p>
+        </div>
+
+        <div 
+          onClick={() => setSimMode("manual")}
+          style={{
+            padding: 16, border: '2px solid',
+            borderColor: simMode === "manual" ? "#0ea5e9" : "#e5e7eb",
+            borderRadius: 8, cursor: 'pointer', background: simMode === "manual" ? "rgba(14, 165, 233, 0.05)" : "transparent"
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600, fontSize: 15, marginBottom: 4 }}>
+            <span style={{ color: simMode === "manual" ? "#0ea5e9" : "#64748b" }}>🟡 Option B: Manual CSV Uploads</span>
+          </div>
+          <p style={{ fontSize: 12.5, color: '#64748b', margin: 0 }}>
+            Manually upload custom 26-year Voc.csv, Isc.csv, and weather data export files.
+          </p>
+        </div>
+      </div>
+
+      {/* Option A: PySAM Trigger Card */}
+      {simMode === "pysam" && (
+        <div className="card" style={{ padding: 20, background: '#f8fafc', borderRadius: 8 }}>
+          <h4 style={{ margin: '0 0 8px', fontSize: 15, fontWeight: 600 }}>Automated 26-Year PySAM Execution</h4>
+          <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+            Will run calculations using Module: <b>{values.module_make || 'Generic'} ({values.moduleVoc || '52'}V Voc)</b>, PCS: <b>{maxInverterDc}V Max DC</b>, Strings: <b>{values.modules_series || values.string_size || '28'} in Series</b>.
+          </p>
+
+          <button 
+            className="btn btn-primary" 
+            disabled={isRunning} 
+            onClick={handleRunPySAM}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+          >
+            <Icon name="cpu" size={16} />
+            {isRunning ? "Running PySAM Engine..." : "Run PySAM 26-Year Simulation"}
+          </button>
+
+          {/* Progress Bar */}
+          {isRunning && (
+            <div style={{ marginTop: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                <span>{progressText || "Processing..."}</span>
+                <span>{Math.round(progressPct)}%</span>
+              </div>
+              <div style={{ height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progressPct}%`, background: '#10b981', transition: 'width 0.3s' }} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Option B: Manual File Uploads */}
+      {simMode === "manual" && (
+        <div className="card" style={{ padding: 20, background: '#f8fafc', borderRadius: 8 }}>
+          <h4 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 600 }}>Upload Manual Simulation CSV Files</h4>
+          <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+            Select your exported 26-year historical simulation CSV files to parse and calculate metrics.
+          </p>
+          <div style={{ display: 'grid', gap: 14 }}>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>26-Year Historical Voc CSV File</label>
+              <input 
+                type="file" 
+                accept=".csv" 
+                onChange={(e) => e.target.files?.[0] && handleVocCsvUpload(e.target.files[0])}
+                style={{ fontSize: 13 }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>26-Year Historical Isc CSV File</label>
+              <input 
+                type="file" 
+                accept=".csv" 
+                onChange={(e) => e.target.files?.[0] && handleIscCsvUpload(e.target.files[0])}
+                style={{ fontSize: 13 }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview & Results Card */}
+      {(previewResult || values.yearlyVocSummary) && (
+        <div className="card" style={{ padding: 20, border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="checkCircle" size={18} style={{ color: '#10b981' }} />
+              Simulation Results Preview & Engineering Verification
+            </h4>
+            {isAccepted ? (
+              <span style={{ background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: 12, fontSize: 12, fontWeight: 600 }}>
+                ✓ Accepted & Saved to Report
+              </span>
+            ) : (
+              <span style={{ background: '#fef3c7', color: '#b45309', padding: '4px 10px', borderRadius: 12, fontSize: 12, fontWeight: 600 }}>
+                Pending Acceptance
+              </span>
+            )}
+          </div>
+
+          {/* 4-Card Sanity Verification Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+            {/* Card 1: Max Voc */}
+            <div style={{ padding: 12, background: passesVocCheck ? '#f0fdf4' : '#fef2f2', border: '1px solid', borderColor: passesVocCheck ? '#bbf7d0' : '#fecaca', borderRadius: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>All-Time Max Voc</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: passesVocCheck ? '#166534' : '#991b1b', marginTop: 4 }}>
+                {currentVocMax ? `${currentVocMax} V` : 'N/A'}
+              </div>
+              <div style={{ fontSize: 11, color: passesVocCheck ? '#15803d' : '#dc2626', marginTop: 4 }}>
+                {passesVocCheck ? `✓ Within ${maxInverterDc}V Limit` : `⚠️ Exceeds ${maxInverterDc}V Limit!`}
+              </div>
+            </div>
+
+            {/* Card 2: Peak Voc Year */}
+            <div style={{ padding: 12, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Peak Voc Year</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#334155', marginTop: 4 }}>
+                {currentVocYear || 'N/A'}
+              </div>
+              <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                Coldest Voc year
+              </div>
+            </div>
+
+            {/* Card 3: Max 3-Hr Avg Isc */}
+            <div style={{ padding: 12, background: hasIscResult ? '#f0fdf4' : '#fffbeb', border: '1px solid', borderColor: hasIscResult ? '#bbf7d0' : '#fde68a', borderRadius: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Max 3-Hr Avg Isc</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: hasIscResult ? '#166534' : '#b45309', marginTop: 4 }}>
+                {hasIscResult ? `${currentIscMax} A` : (simMode === "pysam" ? "Pending PySAM Run" : "Upload Isc.csv")}
+              </div>
+              <div style={{ fontSize: 11, color: hasIscResult ? '#15803d' : '#d97706', marginTop: 4 }}>
+                {hasIscResult ? 'Peak Solar Noon Current' : (simMode === "pysam" ? "Run PySAM simulation" : "Select Isc.csv file")}
+              </div>
+            </div>
+
+            {/* Card 4: Peak Isc Year */}
+            <div style={{ padding: 12, background: currentIscYear ? '#f8fafc' : '#fffbeb', border: '1px solid', borderColor: currentIscYear ? '#e2e8f0' : '#fde68a', borderRadius: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Peak Isc Year</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: currentIscYear ? '#334155' : '#b45309', marginTop: 4 }}>
+                {currentIscYear || (simMode === "pysam" ? "Pending PySAM Run" : "Upload Isc.csv")}
+              </div>
+              <div style={{ fontSize: 11, color: currentIscYear ? '#64748b' : '#d97706', marginTop: 4 }}>
+                {currentIscYear ? 'Highest irradiance year' : (simMode === "pysam" ? "Run PySAM simulation" : "Select Isc.csv file")}
+              </div>
+            </div>
+          </div>
+
+          {/* Expandable Table Preview */}
+          <div style={{ marginBottom: 16 }}>
+            <button 
+              className="btn btn-secondary btn-sm" 
+              onClick={() => setShowTable(!showTable)}
+              style={{ fontSize: 12 }}
+            >
+              {showTable ? "Hide 26-Year Summary Table" : "Show 26-Year Summary Table Preview"}
+            </button>
+
+            {showTable && (
+              <div style={{ marginTop: 12, maxHeight: 240, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 6 }}>
+                <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead style={{ background: '#f1f5f9', position: 'sticky', top: 0 }}>
+                    <tr>
+                      <th style={{ padding: '8px 12px' }}>Year</th>
+                      <th style={{ padding: '8px 12px' }}>Max Voc (V)</th>
+                      <th style={{ padding: '8px 12px' }}>Min Voc (V)</th>
+                      <th style={{ padding: '8px 12px' }}>3-Hr Peak Isc (A)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {((previewResult ? previewResult.vocSummaryData : values.yearlyVocSummary) || []).map((row, idx) => {
+                      const iscRow = ((previewResult ? previewResult.iscSummaryData : values.yearlyIscSummary) || [])[idx] || {};
+                      return (
+                        <tr key={row.year} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '6px 12px', fontWeight: 600 }}>{row.year}</td>
+                          <td style={{ padding: '6px 12px', color: '#15803d' }}>{row.maxVoltage}</td>
+                          <td style={{ padding: '6px 12px' }}>{row.minVoltage}</td>
+                          <td style={{ padding: '6px 12px', color: '#0369a1' }}>{iscRow.avg || 'N/A'}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Accept Button */}
+          {previewResult && !isAccepted && (
+            <button 
+              className="btn btn-primary"
+              onClick={handleAcceptResults}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#10b981', borderColor: '#059669' }}
+            >
+              <Icon name="check" size={16} />
+              Accept & Apply Results to Report
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function TabBody({ tab, values, setValue, files, setFile, showErrors }) {
   const [solarCalcTable, setSolarCalcTable] = useState(null);
   const [solarCalcValues, setSolarCalcValues] = useState(null);
+
+  if (tab.id === 'simulations') {
+    return <SamSimulationTabBody values={values} setValue={setValue} />;
+  }
 
   const errFor = (field, isUpload = false) => {
     if (!showErrors || !field.required) return null;
@@ -839,140 +1319,6 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
         console.error("ASHRAE fetch failed:", error);
       }
     }
-
-    // ==========================
-    // VOC CSV PROCESSING
-    // ==========================
-
-    // Process Voc CSV if uploaded
-    if (tab.id === "uploads") {
-      try {
-        console.log("Triggering PySAM API stream...");
-        setIsProcessingPySAM(true);
-        setPySamProgressText("Initializing weather download...");
-        setPySamProgressPct(0);
-        
-        const response = await fetch(`${API_BASE_URL}/api/run-pysam-stream`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-          body: JSON.stringify({ values: values })
-        });
-
-        if (!response.body) throw new Error("ReadableStream not supported in this browser.");
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let resData = null;
-        let doneReading = false;
-        let buffer = "";
-
-        while (!doneReading) {
-          const { value, done } = await reader.read();
-          if (done) {
-            doneReading = true;
-            break;
-          }
-          buffer += decoder.decode(value, { stream: true });
-          
-          const lines = buffer.split('\n');
-          buffer = lines.pop(); // keep the last incomplete line in the buffer
-          
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const dataStr = line.substring(6).trim();
-              if (dataStr) {
-                try {
-                  const event = JSON.parse(dataStr);
-                  if (event.type === "progress") {
-                    setPySamProgressText(event.message);
-                    if (event.pct !== undefined) setPySamProgressPct(event.pct);
-                  } else if (event.type === "result") {
-                    resData = { success: true, data: event.data };
-                  } else if (event.type === "error") {
-                    throw new Error(event.message);
-                  }
-                } catch (e) {
-                  // ignore JSON parse errors for incomplete chunks
-                }
-              }
-            }
-          }
-        }
-
-        setIsProcessingPySAM(false);
-        
-        if (!resData || !resData.success) {
-          alert("PySAM simulation failed or returned no data.");
-          return;
-        }
-
-        const resultsData = resData.data;
-        
-        // Use the PySAM results directly instead of parsing CSV files!
-        const vocSummaryData = resultsData.voc_summary;
-        const allTimeMaxVoc = Math.max(...vocSummaryData.map(s => s.maxVoltage));
-        
-        const iscSummaryData = resultsData.isc_summary || [];
-        console.log("[FormScreen] iscSummaryData received from backend:", iscSummaryData);
-        
-        const max_3hr_isc = iscSummaryData.length > 0 ? Math.max(...iscSummaryData.map(s => s.avg)) : 0;
-        const max_isc_year = iscSummaryData.find(s => s.avg === max_3hr_isc)?.year || "";
-        console.log("[FormScreen] max_3hr_isc:", max_3hr_isc, "max_isc_year:", max_isc_year);
-
-        setValue("yearlyVocSummary", vocSummaryData);
-        setValue("allTimeMaxVoc", allTimeMaxVoc);
-        setValue("yearlyIscSummary", iscSummaryData);
-        setValue("max_3hr_isc", max_3hr_isc);
-        setValue("max_isc_year", max_isc_year);
-
-        // Generate degradation table from form input
-        const initialVoltage = Number(values.moduleVmp) * Number(values.numberOfModules);
-        const degradationTable = buildMinVoltageDegradationTable(initialVoltage, Number(values.moduleDegradation), 30);
-        setValue("minVoltageDegradationTable", degradationTable);
-
-        const max_isc_year_obj = iscSummaryData.find(s => s.avg === max_3hr_isc);
-        console.log("[FormScreen] max_isc_year_obj:", max_isc_year_obj);
-
-        if (max_isc_year_obj) {
-          const peakData = {
-            t1_datetime: max_isc_year_obj.t1_datetime,
-            t2_datetime: max_isc_year_obj.t2_datetime,
-            t3_datetime: max_isc_year_obj.t3_datetime,
-            t1_ghi: max_isc_year_obj.t1_ghi,
-            t2_ghi: max_isc_year_obj.t2_ghi,
-            t3_ghi: max_isc_year_obj.t3_ghi,
-            t1_dhi: max_isc_year_obj.t1_dhi,
-            t2_dhi: max_isc_year_obj.t2_dhi,
-            t3_dhi: max_isc_year_obj.t3_dhi,
-            t1_isc: max_isc_year_obj.t1_isc,
-            t2_isc: max_isc_year_obj.t2_isc,
-            t3_isc: max_isc_year_obj.t3_isc
-          };
-          console.log("[FormScreen] Setting peakTableData to:", peakData);
-          setValue("peakTableData", peakData);
-        } else {
-          console.warn("[FormScreen] WARNING: max_isc_year_obj is UNDEFINED! Setting peakTableData to {}");
-          setValue("peakTableData", {});
-        }
-
-        const rated_isc = Number(values.moduleIsc) || Number(values.isc_1) || 0;
-        let gain_percentage = "0.00%";
-        if (rated_isc > 0) {
-          gain_percentage = (((max_3hr_isc - rated_isc) / rated_isc) * 100).toFixed(2) + "%";
-        }
-        console.log("[FormScreen] Setting rated_isc:", rated_isc.toFixed(2), "gain_percentage:", gain_percentage);
-        setValue("rated_isc", rated_isc.toFixed(2));
-        setValue("gain_percentage", gain_percentage);
-
-        console.log("PySAM values saved.");
-        continueNext();
-      } catch (err) {
-        setIsProcessingPySAM(false);
-        alert("Failed to connect to PySAM backend: " + err.message);
-      }
-      return; // Skip the old Papa parse logic entirely!
-    }
-
 
     continueNext();
   };

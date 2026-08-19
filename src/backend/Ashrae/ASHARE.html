@@ -1,48 +1,50 @@
 <style>
-/* 1. Page Print Configurations (Your Originals) */
-@page { 
-    size: A4; 
-    margin: 12mm; 
-}
+    /* 1. Page Print Configurations (Your Originals) */
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
 
-#ashrae_table {
-    width: 100% !important;
-    max-width: 100% !important;
-    table-layout: fixed;
-    border-collapse: collapse; /* Combined with grid outlines below */
-    font-size: 8px;
-    page-break-inside: avoid;
-}
+    #ashrae_table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed;
+        border-collapse: collapse;
+        /* Combined with grid outlines below */
+        font-size: 7.5px !important;
+        page-break-inside: avoid;
+    }
 
-/* 2. Cell Sizing & Text Protection (Your Originals + White Borders) */
-#ashrae_table td, #ashrae_table th {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    padding: 0%;
-    
-    /* Ensures background is green, text is white, and grid lines are visible */
-    
-    color: #000000 !important;
-    border: 1px solid #050303 !important; 
-}
+    /* 2. Cell Sizing & Text Protection (Your Originals + White Borders) */
+    #ashrae_table td,
+    #ashrae_table th {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 1px 2px !important;
 
-/* 3. Deep Target Cleanup for Nested Tags */
-#ashrae_table b, 
-#ashrae_table span, 
-#ashrae_table div, 
-#ashrae_table .tooltip {
-    color: #000000 !important;
-    background-color: transparent !important;
-}
+        /* Ensures background is green, text is white, and grid lines are visible */
 
-/* 4. Tracking Asset Inversion */
-#ashrae_table .baloon_icon {
-    filter: brightness(0) invert(1);
-}
+        color: #000000 !important;
+        border: 1px solid #050303 !important;
+    }
+
+    /* 3. Deep Target Cleanup for Nested Tags */
+    #ashrae_table b,
+    #ashrae_table span,
+    #ashrae_table div,
+    #ashrae_table .tooltip {
+        color: #000000 !important;
+        background-color: transparent !important;
+    }
+
+    /* 4. Tracking Asset Inversion */
+    #ashrae_table .baloon_icon {
+        filter: brightness(0) invert(1);
+    }
 </style>
-<table id="ashrae_table" style="width:100% !important; max-width:100% !important; table-layout:fixed; border-collapse:collapse; font-size:11px;">
+<table id="ashrae_table" style="width:100% !important; max-width:100% !important; table-layout:fixed; border-collapse:collapse; font-size:7.5px !important;">
 <colgroup>
-<col span="16" width="42"/>
+<col span="16" style="width:6.25%;"/>
 </colgroup>
 <tbody>
 <tr class="brd2">
@@ -57,22 +59,23 @@
 <tr class="brd2">
 <td align="center" colspan="15" style="padding-bottom:10px">
 <div ;="" class="baloon_icon" style="display:inline-block;background-position:0px 0px;position: relative;right: 10"></div>
-<b id="station_header_title"><div class="baloon_icon" style="display:inline-block;background-position:0px 0px;position: relative;right: 10;"></div><b>HYDERABAD BEGUMPET, INDIA (WMO: 431280)</b></b>
+<b id="station_header_title"><div class="baloon_icon" style="display:inline-block;background-position:0px 0px;position: relative;right: 10;"></div><b>PHOENIX SKY HARBOR, AZ, USA (WMO: 722780)</b></b>
 </td>
 </tr>
 <tr align="center" class="brd2">
-<td colspan="2" style="text-align:center;"><span class="tooltip">Lat:</span> <b data-key="station_latitude"><b>17.452</b></b></td>
-<td colspan="2" style="text-align:center;">Lon: <b data-key="station_longitude"><b>78.461</b></b></td>
-<td colspan="2" style="text-align:center;"><span class="tooltip">Elev:</span> <b data-key="station_elevation"><b>531</b></b></td>
-<td colspan="2" style="text-align:center;"><span class="tooltip">StdP:</span> <b data-key="station_stdp"><b>95.11</b></b></td>
-<td colspan="3" style="text-align:center;"><span class="tooltip">Time zone:</span> <b data-key="station_timezone"><b>5.50 (IND)</b></b></td>
+<td colspan="2" style="text-align:center;"><span class="tooltip">Lat:</span> <b data-key="station_latitude"><b>33.428</b></b></td>
+<td colspan="2" style="text-align:center;">Lon: <b data-key="station_longitude"><b>-112.004</b></b></td>
+<td colspan="2" style="text-align:center;"><span class="tooltip">Elev:</span> <b data-key="station_elevation"><b>339</b></b></td>
+<td colspan="2" style="text-align:center;"><span class="tooltip">StdP:</span> <b data-key="station_stdp"><b>97.32</b></b></td>
+<td colspan="3" style="text-align:center;"><span class="tooltip">Time zone:</span> <b data-key="station_timezone"><b>-7.00 (W07)</b></b></td>
 <td colspan="2" style="text-align:center;"><span class="tooltip">Period:</span> <b data-key="station_period"><b>1999-2023</b></b></td>
 <td colspan="1" style="text-align:center;"><span class="tooltip">Grade</span>: <b data-key="station_grade"><b>A</b></b></td>
-<td colspan="2" style="text-align:center;"><span class="tooltip">WBAN</span>: <b data-key="station_wban"><b>99999</b></b></td>
+<td colspan="2" style="text-align:center;"><span class="tooltip">WBAN</span>: <b data-key="station_wban"><b>23183</b></b></td>
 </tr>
 <tr class="greentext">
-<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Annual Heating, Humidification, and Ventilation Design Conditions
-			</td>
+<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Annual Heating,
+                Humidification, and Ventilation Design Conditions
+            </td>
 </tr>
 <tr class="brd5" height="2">
 <td colspan="16" style="border-bottom-color:black"></td>
@@ -114,21 +117,21 @@
 </tr>
 <tr class="brd2">
 <td data-key="coldest_month" style="text-align:center;"><b>12</b></td>
-<td data-key="heating_DB_99.6" style="text-align:center;"><b>13.5</b></td>
-<td data-key="heating_DB_99" style="text-align:center;"><b>14.9</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99.6_DP" style="text-align:center;"><b>1.8</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99.6_HR" style="text-align:center;"><b>4.6</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99.6_MCDB" style="text-align:center;"><b>30.1</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99_DP" style="text-align:center;"><b>3.9</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99_HR" style="text-align:center;"><b>5.3</b></td>
-<td data-key="humidification_DP/MCDB_and_HR_99_MCDB" style="text-align:center;"><b>29.7</b></td>
-<td data-key="coldest_month_WS/MSDB_0.4_WS" style="text-align:center;"><b>5.1</b></td>
-<td data-key="coldest_month_WS/MSDB_0.4_MCDB" style="text-align:center;"><b>26.9</b></td>
-<td data-key="coldest_month_WS/MSDB_1_WS" style="text-align:center;"><b>4.4</b></td>
-<td data-key="coldest_month_WS/MSDB_1_MCDB" style="text-align:center;"><b>26.4</b></td>
-<td data-key="MCWS/PCWD_to_99.6_DB_MCWS" style="text-align:center;"><b>0.1</b></td>
-<td data-key="MCWS/PCWD_to_99.6_DB_PCWD" style="text-align:center;"><b>0</b></td>
-<td data-key="WSF" style="text-align:center;"><b>0.322</b></td>
+<td data-key="heating_DB_99.6" style="text-align:center;"><b>4.2</b></td>
+<td data-key="heating_DB_99" style="text-align:center;"><b>5.7</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99.6_DP" style="text-align:center;"><b>-16.8</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99.6_HR" style="text-align:center;"><b>0.9</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99.6_MCDB" style="text-align:center;"><b>19.6</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99_DP" style="text-align:center;"><b>-14.4</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99_HR" style="text-align:center;"><b>1.1</b></td>
+<td data-key="humidification_DP/MCDB_and_HR_99_MCDB" style="text-align:center;"><b>19.3</b></td>
+<td data-key="coldest_month_WS/MSDB_0.4_WS" style="text-align:center;"><b>8.9</b></td>
+<td data-key="coldest_month_WS/MSDB_0.4_MCDB" style="text-align:center;"><b>13.4</b></td>
+<td data-key="coldest_month_WS/MSDB_1_WS" style="text-align:center;"><b>7.5</b></td>
+<td data-key="coldest_month_WS/MSDB_1_MCDB" style="text-align:center;"><b>15.5</b></td>
+<td data-key="MCWS/PCWD_to_99.6_DB_MCWS" style="text-align:center;"><b>1.7</b></td>
+<td data-key="MCWS/PCWD_to_99.6_DB_PCWD" style="text-align:center;"><b>100</b></td>
+<td data-key="WSF" style="text-align:center;"><b>0.442</b></td>
 </tr>
 <tr class="brd2" height="2">
 <td></td>
@@ -136,8 +139,9 @@
 </tbody>
 <tbody>
 <tr class="greentext">
-<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Annual Cooling, Dehumidification, and Enthalpy Design Conditions
-			</td>
+<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Annual Cooling,
+                Dehumidification, and Enthalpy Design Conditions
+            </td>
 </tr>
 <tr class="brd5" height="2">
 <td colspan="16" style="border-bottom-color:black"></td>
@@ -181,22 +185,22 @@
 <td></td>
 </tr>
 <tr class="brd2">
-<td data-key="hottest_month" style="text-align:center;"><b>5</b></td>
-<td data-key="hottest_month_DB_range" style="text-align:center;"><b>11.4</b></td>
-<td data-key="cooling_DB_MCWB_0.4_DB" style="text-align:center;"><b>41.0</b></td>
-<td data-key="cooling_DB_MCWB_0.4_MCWB" style="text-align:center;"><b>22.0</b></td>
+<td data-key="hottest_month" style="text-align:center;"><b>7</b></td>
+<td data-key="hottest_month_DB_range" style="text-align:center;"><b>11.2</b></td>
+<td data-key="cooling_DB_MCWB_0.4_DB" style="text-align:center;"><b>44.0</b></td>
+<td data-key="cooling_DB_MCWB_0.4_MCWB" style="text-align:center;"><b>20.8</b></td>
 <td data-key="cooling_DB_MCWB_1_DB" style="text-align:center;"><b>N/A</b></td>
 <td data-key="cooling_DB_MCWB_1_MCWB" style="text-align:center;"><b>N/A</b></td>
-<td data-key="cooling_DB_MCWB_2_DB" style="text-align:center;"><b>38.4</b></td>
-<td data-key="cooling_DB_MCWB_2_MCWB" style="text-align:center;"><b>21.9</b></td>
-<td data-key="evaporation_WB_MCDB_0.4_WB" style="text-align:center;"><b>26.5</b></td>
-<td data-key="evaporation_WB_MCDB_0.4_MCDB" style="text-align:center;"><b>31.9</b></td>
-<td data-key="evaporation_WB_MCDB_1_WB" style="text-align:center;"><b>26.1</b></td>
-<td data-key="evaporation_WB_MCDB_1_MCDB" style="text-align:center;"><b>31.4</b></td>
-<td data-key="evaporation_WB_MCDB_2_WB" style="text-align:center;"><b>25.4</b></td>
-<td data-key="evaporation_WB_MCDB_2_MCDB" style="text-align:center;"><b>30.7</b></td>
-<td data-key="MCWS_PCWD_to_0.4_DB_MCWS" style="text-align:center;"><b>2.7</b></td>
-<td data-key="MCWS_PCWD_to_0.4_DB_PCWD" style="text-align:center;"><b>320</b></td>
+<td data-key="cooling_DB_MCWB_2_DB" style="text-align:center;"><b>41.7</b></td>
+<td data-key="cooling_DB_MCWB_2_MCWB" style="text-align:center;"><b>20.4</b></td>
+<td data-key="evaporation_WB_MCDB_0.4_WB" style="text-align:center;"><b>24.1</b></td>
+<td data-key="evaporation_WB_MCDB_0.4_MCDB" style="text-align:center;"><b>33.9</b></td>
+<td data-key="evaporation_WB_MCDB_1_WB" style="text-align:center;"><b>23.7</b></td>
+<td data-key="evaporation_WB_MCDB_1_MCDB" style="text-align:center;"><b>34.2</b></td>
+<td data-key="evaporation_WB_MCDB_2_WB" style="text-align:center;"><b>23.2</b></td>
+<td data-key="evaporation_WB_MCDB_2_MCDB" style="text-align:center;"><b>34.5</b></td>
+<td data-key="MCWS_PCWD_to_0.4_DB_MCWS" style="text-align:center;"><b>4.4</b></td>
+<td data-key="MCWS_PCWD_to_0.4_DB_PCWD" style="text-align:center;"><b>260</b></td>
 </tr>
 <tr class="brd3" height="2">
 <td></td>
@@ -235,21 +239,21 @@
 <td></td>
 </tr>
 <tr class="brd2">
-<td data-key="dehumidification_DP/MCDB_and_HR_0.4_DP" style="text-align:center;"><b>25.3</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_0.4_HR" style="text-align:center;"><b>21.8</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_0.4_MCDB" style="text-align:center;"><b>29.0</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_1_DP" style="text-align:center;"><b>24.6</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_1_HR" style="text-align:center;"><b>20.9</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_1_MCDB" style="text-align:center;"><b>28.2</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_2_DP" style="text-align:center;"><b>24.2</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_2_HR" style="text-align:center;"><b>20.4</b></td>
-<td data-key="dehumidification_DP/MCDB_and_HR_2_MCDB" style="text-align:center;"><b>27.7</b></td>
-<td data-key="enthalpy_MCDB_0.4_enth" style="text-align:center;"><b>86.2</b></td>
-<td data-key="enthalpy_MCDB_0.4_MCDB" style="text-align:center;"><b>31.9</b></td>
-<td data-key="enthalpy_MCDB_1_enth" style="text-align:center;"><b>83.5</b></td>
-<td data-key="enthalpy_MCDB_1_MCDB" style="text-align:center;"><b>31.3</b></td>
-<td data-key="enthalpy_MCDB_2_enth" style="text-align:center;"><b>81.2</b></td>
-<td data-key="enthalpy_MCDB_2_MCDB" style="text-align:center;"><b>30.5</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_0.4_DP" style="text-align:center;"><b>21.9</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_0.4_HR" style="text-align:center;"><b>17.3</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_0.4_MCDB" style="text-align:center;"><b>27.5</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_1_DP" style="text-align:center;"><b>20.8</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_1_HR" style="text-align:center;"><b>16.1</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_1_MCDB" style="text-align:center;"><b>28.8</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_2_DP" style="text-align:center;"><b>19.7</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_2_HR" style="text-align:center;"><b>15.0</b></td>
+<td data-key="dehumidification_DP/MCDB_and_HR_2_MCDB" style="text-align:center;"><b>30.2</b></td>
+<td data-key="enthalpy_MCDB_0.4_enth" style="text-align:center;"><b>74.1</b></td>
+<td data-key="enthalpy_MCDB_0.4_MCDB" style="text-align:center;"><b>33.2</b></td>
+<td data-key="enthalpy_MCDB_1_enth" style="text-align:center;"><b>72.3</b></td>
+<td data-key="enthalpy_MCDB_1_MCDB" style="text-align:center;"><b>33.8</b></td>
+<td data-key="enthalpy_MCDB_2_enth" style="text-align:center;"><b>70.4</b></td>
+<td data-key="enthalpy_MCDB_2_MCDB" style="text-align:center;"><b>34.2</b></td>
 <td data-key="extreme_max_WB" style="text-align:center;"><b>N/A</b></td>
 </tr>
 <tr class="brd2" height="2">
@@ -258,7 +262,8 @@
 </tbody>
 <tbody>
 <tr class="greentext">
-<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Extreme Annual Design Conditions</td>
+<td colspan="16" style="text-align:left; background-color: #2e7d32; color: #ffffff;">Extreme Annual Design
+                Conditions</td>
 </tr>
 <tr class="brd5" height="2">
 <td colspan="3" style="border-bottom-color:black"></td>
@@ -317,40 +322,40 @@
 <td style="text-align:center;"></td>
 </tr>
 <tr class="brd2">
-<td data-key="extreme_annual_WS_1" style="text-align:center;"><b>7.1</b></td>
-<td data-key="extreme_annual_WS_2.5" style="text-align:center;"><b>6.3</b></td>
-<td class="brd9" data-key="extreme_annual_WS_5" style="text-align:center;"><b>5.4</b></td>
+<td data-key="extreme_annual_WS_1" style="text-align:center;"><b>8.7</b></td>
+<td data-key="extreme_annual_WS_2.5" style="text-align:center;"><b>7.4</b></td>
+<td class="brd9" data-key="extreme_annual_WS_5" style="text-align:center;"><b>6.4</b></td>
 <td class="brd7" style="text-align:center;"><span class="tooltip">DB</span></td>
-<td data-key="extreme_annual_DB_mean_min" style="text-align:center;"><b>10.2</b></td>
-<td data-key="extreme_annual_DB_mean_max" style="text-align:center;"><b>42.5</b></td>
-<td data-key="extreme_annual_DB_standard_deviation_min" style="text-align:center;"><b>1.6</b></td>
-<td data-key="extreme_annual_DB_standard_deviation_max" style="text-align:center;"><b>2.0</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_5_min" style="text-align:center;"><b>9.1</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_5_max" style="text-align:center;"><b>44.0</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_10_min" style="text-align:center;"><b>8.2</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_10_max" style="text-align:center;"><b>45.2</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_20_min" style="text-align:center;"><b>7.3</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_20_max" style="text-align:center;"><b>46.4</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_50_min" style="text-align:center;"><b>6.2</b></td>
-<td data-key="n-year_return_period_values_of_extreme_DB_50_max" style="text-align:center;"><b>47.8</b></td>
+<td data-key="extreme_annual_DB_mean_min" style="text-align:center;"><b>1.5</b></td>
+<td data-key="extreme_annual_DB_mean_max" style="text-align:center;"><b>46.1</b></td>
+<td data-key="extreme_annual_DB_standard_deviation_min" style="text-align:center;"><b>1.5</b></td>
+<td data-key="extreme_annual_DB_standard_deviation_max" style="text-align:center;"><b>1.3</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_5_min" style="text-align:center;"><b>0.4</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_5_max" style="text-align:center;"><b>47.0</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_10_min" style="text-align:center;"><b>-0.5</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_10_max" style="text-align:center;"><b>47.8</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_20_min" style="text-align:center;"><b>-1.4</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_20_max" style="text-align:center;"><b>48.5</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_50_min" style="text-align:center;"><b>-2.5</b></td>
+<td data-key="n-year_return_period_values_of_extreme_DB_50_max" style="text-align:center;"><b>49.4</b></td>
 </tr>
 <tr class="brd2">
 <td style="text-align:center;"></td>
 <td style="text-align:center;"></td>
 <td class="brd9" style="text-align:center;"></td>
 <td class="brd7" style="text-align:center;"><span class="tooltip">WB</span></td>
-<td data-key="extreme_annual_WB_mean_min" style="text-align:center;"><b>7.9</b></td>
-<td data-key="extreme_annual_WB_mean_max" style="text-align:center;"><b>28.0</b></td>
-<td data-key="extreme_annual_WB_standard_deviation_min" style="text-align:center;"><b>1.5</b></td>
-<td data-key="extreme_annual_WB_standard_deviation_max" style="text-align:center;"><b>1.1</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_5_min" style="text-align:center;"><b>6.9</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_5_max" style="text-align:center;"><b>28.8</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_10_min" style="text-align:center;"><b>6.0</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_10_max" style="text-align:center;"><b>29.5</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_20_min" style="text-align:center;"><b>5.2</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_20_max" style="text-align:center;"><b>30.1</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_50_min" style="text-align:center;"><b>4.1</b></td>
-<td data-key="n-year_return_period_values_of_extreme_WB_50_max" style="text-align:center;"><b>30.9</b></td>
+<td data-key="extreme_annual_WB_mean_min" style="text-align:center;"><b>-2.3</b></td>
+<td data-key="extreme_annual_WB_mean_max" style="text-align:center;"><b>25.1</b></td>
+<td data-key="extreme_annual_WB_standard_deviation_min" style="text-align:center;"><b>1.4</b></td>
+<td data-key="extreme_annual_WB_standard_deviation_max" style="text-align:center;"><b>1.0</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_5_min" style="text-align:center;"><b>-3.4</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_5_max" style="text-align:center;"><b>25.8</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_10_min" style="text-align:center;"><b>-4.2</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_10_max" style="text-align:center;"><b>26.4</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_20_min" style="text-align:center;"><b>-5.0</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_20_max" style="text-align:center;"><b>26.9</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_50_min" style="text-align:center;"><b>-6.1</b></td>
+<td data-key="n-year_return_period_values_of_extreme_WB_50_max" style="text-align:center;"><b>27.6</b></td>
 </tr>
 <tr class="brd2" height="2">
 <td></td>

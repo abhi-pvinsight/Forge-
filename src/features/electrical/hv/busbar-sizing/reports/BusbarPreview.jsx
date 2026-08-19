@@ -2,7 +2,7 @@ import React from "react";
 import ReportPreviewShell from "../../../../../shared/components/ReportPreviewShell";
 import BusbarReportDoc from "./BusbarReportDoc";
 
-export default function BusbarPreview({ values = {}, files = {}, onBack, onNew, onCloneToRevision, onSave }) {
+export default function BusbarPreview({ values = {}, files = {}, user, reportId, onBack, onNew, onCloneToRevision, onAdvanceStage, onCloneToNewProject, onSave }) {
     const docNo = values.documentNo || values.projectCode || "PVI-BUS-001";
     const fname = (docNo.endsWith('.docx') ? docNo : docNo + '.docx');
 
@@ -24,9 +24,13 @@ export default function BusbarPreview({ values = {}, files = {}, onBack, onNew, 
             reportElementId="busbar-sizing-report"
             values={values}
             files={files}
+            user={user}
+            reportId={reportId}
             onBack={onBack}
             onNew={onNew}
             onCloneToRevision={onCloneToRevision}
+            onAdvanceStage={onAdvanceStage}
+            onCloneToNewProject={onCloneToNewProject}
             onSave={onSave}
             fname={fname}
             documentDetails={documentDetails}

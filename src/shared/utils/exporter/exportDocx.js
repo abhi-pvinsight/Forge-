@@ -14,7 +14,9 @@ import {
   ImageRun, 
   LeaderType, 
   TabStopType, 
-  AlignmentType 
+  AlignmentType,
+  Bookmark,
+  InternalHyperlink
 } from "docx";
 
 // ─── STYLING & CONVERSION HELPERS ──────────────────────────────────────────
@@ -80,9 +82,69 @@ function createImageRun(src, width = 150, height = 150) {
       }
     });
   } catch (err) {
-    console.error("[exportDocx] Error creating ImageRun:", err);
     return null;
   }
+}
+
+function normalizeWhitespace(text, node = null) {
+  if (!text) return "";
+  const el = node ? (node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement || node.parentNode) : null;
+  if (el && el.closest && el.closest("pre, code")) {
+    return text;
+  }
+  return text
+    .replace(/[\t\n\r]+/g, " ")
+    .replace(/ {2,}/g, " ");
+}
+
+// ─── BOOKMARK & HYPERLINK HELPERS ──────────────────────────────────────────
+
+function sanitizeBookmarkId(id, fallbackIndex = 0) {
+  if (!id) return `bm_heading_${fallbackIndex}`;
+  let clean = String(id)
+    .trim()
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^a-zA-Z0-9_]/g, "");
+  if (!clean || !/^[a-zA-Z]/.test(clean)) {
+    clean = `bm_${clean}`;
+  }
+  return clean.substring(0, 38);
+}
+
+let headingBookmarkMap = new Map();
+let domIdToBookmarkMap = new Map();
+
+function buildHeadingBookmarkMaps(root) {
+  headingBookmarkMap = new Map();
+  domIdToBookmarkMap = new Map();
+  const usedSet = new Set();
+
+  const headings = Array.from(root.querySelectorAll("h1, h2, h3, h4, h5, h6, .toc-heading"));
+  headings.forEach((h, index) => {
+    const rawTitle = h.textContent.trim();
+    const normTitle = normalizeWhitespace(rawTitle).toLowerCase();
+    const domId = h.getAttribute("id");
+
+    let base = sanitizeBookmarkId(domId || normTitle, index);
+    let bookmarkId = base;
+    let counter = 1;
+    while (usedSet.has(bookmarkId)) {
+      bookmarkId = `${base.substring(0, 32)}_${counter++}`;
+    }
+    usedSet.add(bookmarkId);
+
+    if (domId) {
+      domIdToBookmarkMap.set(domId, bookmarkId);
+    }
+    if (normTitle) {
+      headingBookmarkMap.set(normTitle, bookmarkId);
+      const titleNoNum = normTitle.replace(/^\d+[\d.]*\s*/, "").trim();
+      if (titleNoNum) {
+        headingBookmarkMap.set(titleNoNum, bookmarkId);
+      }
+    }
+    h._docxBookmarkId = bookmarkId;
+  });
 }
 
 // ─── DOM PRE-VALIDATION CHECK ────────────────────────────────────────────────
@@ -135,7 +197,7 @@ function parseParagraphChildren(node, currentStyle = { font: "Segoe UI" }) {
   
   for (let child of node.childNodes) {
     if (child.nodeType === Node.TEXT_NODE) {
-      const text = child.textContent;
+      const text = normalizeWhitespace(child.textContent, child);
       if (text) {
         runs.push(new TextRun({
           text: text,
@@ -205,7 +267,7 @@ function parseParagraphChildren(node, currentStyle = { font: "Segoe UI" }) {
 function parseMathFormulaRuns(mathNode, runsArr = [], currentStyle = { font: "Times New Roman", italics: true }) {
   const walk = (node, style) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent;
+      const text = normalizeWhitespace(node.textContent, node);
       if (text) {
         runsArr.push(new TextRun({
           text: text,
@@ -253,8 +315,9 @@ function parseMathFormulaRuns(mathNode, runsArr = [], currentStyle = { font: "Ti
 // ─── TABLE PARSING ──────────────────────────────────────────────────────────
 
 function parseTableElement(node, childrenList) {
+  const isDocControlHeaderTable = node.closest(".doc-control-top") !== null || node.querySelector(".sub-heading") !== null;
   const isBorderless =
-    node.getAttribute("border") === "0" ||
+    (!isDocControlHeaderTable && node.getAttribute("border") === "0") ||
     node.classList.contains("calc-table") ||
     node.classList.contains("busbar-table") ||
     node.closest("#busbar-sizing-report") !== null ||
@@ -304,10 +367,24 @@ function parseTableElement(node, childrenList) {
   
   const docxRows = [];
   const trs = Array.from(node.querySelectorAll("tr"));
+  const hasThead = node.querySelector("thead") !== null;
   
-  for (let tr of trs) {
+  for (let trIndex = 0; trIndex < trs.length; trIndex++) {
+    const tr = trs[trIndex];
     const docxCells = [];
     const cells = Array.from(tr.children);
+    
+    let isHeaderRow = false;
+    if (hasThead) {
+      isHeaderRow = tr.closest("thead") !== null || (trIndex === 0 && cells.some(c => c.tagName.toLowerCase() === 'th'));
+    } else {
+      const hasTh = cells.some(c => c.tagName.toLowerCase() === 'th');
+      if (trIndex === 0 && hasTh) {
+        isHeaderRow = true;
+      } else if (hasTh && cells.every(c => c.tagName.toLowerCase() === 'th')) {
+        isHeaderRow = true;
+      }
+    }
     
     cells.forEach((cell, cellIndex) => {
       const isHeader = cell.tagName.toLowerCase() === 'th';
@@ -344,9 +421,10 @@ function parseTableElement(node, childrenList) {
         for (let childNode of cell.childNodes) {
           if (childNode.nodeType === Node.ELEMENT_NODE) {
             processNode(childNode, cellParagraphs);
-          } else if (childNode.nodeType === Node.TEXT_NODE && childNode.textContent.trim()) {
+          } else if (childNode.nodeType === Node.TEXT_NODE && normalizeWhitespace(childNode.textContent, childNode).trim()) {
+            const text = normalizeWhitespace(childNode.textContent, childNode);
             cellParagraphs.push(new Paragraph({
-              children: [new TextRun({ text: childNode.textContent, color: isHeader ? "FFFFFF" : undefined, font: "Segoe UI" })]
+              children: [new TextRun({ text: text, color: isHeader ? "FFFFFF" : undefined, font: "Segoe UI" })]
             }));
           }
         }
@@ -393,6 +471,7 @@ function parseTableElement(node, childrenList) {
     });
     
     docxRows.push(new TableRow({
+      tableHeader: isHeaderRow ? true : undefined,
       children: docxCells
     }));
   }
@@ -439,12 +518,40 @@ function processNode(node, childrenList) {
         
       const titleEl = node.querySelector(".toc-title");
       const pageNumEl = node.querySelector(".toc-page-num");
+      const anchorEl = node.querySelector("a");
       
-      const titleText = titleEl ? titleEl.textContent.trim() : "";
-      const pageNumText = pageNumEl ? pageNumEl.textContent.trim() : "";
+      const titleText = titleEl ? normalizeWhitespace(titleEl.textContent, titleEl).trim() : "";
+      const pageNumText = pageNumEl ? normalizeWhitespace(pageNumEl.textContent, pageNumEl).trim() : "";
       
+      let matchedBookmarkId = null;
+      if (anchorEl) {
+        const href = anchorEl.getAttribute("href") || "";
+        const hrefId = href.replace(/^#/, "");
+        if (hrefId && domIdToBookmarkMap.has(hrefId)) {
+          matchedBookmarkId = domIdToBookmarkMap.get(hrefId);
+        }
+      }
+
+      if (!matchedBookmarkId && titleText) {
+        const normTOC = normalizeWhitespace(titleText).toLowerCase();
+        const normNoNum = normTOC.replace(/^\d+[\d.]*\s*/, "").trim();
+        matchedBookmarkId = headingBookmarkMap.get(normTOC) || headingBookmarkMap.get(normNoNum) || null;
+      }
+
+      let titleItem;
+      if (matchedBookmarkId) {
+        titleItem = new InternalHyperlink({
+          anchor: matchedBookmarkId,
+          children: [
+            new TextRun({ text: titleText, bold: level === 1, font: "Segoe UI", style: "Hyperlink" })
+          ]
+        });
+      } else {
+        titleItem = new TextRun({ text: titleText, bold: level === 1, font: "Segoe UI" });
+      }
+
       const runs = [
-        new TextRun({ text: titleText, bold: level === 1, font: "Segoe UI" }),
+        titleItem,
         new TextRun({ text: "\t" }),
         new TextRun({ text: pageNumText, bold: level === 1, font: "Segoe UI" })
       ];
@@ -482,9 +589,24 @@ function processNode(node, childrenList) {
       else if (tagName === 'h3') headingLevel = HeadingLevel.HEADING_3;
       else headingLevel = HeadingLevel.HEADING_4;
       
+      const rawTitle = node.textContent.trim();
+      const normTitle = normalizeWhitespace(rawTitle).toLowerCase();
+      const domId = node.getAttribute("id");
+
+      const bookmarkId = node._docxBookmarkId || 
+                         (domId && domIdToBookmarkMap.get(domId)) || 
+                         headingBookmarkMap.get(normTitle) || 
+                         sanitizeBookmarkId(domId || normTitle, 0);
+
       childrenList.push(new Paragraph({
         heading: headingLevel,
-        children: runs,
+        keepWithNext: true,
+        children: [
+          new Bookmark({
+            id: bookmarkId,
+            children: runs
+          })
+        ],
         spacing: { before: 240, after: 120 }
       }));
     } else if (tagName === 'p') {
@@ -513,13 +635,44 @@ function processNode(node, childrenList) {
     } else if (tagName === 'table') {
       parseTableElement(node, childrenList);
     } else if (tagName === 'img') {
-      const src = node.getAttribute("src");
+      let src = node.src || node.getAttribute("src") || "";
+
+      if (src && !src.startsWith("data:")) {
+        try {
+          const canvas = document.createElement("canvas");
+          const w = node.naturalWidth || node.width || 600;
+          const h = node.naturalHeight || node.height || 300;
+          if (w > 0 && h > 0) {
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(node, 0, 0);
+            src = canvas.toDataURL("image/png");
+          }
+        } catch (e) {
+          console.warn("[exportDocx] Could not convert img src to canvas base64:", e);
+        }
+      }
+
       if (src && src.startsWith("data:")) {
+        const isCoverImg = node.classList.contains("cover-img") || 
+                           (node.parentElement && node.parentElement.classList.contains("cover-image")) ||
+                           (node.closest && node.closest(".cover-image")) ||
+                           node.getAttribute("alt") === "pv_backgroung";
+
         let width = 150;
         let height = 150;
-        if (node.classList.contains("logo-element")) { width = 150; height = 50; }
-        else if (node.classList.contains("seal-img")) { width = 180; height = 180; }
-        else {
+
+        if (isCoverImg) {
+          width = 580;  // Full printable page width in Word (dxa equivalent)
+          height = 260; // Banner height matching HTML cover ratio
+        } else if (node.classList.contains("logo-element")) {
+          width = 150;
+          height = 50;
+        } else if (node.classList.contains("seal-img")) {
+          width = 180;
+          height = 180;
+        } else {
           const widthMatch = /width\s*:\s*([\d.]+)/i.exec(style);
           const heightMatch = /height\s*:\s*([\d.]+)/i.exec(style);
           if (widthMatch) width = parseFloat(widthMatch[1]);
@@ -531,8 +684,145 @@ function processNode(node, childrenList) {
           childrenList.push(new Paragraph({
             children: [imageRun],
             alignment: AlignmentType.CENTER,
-            spacing: { before: 120, after: 120 }
+            spacing: { before: 0, after: 120 }
           }));
+        }
+      }
+    } else if (tagName === 'div' || tagName === 'section' || tagName === 'article' || tagName === 'header' || tagName === 'footer') {
+      const classList = node.classList ? Array.from(node.classList) : [];
+
+      if (classList.includes("cover-blue") || classList.includes("cover-green")) {
+        const isBlue = classList.includes("cover-blue");
+        const bgColor = isBlue ? "002060" : "005F5F";
+        const innerParagraphs = [];
+        for (let child of node.childNodes) {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const runs = parseParagraphChildren(child, {
+              font: "Segoe UI",
+              color: "FFFFFF",
+              size: 32,
+              bold: isBlue || undefined
+            });
+
+            if (runs.length > 0) {
+              innerParagraphs.push(new Paragraph({
+                children: runs,
+                spacing: { before: 30, after: 30 }
+              }));
+            }
+          }
+        }
+        if (innerParagraphs.length > 0) {
+          childrenList.push(new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: innerParagraphs,
+                    shading: { fill: bgColor },
+                    margins: { top: 100, bottom: 100, left: 200, right: 200 },
+                    borders: {
+                      top: { style: BorderStyle.NONE },
+                      bottom: { style: BorderStyle.NONE },
+                      left: { style: BorderStyle.NONE },
+                      right: { style: BorderStyle.NONE }
+                    }
+                  })
+                ]
+              })
+            ],
+            spacing: { before: 0, after: 0 }
+          }));
+        }
+        return;
+      }
+
+      if (classList.includes("doc-control-middle")) {
+        const runs = parseParagraphChildren(node, { font: "Segoe UI", color: "163C7A", size: 36, bold: true });
+        if (runs.length > 0) {
+          childrenList.push(new Paragraph({
+            children: runs,
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 360, after: 360 }
+          }));
+        }
+        return;
+      }
+
+      const hasDirectText = Array.from(node.childNodes).some(n => 
+        n.nodeType === Node.TEXT_NODE && normalizeWhitespace(n.textContent, n).trim().length > 0
+      );
+
+      const hasBlockChildren = Array.from(node.childNodes).some(n => 
+        n.nodeType === Node.ELEMENT_NODE && ['div', 'p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'section', 'article', 'img', 'picture', 'figure', 'header', 'footer'].includes(n.tagName.toLowerCase())
+      );
+
+      let textColor = undefined;
+      let shadingBg = undefined;
+
+      const isCoverBlue = classList.includes("cover-blue") || (node.closest && node.closest(".cover-blue"));
+      const isCoverGreen = classList.includes("cover-green") || (node.closest && node.closest(".cover-green"));
+
+      if (isCoverBlue) {
+        textColor = "FFFFFF";
+        shadingBg = "002060";
+      } else if (isCoverGreen) {
+        textColor = "FFFFFF";
+        shadingBg = "005F5F";
+      }
+
+      let fontSize = undefined;
+      let isBold = false;
+
+      if (classList.includes("cover-project") || classList.includes("cover-report")) {
+        fontSize = 32; // 16pt
+        isBold = true;
+      } else if (classList.includes("cover-footer-item")) {
+        fontSize = 28; // 14pt
+      } else if (classList.includes("org-name")) {
+        fontSize = 24; // 12pt
+        isBold = true;
+      } else if (classList.includes("sub-heading")) {
+        fontSize = 18; // 9pt
+        textColor = "1D4ED8";
+        isBold = true;
+      } else if (classList.includes("address")) {
+        fontSize = 19; // 9.5pt
+      }
+
+      if (hasBlockChildren) {
+        for (let child of node.childNodes) {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            processNode(child, childrenList);
+          } else if (child.nodeType === Node.TEXT_NODE) {
+            const txt = normalizeWhitespace(child.textContent, child).trim();
+            if (txt.length > 0) {
+              childrenList.push(new Paragraph({
+                children: [new TextRun({ text: txt, font: "Segoe UI", color: textColor, size: fontSize })],
+                shading: shadingBg ? { fill: shadingBg } : undefined,
+                spacing: { before: 120, after: 120 }
+              }));
+            }
+          }
+        }
+      } else {
+        const textContentClean = normalizeWhitespace(node.textContent, node).trim();
+        if (textContentClean.length > 0) {
+          const runs = parseParagraphChildren(node, {
+            font: "Segoe UI",
+            color: textColor,
+            size: fontSize,
+            bold: isBold || undefined
+          });
+
+          if (runs.length > 0) {
+            childrenList.push(new Paragraph({
+              children: runs,
+              shading: shadingBg ? { fill: shadingBg } : undefined,
+              spacing: { before: 120, after: 120 }
+            }));
+          }
         }
       }
     } else {
@@ -570,6 +860,7 @@ export async function exportDocx(elementId, fileName) {
   }
 
   // 2. Traversal and AST parsing
+  buildHeadingBookmarkMaps(element);
   const childrenElements = [];
   
   // Parse through top-level elements of the report

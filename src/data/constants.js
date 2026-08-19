@@ -5,4 +5,7 @@ export const USER = {
   name: "Arman Shah",
   initials: "AS",
   role: "Electrical Design Engineer",
+  department: "Electrical",
+  vertical: "PV",
 };
+

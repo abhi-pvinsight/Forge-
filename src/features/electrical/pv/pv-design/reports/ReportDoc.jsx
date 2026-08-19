@@ -10,7 +10,7 @@ import listOfAbbreviations from "../../../../../shared/reports/listOfAbbreviatio
 import { fillTemplate } from "../../../../report-engine/templateEngine";
 import tableOfContents from "../../../../../shared/reports/tableOfContents.html?raw";
 import { scanAndNumberReportContent, renderSimpleList, renderSectionIfNotEmpty, renderAbbreviationsTable } from "../../../../../shared/reports/utils/tocScanner";
-// Force Vite reload raw import
+// Force Vite reload raw import - table header repeat & colgroup fix
 import ashraeTableTemplate from "../../../../../backend/Ashrae/ASHARE.html?raw";
 import { buildReportMeta } from "../../../../../shared/reports/buildReportMeta";
 
@@ -146,6 +146,7 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     solarCalcValues: safeSolarCalcValues,
     tempMin: values?.tempMin,
     tempCellMax: values?.tempCellMax,
+    values,
   });
   const vmpMaxTempVal = calc.VmpHot
     ? Number(calc.VmpHot)
@@ -243,8 +244,14 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
     calcAlbedoAvg = Number(values.albedo_avg).toFixed(2);
   }
 
+  const selectedModulesSeries = values.modules_series || values.string_size || 28;
+
   const templateValues = {
     ...values,
+    modules_series: selectedModulesSeries,
+    string_size: selectedModulesSeries,
+    ashrae_modules_series: selectedModulesSeries,
+    pvsyst_modules_series: selectedModulesSeries,
     allTimeMaxVoc: typeof allTimeMaxVocVal === 'number' ? allTimeMaxVocVal.toFixed(2) : allTimeMaxVocVal,
     vmpMaxTemp: typeof vmpMaxTempVal === 'number' ? vmpMaxTempVal.toFixed(1) : vmpMaxTempVal,
     degradation_year30_after: degradationYear30After,
@@ -400,7 +407,6 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
   }, [values, files, safeFiles.batteryDs]);
 
   return (
-
     <div
       id="PV_DBR-report"
       contentEditable={isEditMode}
@@ -408,7 +414,6 @@ export default function ReportDoc({ values = {}, calc = {}, files = {}, solarCal
       onBlur={onHtmlChange ? (e) => onHtmlChange(e.currentTarget.innerHTML) : undefined}
       dangerouslySetInnerHTML={{ __html: reportHtml }}
     />
-
   );
 }
 

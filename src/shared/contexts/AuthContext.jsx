@@ -53,31 +53,6 @@ async function hydrateFromSession(setSession, setUser, setLoading, stored) {
     setLoading(false);
     return;
   } catch {
-    const refreshToken = stored?.session?.refresh_token;
-    if (refreshToken) {
-      try {
-        const refreshed = await refreshSessionApi(refreshToken);
-        const nextSession = refreshed.session;
-        const me = nextSession?.access_token
-          ? await fetchCurrentUserApi(nextSession.access_token)
-          : null;
-
-        const nextState = {
-          ...stored,
-          session: nextSession,
-          user: me?.user || refreshed.user || null,
-        };
-
-        writeStoredSession(nextState);
-        setSession(nextSession);
-        setUser(nextState.user);
-        setLoading(false);
-        return;
-      } catch {
-        // fall through to clear
-      }
-    }
-
     clearStoredSession();
     setSession(null);
     setUser(null);
@@ -131,8 +106,8 @@ export function AuthProvider({ children }) {
     return nextState;
   };
 
-  const signUp = async ({ fullName, email, department, password }) => {
-    const res = await signUpApi({ fullName, email, department, password });
+  const signUp = async ({ fullName, email, department, vertical, password }) => {
+    const res = await signUpApi({ fullName, email, department, vertical, password });
     const nextSession = res.session || null;
     let nextUser = res.user || null;
 
@@ -180,6 +155,8 @@ export function AuthProvider({ children }) {
       email: "forge-test-user@pvinsight.local",
       full_name: "Developer Bypass",
       role: "Electrical Design Engineer",
+      department: "Electrical",
+      vertical: "PV",
       organization_id: "default-org-id",
     };
     const nextState = { session: nextSession, user: nextUser };
