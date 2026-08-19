@@ -678,6 +678,45 @@ export default function FormScreen({ report, vertical, sub, values, setValue, fi
     });
   }, [report.id]);
 
+  // Auto-fetch ASHRAE weather data when coordinates change
+  useEffect(() => {
+    if (values.latitude && values.longitude) {
+      const lat = Number(values.latitude);
+      const lon = Number(values.longitude);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        const timer = setTimeout(async () => {
+          try {
+            console.log(`[FormScreen] Auto-fetching ASHRAE for coordinates: ${lat}, ${lon}`);
+            const ashrae = await generateAshrae(lat, lon);
+            const ashraeData = ashrae?.data || ashrae;
+            if (ashraeData) {
+              const updates = {};
+              Object.entries(ashraeData).forEach(([k, v]) => {
+                if (v !== undefined && v !== null && v !== "N/A") {
+                  updates[k] = String(v);
+                }
+              });
+              
+              const tempMin = ashraeData.extreme_annual_DB_mean_min;
+              const tempCellMax = ashraeData.extreme_annual_DB_mean_max;
+              if (tempMin !== undefined && tempMin !== null && tempMin !== "N/A") {
+                updates["tempMin"] = String(tempMin);
+              }
+              if (tempCellMax !== undefined && tempCellMax !== null && tempCellMax !== "N/A") {
+                updates["tempCellMax"] = String(tempCellMax);
+              }
+              
+              setValue(updates);
+            }
+          } catch (e) {
+            console.error("Auto ASHRAE fetch failed:", e);
+          }
+        }, 1000); // 1-second debounce to prevent spamming during typing
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [values.latitude, values.longitude]);
+
   const loadLastEntry = async () => {
     try {
       setBanner(null);

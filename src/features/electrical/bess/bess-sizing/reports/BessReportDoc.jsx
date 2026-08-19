@@ -17,6 +17,7 @@ import { getReportNodeById } from "../../../../../data/navigation";
 
 import { fillTemplate } from "../../../../report-engine/templateEngine";
 
+// Force Vite reload raw import
 import ashraeTableTemplate from "../../../../../backend/Ashrae/ASHARE.html?raw";
 // import reportTemplate from "../templates/bessReportTemplate.html?raw";
 console.log(ashraeTableTemplate);
@@ -50,6 +51,45 @@ function DocPage({ children }) {
       {children}
     </div>
   );
+}
+
+function renderAshraeTableHtml(rawHtml, values) {
+  if (!rawHtml) return "";
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, "text/html");
+
+    // 1. Update station header title
+    const headerTitle = doc.getElementById("station_header_title");
+    if (headerTitle) {
+      const city = values.weather_station_city || "PHOENIX SKY HARBOR";
+      const state = values.weather_station_state ? `, ${values.weather_station_state}` : "";
+      const country = values.weather_station_country ? `, ${values.weather_station_country}` : ", USA";
+      const wmo = values.weather_station_id || "722780";
+
+      headerTitle.innerHTML = `<div class="baloon_icon" style="display:inline-block;background-position:0px 0px;position: relative;right: 10;"></div><b>${city}${state}${country} (WMO: ${wmo})</b>`;
+    }
+
+    // 2. Loop over all elements with data-key attributes and fill them
+    const cells = doc.querySelectorAll("[data-key]");
+    cells.forEach((cell) => {
+      const key = cell.getAttribute("data-key");
+      if (key && values[key] !== undefined && values[key] !== null) {
+        cell.innerHTML = `<b>${values[key]}</b>`;
+      }
+    });
+
+    // DOMParser moves top-level <style> tags into <head>. Preserve them when
+    // returning the populated fragment so ASHRAE print sizing is not lost.
+    const templateStyles = Array.from(doc.head.querySelectorAll("style"))
+      .map((style) => style.outerHTML)
+      .join("");
+
+    return `${templateStyles}${doc.body.innerHTML}`;
+  } catch (err) {
+    console.error("Failed to dynamically populate ASHRAE table:", err);
+    return rawHtml;
+  }
 }
 
 function DocH({ n, t }) {
@@ -183,7 +223,7 @@ export default function BessReportDoc({ values = {}, files = {}, showStamp = fal
     groundConductorPcs: "600 KCMIL Cu",
     groundConductorAux: "#4/0 AWG Cu",
     groundConductorMisc: "#6 AWG Cu",
-    ASHRAE_TABLE: ashraeTableTemplate,
+    ASHRAE_TABLE: renderAshraeTableHtml(ashraeTableTemplate, values),
     REPORT_NAME: " Design Basis Report - Bess Electrical",
     singleLineDiagram: formatFigure(sldSrc, "Single Line Diagram"),
     loadProfileChart: formatFigure(loadProfileSrc, "Load profile of BESS plant for one day"),

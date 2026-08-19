@@ -4,7 +4,12 @@ from sqlalchemy import create_engine, Column, Integer, String, JSON, ForeignKey,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:root@localhost:5433/forge")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/forge")
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+elif not DATABASE_URL.startswith("postgresql://") and "@" in DATABASE_URL:
+    DATABASE_URL = f"postgresql://{DATABASE_URL}"
 
 engine = create_engine(DATABASE_URL, pool_size=5, max_overflow=10)
 

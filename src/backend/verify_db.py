@@ -4,7 +4,7 @@ from app.database import Base
 from alembic import command
 from alembic.config import Config
 
-os.environ["DATABASE_URL"] = "postgresql://postgres:root@localhost:5433/forge"
+os.environ["DATABASE_URL"] = "postgresql://postgres:password@localhost:5432/forge"
 os.environ["LLMWHISPERER_API_KEY"] = "dummy"
 
 print("1. Testing engine creation...")

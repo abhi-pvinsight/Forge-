@@ -58,16 +58,21 @@ def process_and_populate_report(user_lat, user_lon):
     # This grabs your explicit API keys to line up identically with your HTML data-key targets.
     data_map = {
         "weather_station_city": station.get("place", "N/A"),
-        "weather_station_state": station.get("state", "N/A"),
-        "weather_station_country": station.get("country", "N/A"),
+        "weather_station_state": station.get("state", ""),
+        "weather_station_country": station.get("country", ""),
         "weather_station_id": station.get("wmo", "N/A"),
 
         "station_name": station.get("place", "N/A"),
         "wmo_id": station.get("wmo", "N/A"),
-
         
-        "station_name": station.get("place", "N/A"),
-        "wmo_id": station.get("wmo", "N/A"),
+        "station_latitude": station.get("lat", "N/A"),
+        "station_longitude": station.get("long", "N/A"),
+        "station_elevation": station.get("elev", "N/A"),
+        "station_stdp": station.get("stdp", "N/A"),
+        "station_timezone": station.get("time_zone", "N/A"),
+        "station_period": station.get("period", "N/A"),
+        "station_grade": station.get("grade", "N/A"),
+        "station_wban": station.get("wban", "N/A"),
         
         "coldest_month": station.get("coldest_month", "N/A"),
         "heating_DB_99.6": station.get("heating_DB_99.6", "N/A"),

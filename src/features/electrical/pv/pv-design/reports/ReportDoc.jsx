@@ -10,6 +10,7 @@ import listOfAbbreviations from "../../../../../shared/reports/listOfAbbreviatio
 import { fillTemplate } from "../../../../report-engine/templateEngine";
 import tableOfContents from "../../../../../shared/reports/tableOfContents.html?raw";
 import { scanAndNumberReportContent, renderSimpleList, renderSectionIfNotEmpty, renderAbbreviationsTable } from "../../../../../shared/reports/utils/tocScanner";
+// Force Vite reload raw import
 import ashraeTableTemplate from "../../../../../backend/Ashrae/ASHARE.html?raw";
 import { buildReportMeta } from "../../../../../shared/reports/buildReportMeta";
 
